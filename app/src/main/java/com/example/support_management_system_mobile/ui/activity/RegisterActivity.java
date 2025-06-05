@@ -1,4 +1,4 @@
-package com.example.support_management_system_mobile.activity;
+package com.example.support_management_system_mobile.ui.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -81,7 +81,7 @@ public class RegisterActivity extends AppCompatActivity {
 
         RegisterRequest request = new RegisterRequest(login, password, email, name, surname);
 
-        APIClient.getApiService().register(request).enqueue(new Callback<>() {
+        APIClient.getAPIService().register(request).enqueue(new Callback<>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
                 if (response.isSuccessful()) {

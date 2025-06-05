@@ -21,4 +21,16 @@
     <string name="email_register_error">Incorrect e-mail address format</string>
     <string name="password_register_error">Password cannot be empty</string>
     <string name="invalid_data_register_error">Incorrect data was entered</string>
+
+    <string name="to_knowledge_base_button">Go to the knowledge base</string>
+    <string name="to_supported_software">Go to the list of supported software</string>
+    <string name="welcome">Welcome to Support Manager System</string>
+    <string name="to_login">Go to login</string>
+    <string name="software_supported">Software supported</string>
+    <string name="knowledge_list">Knowledge Base</string>
+    <string name="no_data_to_display">No data to display</string>
+
+    <string name="home_menu">Home</string>
+    <string name="tickets_menu">Tickets</string>
+    <string name="account_menu">Account</string>
 </resources>

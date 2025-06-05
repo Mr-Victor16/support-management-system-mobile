@@ -2,16 +2,19 @@ package com.example.support_management_system_mobile;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Toast;
+import android.view.View;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
-import com.example.support_management_system_mobile.activity.LoginActivity;
-import com.example.support_management_system_mobile.auth.JWTUtils;
+import com.example.support_management_system_mobile.ui.fragment.WelcomeFragment;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigationrail.NavigationRailView;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -26,12 +29,34 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        String token = JWTUtils.getToken(this);
-        if (token == null) {
-            startActivity(new Intent(this, LoginActivity.class));
-            finish();
-        } else {
-            Toast.makeText(MainActivity.this, "Logged in", Toast.LENGTH_SHORT).show();
+        View navView = findViewById(R.id.mainNavigationBar);
+
+        if (navView instanceof BottomNavigationView) {
+            ((BottomNavigationView) navView).setOnItemSelectedListener(item -> {
+                int id = item.getItemId();
+                if (id == R.id.nav_main) {
+                    startActivity(new Intent(this, MainActivity.class));
+                    return true;
+                }
+                return false;
+            });
+        } else if (navView instanceof NavigationRailView) {
+            ((NavigationRailView) navView).setOnItemSelectedListener(item -> {
+                int id = item.getItemId();
+                if (id == R.id.nav_main) {
+                    startActivity(new Intent(this, MainActivity.class));
+                    return true;
+                }
+                return false;
+            });
+        }
+
+        if (savedInstanceState == null) {
+            Fragment welcomeFragment = new WelcomeFragment();
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction()
+                    .replace(R.id.mainContainer, welcomeFragment)
+                    .commit();
         }
     }
 }
