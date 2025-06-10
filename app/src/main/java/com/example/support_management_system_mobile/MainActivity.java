@@ -1,6 +1,5 @@
 package com.example.support_management_system_mobile;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
@@ -10,8 +9,8 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 
+import com.example.support_management_system_mobile.ui.fragment.ProfileFragment;
 import com.example.support_management_system_mobile.ui.fragment.WelcomeFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigationrail.NavigationRailView;
@@ -29,34 +28,36 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
+        setupNavigation();
+
+        if (savedInstanceState == null) loadFragment(new WelcomeFragment());
+    }
+
+    private void setupNavigation() {
         View navView = findViewById(R.id.mainNavigationBar);
 
         if (navView instanceof BottomNavigationView) {
-            ((BottomNavigationView) navView).setOnItemSelectedListener(item -> {
-                int id = item.getItemId();
-                if (id == R.id.nav_main) {
-                    startActivity(new Intent(this, MainActivity.class));
-                    return true;
-                }
-                return false;
-            });
+            ((BottomNavigationView) navView).setOnItemSelectedListener(item -> handleNavigation(item.getItemId()));
         } else if (navView instanceof NavigationRailView) {
-            ((NavigationRailView) navView).setOnItemSelectedListener(item -> {
-                int id = item.getItemId();
-                if (id == R.id.nav_main) {
-                    startActivity(new Intent(this, MainActivity.class));
-                    return true;
-                }
-                return false;
-            });
+            ((NavigationRailView) navView).setOnItemSelectedListener(item -> handleNavigation(item.getItemId()));
         }
+    }
 
-        if (savedInstanceState == null) {
-            Fragment welcomeFragment = new WelcomeFragment();
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            fragmentManager.beginTransaction()
-                    .replace(R.id.mainContainer, welcomeFragment)
-                    .commit();
+    private boolean handleNavigation(int itemID) {
+        if (itemID == R.id.nav_main) {
+            loadFragment(new WelcomeFragment());
+            return true;
+        } else if (itemID == R.id.nav_account) {
+            loadFragment(new ProfileFragment());
+            return true;
         }
+        return false;
+    }
+
+    private void loadFragment(Fragment fragment) {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.mainContainer, fragment)
+                .commit();
     }
 }

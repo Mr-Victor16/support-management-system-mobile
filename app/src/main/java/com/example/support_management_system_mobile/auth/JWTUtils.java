@@ -56,7 +56,31 @@ public class JWTUtils {
         return getPrefs(context).getString(USERNAME_KEY, null);
     }
 
+    public static String getName(Context context) {
+        return getPrefs(context).getString(NAME_KEY, null);
+    }
+
+    public static String getSurname(Context context) {
+        return getPrefs(context).getString(SURNAME_KEY, null);
+    }
+
+    public static String getEmail(Context context) {
+        return getPrefs(context).getString(EMAIL_KEY, null);
+    }
+
     public static long getUserId(Context context) {
         return getPrefs(context).getLong(ID_KEY, -1);
+    }
+
+    public static void setName(Context context, String name) {
+        SharedPreferences.Editor editor = getPrefs(context).edit();
+        editor.putString(NAME_KEY, name);
+        editor.apply();
+    }
+
+    public static void setSurname(Context context, String surname) {
+        SharedPreferences.Editor editor = getPrefs(context).edit();
+        editor.putString(SURNAME_KEY, surname);
+        editor.apply();
     }
 }

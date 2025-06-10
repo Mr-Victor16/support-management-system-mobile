@@ -21,7 +21,7 @@ import com.example.support_management_system_mobile.auth.APIClient;
 import com.example.support_management_system_mobile.auth.JWTUtils;
 import com.example.support_management_system_mobile.payload.request.RegisterRequest;
 
-import com.example.support_management_system_mobile.validators.RegisterValidator;
+import com.example.support_management_system_mobile.validators.UserValidator;
 
 import java.util.HashMap;
 import java.util.function.Predicate;
@@ -123,11 +123,11 @@ public class RegisterActivity extends AppCompatActivity {
     private void validateForm() {
         boolean valid = true;
 
-        valid &= validateField(usernameEditText, RegisterValidator::isUsernameValid, R.string.username_register_error);
-        valid &= validateField(nameEditText, RegisterValidator::isNameValid, R.string.name_register_error);
-        valid &= validateField(surnameEditText, RegisterValidator::isSurnameValid, R.string.surname_register_error);
-        valid &= validateField(emailEditText, RegisterValidator::isEmailValid, R.string.email_register_error);
-        valid &= validateField(passwordEditText, RegisterValidator::isPasswordValid, R.string.password_register_error);
+        valid &= validateField(usernameEditText, UserValidator::isUsernameValid, R.string.username_register_error);
+        valid &= validateField(nameEditText, UserValidator::isNameValid, R.string.name_register_error);
+        valid &= validateField(surnameEditText, UserValidator::isSurnameValid, R.string.surname_register_error);
+        valid &= validateField(emailEditText, UserValidator::isEmailValid, R.string.email_register_error);
+        valid &= validateField(passwordEditText, UserValidator::isPasswordValid, R.string.password_register_error);
 
         registerButton.setEnabled(valid);
     }

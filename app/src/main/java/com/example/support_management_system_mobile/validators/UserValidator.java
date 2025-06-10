@@ -2,7 +2,7 @@ package com.example.support_management_system_mobile.validators;
 
 import android.util.Patterns;
 
-public class RegisterValidator {
+public class UserValidator {
     public static boolean isUsernameValid(String username) {
         return username != null && username.length() >= 2 && username.length() <= 36;
     }

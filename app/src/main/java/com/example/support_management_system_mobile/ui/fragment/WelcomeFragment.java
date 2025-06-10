@@ -10,8 +10,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.example.support_management_system_mobile.R;
+import com.example.support_management_system_mobile.auth.JWTUtils;
 import com.example.support_management_system_mobile.ui.activity.LoginActivity;
 
 public class WelcomeFragment extends Fragment {
@@ -20,8 +22,17 @@ public class WelcomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_welcome, container, false);
 
+        TextView welcomeHeader = view.findViewById(R.id.welcomeHeader);
         Button loginButton = view.findViewById(R.id.toLoginButton);
-        loginButton.setOnClickListener(v -> openLoginActivity());
+
+        if (JWTUtils.getToken(requireContext()) == null){
+            loginButton.setOnClickListener(v -> openLoginActivity());
+            welcomeHeader.setText(R.string.welcome);
+        } else {
+            loginButton.setVisibility(View.GONE);
+            String welcomeText = getString(R.string.welcome_header_format, JWTUtils.getName(requireContext()));
+            welcomeHeader.setText(welcomeText);
+        }
 
         Button softwareButton = view.findViewById(R.id.toSoftwareButton);
         softwareButton.setOnClickListener(v -> openSupportedSoftwareFragment());

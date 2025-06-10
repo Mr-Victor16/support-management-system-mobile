@@ -2,6 +2,7 @@ package com.example.support_management_system_mobile.api;
 
 import com.example.support_management_system_mobile.payload.request.LoginRequest;
 import com.example.support_management_system_mobile.payload.request.RegisterRequest;
+import com.example.support_management_system_mobile.payload.request.UpdateProfileRequest;
 import com.example.support_management_system_mobile.payload.response.Knowledge;
 import com.example.support_management_system_mobile.payload.response.LoginResponse;
 import com.example.support_management_system_mobile.payload.response.Software;
@@ -11,7 +12,9 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.Header;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 
 public interface APIService {
     @POST("/api/auth/login")
@@ -25,4 +28,7 @@ public interface APIService {
 
     @GET("/api/knowledge-bases")
     Call<List<Knowledge>> getKnowledgeItems();
+
+    @PUT("/api/profiles")
+    Call<Void> updateProfile(@Header("Authorization") String bearerToken, @Body UpdateProfileRequest request);
 }
