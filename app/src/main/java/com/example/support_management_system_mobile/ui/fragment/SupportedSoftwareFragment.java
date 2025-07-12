@@ -16,7 +16,7 @@ import android.widget.Toast;
 import com.example.support_management_system_mobile.R;
 import com.example.support_management_system_mobile.adapter.SoftwareAdapter;
 import com.example.support_management_system_mobile.auth.APIClient;
-import com.example.support_management_system_mobile.payload.response.Software;
+import com.example.support_management_system_mobile.models.Software;
 
 import java.util.List;
 
@@ -49,7 +49,7 @@ public class SupportedSoftwareFragment extends Fragment {
         recyclerView.setVisibility(View.GONE);
         emptyMessage.setVisibility(View.GONE);
 
-        APIClient.getAPIService().getSupportedSoftwareList().enqueue(new Callback<>() {
+        APIClient.getAPIService(requireContext()).getSupportedSoftwareList().enqueue(new Callback<>() {
             @Override
             public void onResponse(Call<List<Software>> call, Response<List<Software>> response) {
                 loadingSpinner.setVisibility(View.GONE);

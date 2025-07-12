@@ -3,6 +3,7 @@ package com.example.support_management_system_mobile.auth;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.example.support_management_system_mobile.models.User;
 import com.example.support_management_system_mobile.payload.response.LoginResponse;
 
 public class JWTUtils {
@@ -82,5 +83,12 @@ public class JWTUtils {
         SharedPreferences.Editor editor = getPrefs(context).edit();
         editor.putString(SURNAME_KEY, surname);
         editor.apply();
+    }
+
+    public static User getCurrentUser(Context context) {
+        Long id = getUserId(context);
+        String username = getUsername(context);
+        String role = getUserRole(context);
+        return new User(id, username, role);
     }
 }

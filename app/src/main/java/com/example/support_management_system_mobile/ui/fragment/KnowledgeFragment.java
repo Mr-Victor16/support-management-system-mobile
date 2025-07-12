@@ -16,7 +16,7 @@ import android.widget.Toast;
 import com.example.support_management_system_mobile.R;
 import com.example.support_management_system_mobile.adapter.KnowledgeAdapter;
 import com.example.support_management_system_mobile.auth.APIClient;
-import com.example.support_management_system_mobile.payload.response.Knowledge;
+import com.example.support_management_system_mobile.models.Knowledge;
 
 import java.util.List;
 
@@ -49,7 +49,7 @@ public class KnowledgeFragment extends Fragment {
         recyclerView.setVisibility(View.GONE);
         emptyMessage.setVisibility(View.GONE);
 
-        APIClient.getAPIService().getKnowledgeItems().enqueue(new Callback<>() {
+        APIClient.getAPIService(requireContext()).getKnowledgeItems().enqueue(new Callback<>() {
             @Override
             public void onResponse(Call<List<Knowledge>> call, Response<List<Knowledge>> response) {
                 loadingSpinner.setVisibility(View.GONE);

@@ -1,4 +1,4 @@
-package com.example.support_management_system_mobile.payload.response;
+package com.example.support_management_system_mobile.models;
 
 public class Software {
     private Long id;

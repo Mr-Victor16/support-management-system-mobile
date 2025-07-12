@@ -1,0 +1,57 @@
+package com.example.support_management_system_mobile.models;
+
+public class Status {
+    private Long id;
+    private String name;
+    private boolean closeTicket;
+    private boolean defaultStatus = false;
+
+    public Status(Long id, String name, boolean closeTicket) {
+        this.id = id;
+        this.name = name;
+        this.closeTicket = closeTicket;
+    }
+
+    public Status(String name, boolean closeTicket, boolean defaultStatus) {
+        this.name = name;
+        this.closeTicket = closeTicket;
+        this.defaultStatus = defaultStatus;
+    }
+
+    public Status(String name, boolean closeTicket) {
+        this.name = name;
+        this.closeTicket = closeTicket;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public boolean isCloseTicket() {
+        return closeTicket;
+    }
+
+    public void setCloseTicket(boolean closeTicket) {
+        this.closeTicket = closeTicket;
+    }
+
+    public boolean isDefaultStatus() {
+        return defaultStatus;
+    }
+
+    public void setDefaultStatus(boolean defaultStatus) {
+        this.defaultStatus = defaultStatus;
+    }
+}

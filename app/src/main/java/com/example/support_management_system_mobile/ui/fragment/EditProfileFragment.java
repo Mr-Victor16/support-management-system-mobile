@@ -108,7 +108,7 @@ public class EditProfileFragment extends Fragment {
         UpdateProfileRequest request = new UpdateProfileRequest(updatedFirstName, updatedSurname, updatedPassword);
         String authToken = "Bearer " + JWTUtils.getToken(requireContext());
 
-        APIClient.getAPIService().updateProfile(authToken, request).enqueue(new Callback<>() {
+        APIClient.getAPIService(requireContext()).updateProfile(authToken, request).enqueue(new Callback<>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if (response.isSuccessful()) {

@@ -11,6 +11,7 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 
 import com.example.support_management_system_mobile.ui.fragment.ProfileFragment;
+import com.example.support_management_system_mobile.ui.fragment.TicketListFragment;
 import com.example.support_management_system_mobile.ui.fragment.WelcomeFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigationrail.NavigationRailView;
@@ -49,6 +50,9 @@ public class MainActivity extends AppCompatActivity {
             return true;
         } else if (itemID == R.id.nav_account) {
             loadFragment(new ProfileFragment());
+            return true;
+        } else if (itemID == R.id.nav_tickets) {
+            loadFragment(new TicketListFragment());
             return true;
         }
         return false;

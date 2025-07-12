@@ -9,8 +9,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.support_management_system_mobile.R;
-import com.example.support_management_system_mobile.payload.response.Knowledge;
-import com.example.support_management_system_mobile.payload.response.Software;
+import com.example.support_management_system_mobile.models.Knowledge;
+import com.example.support_management_system_mobile.models.Software;
 
 import java.util.HashSet;
 import java.util.List;

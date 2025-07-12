@@ -1,0 +1,106 @@
+package com.example.support_management_system_mobile.models;
+
+import java.io.Serializable;
+import java.util.List;
+
+public class User implements Serializable {
+    private Long id;
+    private String username;
+    private String password;
+    private String email;
+    private String name;
+    private String surname;
+    private boolean enabled;
+    private String role;
+    private List<Ticket> tickets;
+
+    public User(Long id, String username, String password, String email, String name, String surname, boolean enabled, String role, List<Ticket> tickets) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.name = name;
+        this.surname = surname;
+        this.enabled = enabled;
+        this.role = role;
+        this.tickets = tickets;
+    }
+
+    public User(Long id, String username, String role) {
+        this.id = id;
+        this.username = username;
+        this.role = role;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getSurname() {
+        return surname;
+    }
+
+    public void setSurname(String surname) {
+        this.surname = surname;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public List<Ticket> getTickets() {
+        return tickets;
+    }
+
+    public void setTickets(List<Ticket> tickets) {
+        this.tickets = tickets;
+    }
+}

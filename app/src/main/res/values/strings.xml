@@ -50,4 +50,26 @@
     <string name="profile_updated_successfully">Your profile has been updated successfully.</string>
     <string name="profile_update_failed">Update failed. Please check your input.</string>
 
+    <string name="all_tickets_header">All tickets</string>
+    <string name="my_tickets_header">My tickets</string>
+    <string name="edit_button">Edit</string>
+    <string name="delete_button">Delete</string>
+    <string name="send_button">Send</string>
+    <string name="change_status">Change status</string>
+    <string name="enter_your_reply">Enter your reply</string>
+    <string name="no_replies">No replies yet</string>
+    <string name="replies">Replies</string>
+    <string name="ticket_details">Ticket details</string>
+    <string name="reply_length_error">Ticket reply must be 5–500 characters</string>
+    <string name="add_ticket_button">Add ticket</string>
+    <string name="session_expired">Your session has expired</string>
+    <string name="reply_added">Reply added</string>
+    <string name="reply_deleted">Reply deleted</string>
+    <string name="delete_reply">Delete reply</string>
+    <string name="cancel_button">Cancel</string>
+    <string name="confirm_delete_reply">Are you sure you want to delete this reply?</string>
+    <string name="delete_ticket">Delete ticket</string>
+    <string name="confirm_delete_ticket">Are you sure you want to delete this ticket?</string>
+    <string name="ticket_deleted">Ticket deleted</string>
+
 </resources>
