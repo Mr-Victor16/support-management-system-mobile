@@ -11,13 +11,16 @@ import com.example.support_management_system_mobile.models.Software;
 
 import java.util.List;
 
+import okhttp3.MultipartBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
+import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
+import retrofit2.http.Part;
 import retrofit2.http.Path;
 
 public interface APIService {
@@ -53,4 +56,15 @@ public interface APIService {
 
     @POST("api/tickets/reply")
     Call<Void> addTicketReply(@Body AddTicketReplyRequest request, @Header("Authorization") String bearerToken);
+
+    @Multipart
+    @POST("api/tickets/{ticketID}/image")
+    Call<Void> uploadTicketImages(
+            @Path("ticketID") Long ticketId,
+            @Part List<MultipartBody.Part> files,
+            @Header("Authorization") String bearerToken
+    );
+
+    @DELETE("api/tickets/image/{imageID}")
+    Call<Void> deleteTicketImage(@Path("imageID") Long imageId, @Header("Authorization") String bearerToken);
 }

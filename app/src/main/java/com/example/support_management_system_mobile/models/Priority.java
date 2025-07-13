@@ -1,6 +1,8 @@
 package com.example.support_management_system_mobile.models;
 
-public class Priority {
+import java.io.Serializable;
+
+public class Priority implements Serializable {
     private Long id;
     private String name;
     private Integer maxTime;

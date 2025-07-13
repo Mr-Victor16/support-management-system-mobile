@@ -71,5 +71,15 @@
     <string name="delete_ticket">Delete ticket</string>
     <string name="confirm_delete_ticket">Are you sure you want to delete this ticket?</string>
     <string name="ticket_deleted">Ticket deleted</string>
+    <string name="close_button">Close</string>
+    <string name="delete_image">Delete image</string>
+    <string name="images">Images</string>
+    <string name="confirm_delete_image">Are you sure you want to delete this image?</string>
+    <string name="image_deleted">Image deleted</string>
+    <string name="image_added">Image added</string>
+    <string name="file_processing_error">File processing error</string>
+    <string name="add_image">Add image</string>
+    <string name="add_images">Add images</string>
+    <string name="images_count">"Images: "</string>
 
 </resources>

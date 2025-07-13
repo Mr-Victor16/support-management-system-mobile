@@ -1,6 +1,8 @@
 package com.example.support_management_system_mobile.models;
 
-public class Software {
+import java.io.Serializable;
+
+public class Software implements Serializable {
     private Long id;
     private String name;
     private String description;

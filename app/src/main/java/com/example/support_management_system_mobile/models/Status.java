@@ -1,6 +1,8 @@
 package com.example.support_management_system_mobile.models;
 
-public class Status {
+import java.io.Serializable;
+
+public class Status implements Serializable {
     private Long id;
     private String name;
     private boolean closeTicket;

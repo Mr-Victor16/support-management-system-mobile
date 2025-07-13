@@ -1,8 +1,9 @@
 package com.example.support_management_system_mobile.models;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
-public class TicketReply {
+public class TicketReply implements Serializable {
     private Long id;
     private User user;
     private String content;

@@ -1,7 +1,11 @@
 package com.example.support_management_system_mobile.ui.fragment;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -22,12 +26,14 @@ import com.example.support_management_system_mobile.R;
 import com.example.support_management_system_mobile.adapter.TicketReplyAdapter;
 import com.example.support_management_system_mobile.auth.APIClient;
 import com.example.support_management_system_mobile.auth.JWTUtils;
+import com.example.support_management_system_mobile.models.Image;
 import com.example.support_management_system_mobile.models.Ticket;
 import com.example.support_management_system_mobile.models.TicketReply;
 import com.example.support_management_system_mobile.models.User;
 import com.example.support_management_system_mobile.payload.request.AddTicketReplyRequest;
+import com.example.support_management_system_mobile.ui.activity.TicketImageActivity;
 import com.example.support_management_system_mobile.validators.TicketValidator;
-
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -37,14 +43,14 @@ import retrofit2.Response;
 public class TicketDetailsFragment extends Fragment {
     private static final String ARG_TICKET = "ticket";
     private static final String ARG_USER = "user";
-
     private TextView ticketTitle, ticketDate, ticketStatus, ticketCategory, ticketDescription;
     private TextView replyCharCountTextView, noRepliesTextView;
     private RecyclerView repliesRecyclerView;
     private EditText replyEditText;
-    private Button sendReplyButton, editTicketButton, deleteTicketButton, changeStatusButton;
+    private Button sendReplyButton, editTicketButton, deleteTicketButton, changeStatusButton, showImagesButton;
     private LinearLayout replyInputLayout, ticketActionsLayout;
-
+    private List<Image> ticketImages = new ArrayList<>();
+    private ActivityResultLauncher<Intent> fullScreenImageLauncher;
     private Ticket ticket;
     private User currentUser;
 
@@ -64,10 +70,19 @@ public class TicketDetailsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         if (getArguments() != null) {
             ticket = (Ticket) getArguments().getSerializable(ARG_TICKET);
             currentUser = (User) getArguments().getSerializable(ARG_USER);
         }
+
+        fullScreenImageLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        fetchUpdatedTicket();
+                    }
+                });
     }
 
     @Override
@@ -92,6 +107,7 @@ public class TicketDetailsFragment extends Fragment {
         deleteTicketButton = view.findViewById(R.id.deleteTicketButton);
         changeStatusButton = view.findViewById(R.id.changeStatusButton);
         noRepliesTextView = view.findViewById(R.id.noRepliesTextView);
+        showImagesButton = view.findViewById(R.id.showImagesButton);
 
         setTicketData();
         setupRepliesList(ticket.getReplies());
@@ -125,9 +141,7 @@ public class TicketDetailsFragment extends Fragment {
             public void afterTextChanged(Editable s) {}
         });
 
-        sendReplyButton.setOnClickListener(v -> {
-            sendReply(replyEditText.getText().toString());
-        });
+        sendReplyButton.setOnClickListener(v -> sendReply(replyEditText.getText().toString()));
     }
 
     private void sendReply(String content){
@@ -159,9 +173,14 @@ public class TicketDetailsFragment extends Fragment {
         ticketStatus.setText(ticket.getStatus().getName());
         ticketCategory.setText(ticket.getCategory().getName());
         ticketDescription.setText(ticket.getDescription());
+        ticketImages = ticket.getImages();
 
         boolean isClosed = ticket.getStatus().isCloseTicket();
         replyInputLayout.setVisibility(isClosed ? View.GONE : View.VISIBLE);
+
+        int imageCount = ticket.getImages().size();
+        if (imageCount > 0) showImagesButton.setText(getString(R.string.images_count)+imageCount);
+        else showImagesButton.setText(R.string.add_images);
     }
 
     private void setupRepliesList(List<TicketReply> replies) {
@@ -251,6 +270,7 @@ public class TicketDetailsFragment extends Fragment {
         if (isOwner || isOperatorOrAdmin) {
             editTicketButton.setVisibility(View.VISIBLE);
             deleteTicketButton.setVisibility(View.VISIBLE);
+            showImagesButton.setVisibility(View.VISIBLE);
         }
 
         if (isOperatorOrAdmin) {
@@ -271,7 +291,13 @@ public class TicketDetailsFragment extends Fragment {
             Toast.makeText(getContext(), "Change status", Toast.LENGTH_SHORT).show();
         });
 
-        //TODO: Ticket images management
+        showImagesButton.setOnClickListener(v -> {
+            Intent intent = new Intent(requireContext(), TicketImageActivity.class);
+            intent.putExtra(TicketImageActivity.EXTRA_IMAGES, new ArrayList<>(ticketImages));
+            intent.putExtra(TicketImageActivity.EXTRA_POSITION, 0);
+            intent.putExtra(TicketImageActivity.TICKET_ID, ticket.getId().longValue());
+            fullScreenImageLauncher.launch(intent);
+        });
     }
 
     private void fetchUpdatedTicket() {
