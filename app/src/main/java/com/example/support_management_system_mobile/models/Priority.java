@@ -35,4 +35,22 @@ public class Priority implements Serializable {
     public void setMaxTime(Integer maxTime) {
         this.maxTime = maxTime;
     }
+
+    @Override
+    public String toString() {
+        return name;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Priority priority = (Priority) o;
+        return id != null && id.equals(priority.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
+    }
 }

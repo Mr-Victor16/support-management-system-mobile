@@ -7,6 +7,12 @@ public class Software implements Serializable {
     private String name;
     private String description;
 
+    public Software(Long id, String name, String description) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+    }
+
     public Long getId() {
         return id;
     }
@@ -31,9 +37,21 @@ public class Software implements Serializable {
         this.description = description;
     }
 
-    public Software(Long id, String name, String description) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
+    @Override
+    public String toString() {
+        return name;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Software software = (Software) o;
+        return id != null && id.equals(software.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
     }
 }

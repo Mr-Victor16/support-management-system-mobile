@@ -1,8 +1,11 @@
 package com.example.support_management_system_mobile.ui.fragment;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -20,6 +23,7 @@ import com.example.support_management_system_mobile.auth.JWTUtils;
 import com.example.support_management_system_mobile.models.Ticket;
 import com.example.support_management_system_mobile.models.User;
 import com.example.support_management_system_mobile.ui.activity.LoginActivity;
+import com.example.support_management_system_mobile.ui.activity.TicketFormActivity;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
@@ -64,9 +68,9 @@ public class TicketListFragment extends Fragment {
         return view;
     }
 
-    private void onTicketClick(Ticket ticket) {
+    private void onTicketClick(Ticket ticket, Boolean newTicket) {
         User user = JWTUtils.getCurrentUser(getContext());
-        Fragment fragment = TicketDetailsFragment.newInstance(ticket, user);
+        Fragment fragment = TicketDetailsFragment.newInstance(ticket, user, newTicket);
 
         requireActivity().getSupportFragmentManager()
                 .beginTransaction()
@@ -76,12 +80,9 @@ public class TicketListFragment extends Fragment {
     }
 
     private void navigateToAddTicket() {
-//        Fragment fragment = new AddTicketFragment();
-//        requireActivity().getSupportFragmentManager()
-//                .beginTransaction()
-//                .replace(R.id.mainContainer, fragment)
-//                .addToBackStack(null)
-//                .commit();
+        Intent intent = new Intent(getContext(), TicketFormActivity.class);
+        //startActivity(intent);
+        addTicketLauncher.launch(intent);
     }
 
     private void loadTickets() {
@@ -142,4 +143,15 @@ public class TicketListFragment extends Fragment {
             }
         });
     }
+
+    private final ActivityResultLauncher<Intent> addTicketLauncher =
+            registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+                if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+                    boolean ticketAdded = result.getData().getBooleanExtra("ticket_added", false);
+                    if (ticketAdded) {
+                        Ticket ticket = (Ticket) result.getData().getSerializableExtra("ticket_object");
+                        onTicketClick(ticket, true);
+                    }
+                }
+            });
 }

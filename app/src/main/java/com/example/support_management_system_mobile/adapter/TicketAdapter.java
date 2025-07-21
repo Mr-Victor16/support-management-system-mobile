@@ -19,7 +19,7 @@ public class TicketAdapter extends RecyclerView.Adapter<TicketAdapter.TicketView
     private final OnTicketClickListener listener;
 
     public interface OnTicketClickListener {
-        void onTicketClick(Ticket ticket);
+        void onTicketClick(Ticket ticket, Boolean newTicket);
     }
 
     public TicketAdapter(List<Ticket> ticketList, OnTicketClickListener listener) {
@@ -41,7 +41,7 @@ public class TicketAdapter extends RecyclerView.Adapter<TicketAdapter.TicketView
         holder.title.setText(ticket.getTitle());
         holder.date.setText(ticket.getCreatedDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
         holder.status.setText(ticket.getStatus().getName());
-        holder.itemView.setOnClickListener(v -> listener.onTicketClick(ticket));
+        holder.itemView.setOnClickListener(v -> listener.onTicketClick(ticket, false));
     }
 
     @Override

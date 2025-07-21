@@ -18,21 +18,6 @@ public class Ticket implements Serializable {
     private List<TicketReply> replies;
     private User user;
 
-    public Ticket(Long id, String title, String description, List<Image> images, LocalDate createdDate, Category category, Priority priority, Status status, String version, Software software, List<TicketReply> replies, User user) {
-        this.id = id;
-        this.title = title;
-        this.description = description;
-        this.images = images;
-        this.createdDate = createdDate;
-        this.category = category;
-        this.priority = priority;
-        this.status = status;
-        this.version = version;
-        this.software = software;
-        this.replies = replies;
-        this.user = user;
-    }
-
     public Long getId() {
         return id;
     }

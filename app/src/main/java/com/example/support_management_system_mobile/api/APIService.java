@@ -1,11 +1,16 @@
 package com.example.support_management_system_mobile.api;
 
+import com.example.support_management_system_mobile.models.Category;
+import com.example.support_management_system_mobile.models.Priority;
+import com.example.support_management_system_mobile.models.Status;
 import com.example.support_management_system_mobile.models.Ticket;
 import com.example.support_management_system_mobile.payload.request.AddTicketReplyRequest;
+import com.example.support_management_system_mobile.payload.request.AddTicketRequest;
 import com.example.support_management_system_mobile.payload.request.LoginRequest;
 import com.example.support_management_system_mobile.payload.request.RegisterRequest;
 import com.example.support_management_system_mobile.payload.request.UpdateProfileRequest;
 import com.example.support_management_system_mobile.models.Knowledge;
+import com.example.support_management_system_mobile.payload.request.UpdateTicketRequest;
 import com.example.support_management_system_mobile.payload.response.LoginResponse;
 import com.example.support_management_system_mobile.models.Software;
 
@@ -67,4 +72,22 @@ public interface APIService {
 
     @DELETE("api/tickets/image/{imageID}")
     Call<Void> deleteTicketImage(@Path("imageID") Long imageId, @Header("Authorization") String bearerToken);
+
+    @GET("api/categories")
+    Call<List<Category>> getAllCategories(@Header("Authorization") String bearerToken);
+
+    @GET("api/software")
+    Call<List<Software>> getAllSoftware(@Header("Authorization") String bearerToken);
+
+    @POST("api/tickets")
+    Call<Void> createTicket(@Body AddTicketRequest request, @Header("Authorization") String bearerToken);
+
+    @PUT("api/tickets")
+    Call<Void> updateTicket(@Body UpdateTicketRequest request, @Header("Authorization") String bearerToken);
+
+    @GET("api/statuses")
+    Call<List<Status>> getAllStatuses(@Header("Authorization") String bearerToken);
+
+    @GET("api/priorities")
+    Call<List<Priority>> getAllPriorities(@Header("Authorization") String bearerToken);
 }

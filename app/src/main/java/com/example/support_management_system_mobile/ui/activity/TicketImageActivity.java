@@ -55,7 +55,6 @@ public class TicketImageActivity extends AppCompatActivity {
     private Long ticketId;
     private ActivityResultLauncher<Intent> imagePickerLauncher;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

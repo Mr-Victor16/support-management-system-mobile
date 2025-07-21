@@ -21,6 +21,9 @@
     <string name="email_register_error">Incorrect e-mail address format</string>
     <string name="password_register_error">Password cannot be empty</string>
     <string name="invalid_data_register_error">Incorrect data was entered</string>
+    <string name="ticket_title_error">Ticket title must contain between 5 and 100 characters</string>
+    <string name="ticket_description_error">Ticket description must contain between 5 and 500 characters</string>
+    <string name="software_version_error">Software version must contain between 1 and 10 characters</string>
 
     <string name="to_knowledge_base_button">Go to the knowledge base</string>
     <string name="to_supported_software">Go to the list of supported software</string>
@@ -81,5 +84,14 @@
     <string name="add_image">Add image</string>
     <string name="add_images">Add images</string>
     <string name="images_count">"Images: "</string>
+    <string name="new_ticket">New ticket</string>
+    <string name="edit_ticket">Edit ticket</string>
+    <string name="save">Save</string>
+    <string name="description">Description</string>
+    <string name="title">Title</string>
+    <string name="priority">Priority</string>
+    <string name="category">Category</string>
+    <string name="software">Software</string>
+    <string name="software_version">Software version</string>
 
 </resources>

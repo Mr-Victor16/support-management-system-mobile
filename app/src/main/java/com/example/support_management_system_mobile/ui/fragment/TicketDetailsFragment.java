@@ -31,6 +31,7 @@ import com.example.support_management_system_mobile.models.Ticket;
 import com.example.support_management_system_mobile.models.TicketReply;
 import com.example.support_management_system_mobile.models.User;
 import com.example.support_management_system_mobile.payload.request.AddTicketReplyRequest;
+import com.example.support_management_system_mobile.ui.activity.TicketFormActivity;
 import com.example.support_management_system_mobile.ui.activity.TicketImageActivity;
 import com.example.support_management_system_mobile.validators.TicketValidator;
 import java.util.ArrayList;
@@ -43,6 +44,7 @@ import retrofit2.Response;
 public class TicketDetailsFragment extends Fragment {
     private static final String ARG_TICKET = "ticket";
     private static final String ARG_USER = "user";
+    private static final String ARG_NEW = "new";
     private TextView ticketTitle, ticketDate, ticketStatus, ticketCategory, ticketDescription;
     private TextView replyCharCountTextView, noRepliesTextView;
     private RecyclerView repliesRecyclerView;
@@ -58,11 +60,12 @@ public class TicketDetailsFragment extends Fragment {
 
     }
 
-    public static TicketDetailsFragment newInstance(Ticket ticket, User user) {
+    public static TicketDetailsFragment newInstance(Ticket ticket, User user, Boolean newTicket) {
         TicketDetailsFragment fragment = new TicketDetailsFragment();
         Bundle args = new Bundle();
         args.putSerializable(ARG_TICKET, ticket);
         args.putSerializable(ARG_USER, user);
+        args.putBoolean(ARG_NEW, newTicket);
         fragment.setArguments(args);
         return fragment;
     }
@@ -110,6 +113,7 @@ public class TicketDetailsFragment extends Fragment {
         showImagesButton = view.findViewById(R.id.showImagesButton);
 
         setTicketData();
+        if(getArguments().getBoolean(ARG_NEW)) addImagesDialog();
         setupRepliesList(ticket.getReplies());
         setupActionButtons();
 
@@ -117,6 +121,15 @@ public class TicketDetailsFragment extends Fragment {
         setupReplyInputListeners();
 
         return view;
+    }
+
+    private void addImagesDialog(){
+        new AlertDialog.Builder(requireContext())
+                .setTitle("Add images")
+                .setMessage("Do you want add images to your ticket?")
+                .setPositiveButton("Yes", (dialog, which) -> showImages())
+                .setNegativeButton("No", null)
+                .show();
     }
 
     private void setupReplyInputListeners() {
@@ -278,8 +291,10 @@ public class TicketDetailsFragment extends Fragment {
         }
 
         editTicketButton.setOnClickListener(v -> {
-            // TODO: Navigate to edit screen
-            Toast.makeText(getContext(), "Edit ticket", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(requireContext(), TicketFormActivity.class);
+            intent.putExtra("ticket_id", ticket.getId());
+            editTicketLauncher.launch(intent);
+            //startActivity(intent);
         });
 
         deleteTicketButton.setOnClickListener(v -> {
@@ -291,13 +306,15 @@ public class TicketDetailsFragment extends Fragment {
             Toast.makeText(getContext(), "Change status", Toast.LENGTH_SHORT).show();
         });
 
-        showImagesButton.setOnClickListener(v -> {
-            Intent intent = new Intent(requireContext(), TicketImageActivity.class);
-            intent.putExtra(TicketImageActivity.EXTRA_IMAGES, new ArrayList<>(ticketImages));
-            intent.putExtra(TicketImageActivity.EXTRA_POSITION, 0);
-            intent.putExtra(TicketImageActivity.TICKET_ID, ticket.getId().longValue());
-            fullScreenImageLauncher.launch(intent);
-        });
+        showImagesButton.setOnClickListener(v -> showImages());
+    }
+
+    private void showImages(){
+        Intent intent = new Intent(requireContext(), TicketImageActivity.class);
+        intent.putExtra(TicketImageActivity.EXTRA_IMAGES, new ArrayList<>(ticketImages));
+        intent.putExtra(TicketImageActivity.EXTRA_POSITION, 0);
+        intent.putExtra(TicketImageActivity.TICKET_ID, ticket.getId().longValue());
+        fullScreenImageLauncher.launch(intent);
     }
 
     private void fetchUpdatedTicket() {
@@ -321,4 +338,12 @@ public class TicketDetailsFragment extends Fragment {
             }
         });
     }
+
+    private final ActivityResultLauncher<Intent> editTicketLauncher =
+            registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+                if (result.getResultCode() == Activity.RESULT_OK) {
+                    ticket = (Ticket) result.getData().getSerializableExtra("ticket_object");
+                    setTicketData();
+                }
+            });
 }
