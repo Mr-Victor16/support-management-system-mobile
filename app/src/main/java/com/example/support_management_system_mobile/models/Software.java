@@ -48,6 +48,8 @@ public class Software implements Serializable {
         if (o == null || getClass() != o.getClass()) return false;
         Software software = (Software) o;
         return id != null && id.equals(software.id);
+
+        //TODO: Poprawić equals i hashcode
     }
 
     @Override

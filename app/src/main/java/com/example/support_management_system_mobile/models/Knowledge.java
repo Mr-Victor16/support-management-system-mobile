@@ -1,6 +1,7 @@
 package com.example.support_management_system_mobile.models;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 public class Knowledge {
     private Long id;
@@ -55,5 +56,24 @@ public class Knowledge {
 
     public void setSoftware(Software software) {
         this.software = software;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Knowledge knowledge = (Knowledge) o;
+
+        return Objects.equals(id, knowledge.id) &&
+                Objects.equals(title, knowledge.title) &&
+                Objects.equals(content, knowledge.content) &&
+                Objects.equals(createdDate, knowledge.createdDate) &&
+                Objects.equals(software, knowledge.software);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, title, content, createdDate, software);
     }
 }

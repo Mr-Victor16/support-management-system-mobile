@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center"
-    tools:context=".ui.activity.RegisterActivity">
+    tools:context=".ui.register.RegisterActivity">
 
     <TextView
         android:id="@+id/registerHeader"
@@ -87,5 +87,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:text="@string/register_button" />
+        android:text="@string/register_button"
+        android:enabled="false" />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:visibility="gone"
+        android:layout_marginTop="16dp" />
 </LinearLayout>

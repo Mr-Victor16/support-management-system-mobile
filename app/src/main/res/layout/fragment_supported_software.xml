@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".ui.fragment.SupportedSoftwareFragment"
+    tools:context=".ui.software.SupportedSoftwareFragment"
     android:id="@+id/layoutSoftware"
     android:layout_width="match_parent"
     android:layout_height="match_parent"

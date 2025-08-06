@@ -6,7 +6,9 @@ import android.os.Handler;
 import android.os.Looper;
 import android.widget.Toast;
 
-import com.example.support_management_system_mobile.MainActivity;
+import androidx.annotation.NonNull;
+
+import com.example.support_management_system_mobile.ui.MainActivity;
 import com.example.support_management_system_mobile.R;
 
 import java.io.IOException;
@@ -23,6 +25,7 @@ public class AuthInterceptor implements Interceptor {
         this.context = context;
     }
 
+    @NonNull
     @Override
     public Response intercept(Chain chain) throws IOException {
         Request original = chain.request();

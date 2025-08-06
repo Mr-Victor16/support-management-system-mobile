@@ -1,0 +1,27 @@
+package com.example.support_management_system_mobile.data.repository;
+
+import com.example.support_management_system_mobile.network.APIService;
+import com.example.support_management_system_mobile.payload.request.LoginRequest;
+import com.example.support_management_system_mobile.payload.request.RegisterRequest;
+import com.example.support_management_system_mobile.payload.response.LoginResponse;
+
+import javax.inject.Inject;
+
+import retrofit2.Callback;
+
+public class AuthRepository {
+    private final APIService apiService;
+
+    @Inject
+    public AuthRepository(APIService apiService) {
+        this.apiService = apiService;
+    }
+
+    public void login(LoginRequest req, Callback<LoginResponse> callback) {
+        apiService.login(req).enqueue(callback);
+    }
+
+    public void register(RegisterRequest request, Callback<String> callback) {
+        apiService.register(request).enqueue(callback);
+    }
+}

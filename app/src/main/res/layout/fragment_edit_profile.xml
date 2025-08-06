@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.fragment.EditProfileFragment">
+    tools:context=".ui.profile.EditProfileFragment">
 
     <LinearLayout
         android:id="@+id/main"
@@ -66,5 +66,13 @@
             android:layout_marginTop="10dp"
             android:text="@string/save_changes_button" />
 
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:visibility="gone"
+            android:layout_marginTop="16dp" />
     </LinearLayout>
 </ScrollView>
