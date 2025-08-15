@@ -1,13 +1,12 @@
 package com.example.support_management_system_mobile.ui.ticket;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -19,328 +18,256 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.support_management_system_mobile.R;
-import com.example.support_management_system_mobile.auth.APIClient;
-import com.example.support_management_system_mobile.auth.JWTUtils;
-import com.example.support_management_system_mobile.models.Image;
-import com.example.support_management_system_mobile.models.Ticket;
+import com.example.support_management_system_mobile.models.Status;
 import com.example.support_management_system_mobile.models.TicketReply;
-import com.example.support_management_system_mobile.models.User;
-import com.example.support_management_system_mobile.payload.request.AddTicketReplyRequest;
-import com.example.support_management_system_mobile.validators.TicketValidator;
-import java.util.ArrayList;
+
 import java.util.List;
+import java.util.Objects;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import dagger.hilt.android.AndroidEntryPoint;
 
+@AndroidEntryPoint
 public class TicketDetailsFragment extends Fragment {
-    private static final String ARG_TICKET = "ticket";
-    private static final String ARG_USER = "user";
-    private static final String ARG_NEW = "new";
-    private TextView ticketTitle, ticketDate, ticketStatus, ticketCategory, ticketDescription;
-    private TextView replyCharCountTextView, noRepliesTextView;
+    private TicketViewModel viewModel;
+    private TicketReplyAdapter replyAdapter;
+    private long ticketId = -1;
+
+    private ProgressBar progressBar;
+    private ScrollView contentLayout;
+    private LinearLayout errorLayout;
+    private TextView errorMessageTextView;
+    private TextView ticketTitle, ticketStatus, closedTicketNotice, ticketDescription, ticketCategory, ticketPriority, ticketSoftware, ticketAuthor, ticketDate, noRepliesTextView;
+    private Button sendReplyButton;
+    private Button editTicketButton, deleteTicketButton, changeStatusButton, manageImagesButton;
     private RecyclerView repliesRecyclerView;
     private EditText replyEditText;
-    private Button sendReplyButton, editTicketButton, deleteTicketButton, changeStatusButton, showImagesButton;
-    private LinearLayout replyInputLayout, ticketActionsLayout;
-    private List<Image> ticketImages = new ArrayList<>();
-    private ActivityResultLauncher<Intent> fullScreenImageLauncher;
-    private Ticket ticket;
-    private User currentUser;
+    private LinearLayout replyInputLayout;
 
-    public TicketDetailsFragment() {
-
-    }
-
-    public static TicketDetailsFragment newInstance(Ticket ticket, User user, Boolean newTicket) {
-        TicketDetailsFragment fragment = new TicketDetailsFragment();
-        Bundle args = new Bundle();
-        args.putSerializable(ARG_TICKET, ticket);
-        args.putSerializable(ARG_USER, user);
-        args.putBoolean(ARG_NEW, newTicket);
-        fragment.setArguments(args);
-        return fragment;
-    }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         if (getArguments() != null) {
-            ticket = (Ticket) getArguments().getSerializable(ARG_TICKET);
-            currentUser = (User) getArguments().getSerializable(ARG_USER);
+            ticketId = getArguments().getLong("ticketId", -1);
         }
-
-        fullScreenImageLauncher = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),
-                result -> {
-                    if (result.getResultCode() == Activity.RESULT_OK) {
-                        fetchUpdatedTicket();
-                    }
-                });
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_ticket_details, container, false);
-
-        ticketTitle = view.findViewById(R.id.ticketTitle);
-        ticketDate = view.findViewById(R.id.ticketDate);
-        ticketStatus = view.findViewById(R.id.ticketStatus);
-        ticketCategory = view.findViewById(R.id.ticketCategory);
-        ticketDescription = view.findViewById(R.id.ticketDescription);
-
-        repliesRecyclerView = view.findViewById(R.id.repliesRecyclerView);
-        replyEditText = view.findViewById(R.id.replyEditText);
-        sendReplyButton = view.findViewById(R.id.sendReplyButton);
-        sendReplyButton.setEnabled(false);
-
-        replyInputLayout = view.findViewById(R.id.replyInputLayout);
-        ticketActionsLayout = view.findViewById(R.id.ticketActionsLayout);
-
-        editTicketButton = view.findViewById(R.id.editTicketButton);
-        deleteTicketButton = view.findViewById(R.id.deleteTicketButton);
-        changeStatusButton = view.findViewById(R.id.changeStatusButton);
-        noRepliesTextView = view.findViewById(R.id.noRepliesTextView);
-        showImagesButton = view.findViewById(R.id.showImagesButton);
-
-        setTicketData();
-        if(getArguments().getBoolean(ARG_NEW)) addImagesDialog();
-        setupRepliesList(ticket.getReplies());
-        setupActionButtons();
-
-        replyCharCountTextView = view.findViewById(R.id.replyCharCountTextView);
-        setupReplyInputListeners();
-
+        initViews(view);
         return view;
     }
 
-    private void addImagesDialog(){
-        new AlertDialog.Builder(requireContext())
-                .setTitle("Add images")
-                .setMessage("Do you want add images to your ticket?")
-                .setPositiveButton("Yes", (dialog, which) -> showImages())
-                .setNegativeButton("No", null)
-                .show();
-    }
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-    private void setupReplyInputListeners() {
-        replyEditText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+        viewModel = new ViewModelProvider(requireActivity()).get(TicketViewModel.class);
 
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                String text = s.toString().trim();
-                int length = s.length();
+        setupRecyclerView();
+        setupClickListeners();
+        observeViewModel();
 
-                replyCharCountTextView.setText(length + " / 500");
-
-                boolean isValid = TicketValidator.isTicketReplyValid(text);
-                sendReplyButton.setEnabled(isValid);
-
-                if (!isValid) replyEditText.setError(getString(R.string.reply_length_error));
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {}
-        });
-
-        sendReplyButton.setOnClickListener(v -> sendReply(replyEditText.getText().toString()));
-    }
-
-    private void sendReply(String content){
-        String token = "Bearer " + JWTUtils.getToken(requireContext());
-        AddTicketReplyRequest request = new AddTicketReplyRequest(ticket.getId(), content);
-
-        APIClient.getAPIService(requireContext()).addTicketReply(request, token).enqueue(new Callback<Void>() {
-            @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
-                if (response.isSuccessful()) {
-                    Toast.makeText(getContext(), R.string.reply_added, Toast.LENGTH_SHORT).show();
-                    fetchUpdatedTicket();
-                    replyEditText.setText("");
-                } else {
-                    Toast.makeText(getContext(), R.string.server_error, Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Void> call, Throwable t) {
-                Toast.makeText(getContext(), R.string.server_error, Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void setTicketData() {
-        ticketTitle.setText(ticket.getTitle());
-        ticketDate.setText(ticket.getCreatedDate().toString());
-        ticketStatus.setText(ticket.getStatus().getName());
-        ticketCategory.setText(ticket.getCategory().getName());
-        ticketDescription.setText(ticket.getDescription());
-        ticketImages = ticket.getImages();
-
-        boolean isClosed = ticket.getStatus().isCloseTicket();
-        replyInputLayout.setVisibility(isClosed ? View.GONE : View.VISIBLE);
-
-        int imageCount = ticket.getImages().size();
-        if (imageCount > 0) showImagesButton.setText(getString(R.string.images_count)+imageCount);
-        else showImagesButton.setText(R.string.add_images);
-    }
-
-    private void setupRepliesList(List<TicketReply> replies) {
-        repliesRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        TicketReplyAdapter adapter = new TicketReplyAdapter(
-                replies,
-                currentUser.getRole(),
-                this::confirmDeleteReply
-        );
-        repliesRecyclerView.setAdapter(adapter);
-
-        if (replies == null || replies.isEmpty()) {
-            noRepliesTextView.setVisibility(View.VISIBLE);
-            repliesRecyclerView.setVisibility(View.GONE);
+        if (ticketId > 0) {
+            viewModel.loadTicketDetails(ticketId);
         } else {
-            noRepliesTextView.setVisibility(View.GONE);
-            repliesRecyclerView.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.GONE);
+            contentLayout.setVisibility(View.GONE);
+            errorLayout.setVisibility(View.VISIBLE);
+            errorMessageTextView.setText(R.string.ticket_not_found);
         }
     }
 
-    private void confirmDeleteReply(TicketReply reply) {
-        new AlertDialog.Builder(requireContext())
+    private void initViews(View view) {
+        progressBar = view.findViewById(R.id.progressBar);
+        contentLayout = view.findViewById(R.id.contentLayout);
+        errorLayout = view.findViewById(R.id.errorLayout);
+        errorMessageTextView = view.findViewById(R.id.errorMessageTextView);
+        ticketTitle = view.findViewById(R.id.ticketTitle);
+        ticketStatus = view.findViewById(R.id.ticketStatus);
+        closedTicketNotice = view.findViewById(R.id.closedTicketNotice);
+        ticketDescription = view.findViewById(R.id.ticketDescription);
+        ticketCategory = view.findViewById(R.id.ticketCategory);
+        ticketPriority = view.findViewById(R.id.ticketPriority);
+        ticketSoftware = view.findViewById(R.id.ticketSoftware);
+        ticketAuthor = view.findViewById(R.id.ticketAuthor);
+        ticketDate = view.findViewById(R.id.ticketDate);
+        editTicketButton = view.findViewById(R.id.editTicketButton);
+        deleteTicketButton = view.findViewById(R.id.deleteTicketButton);
+        changeStatusButton = view.findViewById(R.id.changeStatusButton);
+        manageImagesButton = view.findViewById(R.id.manageImagesButton);
+        repliesRecyclerView = view.findViewById(R.id.repliesRecyclerView);
+        noRepliesTextView = view.findViewById(R.id.noRepliesTextView);
+        replyInputLayout = view.findViewById(R.id.replyInputLayout);
+        replyEditText = view.findViewById(R.id.replyEditText);
+        sendReplyButton = view.findViewById(R.id.sendReplyButton);
+    }
+
+    private void setupRecyclerView() {
+        replyAdapter = new TicketReplyAdapter(reply -> new AlertDialog.Builder(requireContext())
                 .setTitle(R.string.delete_reply)
                 .setMessage(R.string.confirm_delete_reply)
-                .setPositiveButton(R.string.delete_button, (dialog, which) -> deleteReply(reply))
+                .setPositiveButton(R.string.delete_button, (d, w) -> viewModel.deleteReply(reply))
                 .setNegativeButton(R.string.cancel_button, null)
-                .show();
+                .show());
+        repliesRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        repliesRecyclerView.setAdapter(replyAdapter);
     }
 
-    private void deleteReply(TicketReply reply) {
-        String token = "Bearer " + JWTUtils.getToken(requireContext());
+    private void setupClickListeners() {
+        sendReplyButton.setOnClickListener(v -> viewModel.addReply());
 
-        APIClient.getAPIService(requireContext()).deleteReply(reply.getId(), token).enqueue(new Callback<Void>() {
-            @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
-                if (response.isSuccessful()) {
-                    Toast.makeText(getContext(), R.string.reply_deleted, Toast.LENGTH_SHORT).show();
-                    ticket.getReplies().remove(reply);
-                    setupRepliesList(ticket.getReplies());
-                } else {
-                    Toast.makeText(getContext(), R.string.server_error, Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Void> call, Throwable t) {
-                Toast.makeText(getContext(), R.string.server_error, Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void confirmDeleteTicket() {
-        new AlertDialog.Builder(requireContext())
+        deleteTicketButton.setOnClickListener(v -> new AlertDialog.Builder(requireContext())
                 .setTitle(R.string.delete_ticket)
                 .setMessage(R.string.confirm_delete_ticket)
-                .setPositiveButton(R.string.delete_button, (dialog, which) -> deleteTicket())
+                .setPositiveButton(R.string.delete_button, (d, w) -> viewModel.deleteTicket())
+                .setNegativeButton(R.string.cancel_button, null)
+                .show());
+
+        changeStatusButton.setOnClickListener(v -> viewModel.loadStatuses());
+        editTicketButton.setOnClickListener(v -> viewModel.onEditTicketClicked());
+        manageImagesButton.setOnClickListener(v -> viewModel.onManageImagesClicked());
+
+        replyEditText.addTextChangedListener(new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
+                viewModel.replyContent.setValue(s.toString());
+            }
+            @Override public void afterTextChanged(Editable s) {}
+        });
+    }
+
+    private void observeViewModel() {
+        viewModel.ticketDetailsState.observe(getViewLifecycleOwner(), state -> {
+            progressBar.setVisibility(state instanceof TicketDetailsUIState.Loading ? View.VISIBLE : View.GONE);
+            contentLayout.setVisibility(state instanceof TicketDetailsUIState.Success ? View.VISIBLE : View.GONE);
+            errorLayout.setVisibility(state instanceof TicketDetailsUIState.Error ? View.VISIBLE : View.GONE);
+
+            if (state instanceof TicketDetailsUIState.Success) {
+                bindSuccessState((TicketDetailsUIState.Success) state);
+            } else if (state instanceof TicketDetailsUIState.Error) {
+                errorMessageTextView.setText(((TicketDetailsUIState.Error) state).messageTextResId);
+            }
+        });
+
+        viewModel.isReplyValid.observe(getViewLifecycleOwner(), isValid -> sendReplyButton.setEnabled(isValid));
+
+        viewModel.getStatusesEvent().observe(getViewLifecycleOwner(), event -> {
+            List<Status> statuses = event.getContentIfNotHandled();
+            if (statuses != null && !statuses.isEmpty()) {
+                showStatusChangeDialog(statuses);
+            }
+        });
+
+        viewModel.toastMessage.observe(getViewLifecycleOwner(), event -> {
+            String message = event.getContentIfNotHandled();
+            if (message != null) Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+        });
+
+        viewModel.detailsNavigation.observe(getViewLifecycleOwner(), event -> {
+            TicketViewModel.DetailsNavigation target = event.getContentIfNotHandled();
+            if (target != null) {
+                handleNavigation(target);
+            }
+        });
+
+        viewModel.replyContent.observe(getViewLifecycleOwner(), text -> {
+            if (!Objects.equals(replyEditText.getText().toString(), text)) {
+                replyEditText.setText(text);
+            }
+        });
+    }
+
+    private void bindSuccessState(TicketDetailsUIState.Success state) {
+        ticketTitle.setText(state.ticket.getTitle());
+        ticketStatus.setText(state.ticket.getStatus().getName());
+        ticketDescription.setText(state.ticket.getDescription());
+        ticketCategory.setText(getString(R.string.category_format, state.ticket.getCategory().getName()));
+        ticketPriority.setText(getString(R.string.priority_format, state.ticket.getPriority().getName()));
+        ticketSoftware.setText(getString(R.string.software_format, state.ticket.getSoftware().getName(), state.ticket.getVersion()));
+        ticketAuthor.setText(getString(R.string.author_format, state.ticket.getUser().getUsername()));
+        ticketDate.setText(getString(R.string.date_format, state.ticket.getCreatedDate().toString()));
+
+        TicketDetailsControlsState controls = state.controls;
+        editTicketButton.setVisibility(controls.canEditTicket ? View.VISIBLE : View.GONE);
+        deleteTicketButton.setVisibility(controls.canDeleteTicket ? View.VISIBLE : View.GONE);
+        changeStatusButton.setVisibility(controls.canChangeStatus ? View.VISIBLE : View.GONE);
+        manageImagesButton.setVisibility(controls.canManageImages ? View.VISIBLE : View.GONE);
+        replyInputLayout.setVisibility(controls.canAddReply ? View.VISIBLE : View.GONE);
+        closedTicketNotice.setVisibility(state.isClosedNoticeVisible ? View.VISIBLE : View.GONE);
+
+        int imageCount = state.imageCount;
+        if (imageCount > 0) {
+            manageImagesButton.setText(getString(R.string.images_count, imageCount));
+        } else {
+            manageImagesButton.setText(R.string.add_images);
+        }
+
+        replyAdapter.setCanDelete(controls.canDeleteReply);
+        List<TicketReply> replies = state.ticket.getReplies();
+        if (replies == null || replies.isEmpty()) {
+            repliesRecyclerView.setVisibility(View.GONE);
+            noRepliesTextView.setVisibility(View.VISIBLE);
+        } else {
+            repliesRecyclerView.setVisibility(View.VISIBLE);
+            noRepliesTextView.setVisibility(View.GONE);
+            replyAdapter.submitList(replies);
+        }
+    }
+
+    private void showStatusChangeDialog(List<Status> statuses) {
+        final CharSequence[] statusNames = statuses.stream().map(Status::getName).toArray(CharSequence[]::new);
+        new AlertDialog.Builder(requireContext())
+                .setTitle(R.string.change_status_title)
+                .setItems(statusNames, (dialog, which) -> {
+                    Status selectedStatus = statuses.get(which);
+                    viewModel.changeStatus(selectedStatus);
+                })
                 .setNegativeButton(R.string.cancel_button, null)
                 .show();
     }
 
-    private void deleteTicket() {
-        String token = "Bearer " + JWTUtils.getToken(requireContext());
+    private void handleNavigation(TicketViewModel.DetailsNavigation target) {
+        if (getActivity() == null) return;
 
-        APIClient.getAPIService(requireContext()).deleteTicket(ticket.getId(), token).enqueue(new Callback<Void>() {
-            @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
-                if (response.isSuccessful()) {
-                    Toast.makeText(getContext(), R.string.ticket_deleted, Toast.LENGTH_SHORT).show();
-                    requireActivity().getSupportFragmentManager().popBackStack();
-                } else {
-                    Toast.makeText(getContext(), R.string.server_error, Toast.LENGTH_SHORT).show();
-                }
-            }
+        long currentTicketId = getArguments() != null ? getArguments().getLong("ticketId", -1) : -1;
+        if (currentTicketId == -1) return;
 
-            @Override
-            public void onFailure(Call<Void> call, Throwable t) {
-                Toast.makeText(getContext(), R.string.server_error, Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void setupActionButtons() {
-        boolean isOwner = currentUser.getId().equals(ticket.getUser().getId());
-        String role = currentUser.getRole();
-        boolean isOperatorOrAdmin = role.contains("OPERATOR") || role.contains("ADMIN");
-
-        if (isOwner || isOperatorOrAdmin) {
-            editTicketButton.setVisibility(View.VISIBLE);
-            deleteTicketButton.setVisibility(View.VISIBLE);
-            showImagesButton.setVisibility(View.VISIBLE);
+        switch (target) {
+            case GO_BACK:
+                getParentFragmentManager().popBackStack();
+                break;
+            case GO_TO_EDIT:
+                TicketFormFragment formFragment = new TicketFormFragment();
+                Bundle editArgs = new Bundle();
+                editArgs.putLong("ticketId", currentTicketId);
+                formFragment.setArguments(editArgs);
+                performTransaction(formFragment);
+                break;
+            case GO_TO_IMAGES:
+                TicketImageFragment imageFragment = new TicketImageFragment();
+                Bundle imageArgs = new Bundle();
+                imageArgs.putLong("ticketId", currentTicketId);
+                imageFragment.setArguments(imageArgs);
+                performTransaction(imageFragment);
+                break;
         }
+    }
 
-        if (isOperatorOrAdmin) {
-            changeStatusButton.setVisibility(View.VISIBLE);
+    private void performTransaction(Fragment fragment) {
+        if (isAdded() && getActivity() != null) {
+            getParentFragmentManager().beginTransaction()
+                    .replace(R.id.mainContainer, fragment)
+                    .addToBackStack(null)
+                    .commit();
         }
-
-        editTicketButton.setOnClickListener(v -> {
-            Intent intent = new Intent(requireContext(), TicketFormActivity.class);
-            intent.putExtra("ticket_id", ticket.getId());
-            editTicketLauncher.launch(intent);
-            //startActivity(intent);
-        });
-
-        deleteTicketButton.setOnClickListener(v -> {
-            confirmDeleteTicket();
-        });
-
-        changeStatusButton.setOnClickListener(v -> {
-            // TODO: Show dialog or status picker
-            Toast.makeText(getContext(), "Change status", Toast.LENGTH_SHORT).show();
-        });
-
-        showImagesButton.setOnClickListener(v -> showImages());
     }
-
-    private void showImages(){
-        Intent intent = new Intent(requireContext(), TicketImageActivity.class);
-        intent.putExtra(TicketImageActivity.EXTRA_IMAGES, new ArrayList<>(ticketImages));
-        intent.putExtra(TicketImageActivity.EXTRA_POSITION, 0);
-        intent.putExtra(TicketImageActivity.TICKET_ID, ticket.getId().longValue());
-        fullScreenImageLauncher.launch(intent);
-    }
-
-    private void fetchUpdatedTicket() {
-        String token = "Bearer " + JWTUtils.getToken(requireContext());
-
-        APIClient.getAPIService(requireContext()).getTicketById(ticket.getId(), token).enqueue(new Callback<Ticket>() {
-            @Override
-            public void onResponse(Call<Ticket> call, Response<Ticket> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    ticket = response.body();
-                    setTicketData();
-                    setupRepliesList(ticket.getReplies());
-                } else {
-                    Toast.makeText(getContext(), R.string.server_error, Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Ticket> call, Throwable t) {
-                Toast.makeText(getContext(), R.string.server_error, Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private final ActivityResultLauncher<Intent> editTicketLauncher =
-            registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
-                if (result.getResultCode() == Activity.RESULT_OK) {
-                    ticket = (Ticket) result.getData().getSerializableExtra("ticket_object");
-                    setTicketData();
-                }
-            });
 }

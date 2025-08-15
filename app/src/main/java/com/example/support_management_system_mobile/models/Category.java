@@ -1,6 +1,9 @@
 package com.example.support_management_system_mobile.models;
 
+import androidx.annotation.NonNull;
+
 import java.io.Serializable;
+import java.util.Objects;
 
 public class Category implements Serializable {
     private Long id;
@@ -27,20 +30,22 @@ public class Category implements Serializable {
     }
 
     @Override
-    public String toString() {
-        return name;
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Category category = (Category) o;
-        return id != null && id.equals(category.id);
+
+        return Objects.equals(id, category.id);
     }
 
     @Override
     public int hashCode() {
-        return id != null ? id.hashCode() : 0;
+        return Objects.hash(id);
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return name;
     }
 }

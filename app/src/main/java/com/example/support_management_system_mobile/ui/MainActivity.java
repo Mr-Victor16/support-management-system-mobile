@@ -1,7 +1,7 @@
 package com.example.support_management_system_mobile.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.IdRes;
@@ -12,6 +12,8 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 
 import com.example.support_management_system_mobile.R;
+import com.example.support_management_system_mobile.auth.JWTUtils;
+import com.example.support_management_system_mobile.ui.login.LoginActivity;
 import com.example.support_management_system_mobile.ui.profile.ProfileFragment;
 import com.example.support_management_system_mobile.ui.ticket.TicketListFragment;
 import com.example.support_management_system_mobile.ui.welcome.WelcomeFragment;
@@ -41,13 +43,21 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupNavigation() {
-        View navView = findViewById(R.id.mainNavigationBar);
-        if (navView instanceof NavigationBarView) {
-            ((NavigationBarView) navView).setOnItemSelectedListener(item -> {
-                loadFragment(item.getItemId());
-                return true;
-            });
-        }
+        NavigationBarView navView = findViewById(R.id.mainNavigationBar);
+        navView.setOnItemSelectedListener(item -> {
+            int itemId = item.getItemId();
+
+            if (itemId == R.id.nav_tickets || itemId == R.id.nav_account) {
+                if (JWTUtils.getToken(this) == null) {
+                    startActivity(new Intent(this, LoginActivity.class));
+
+                    return false;
+                }
+            }
+
+            loadFragment(itemId);
+            return true;
+        });
     }
 
     private void loadFragment(@IdRes int itemId) {

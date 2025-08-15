@@ -1,156 +1,137 @@
 package com.example.support_management_system_mobile.ui.ticket;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.support_management_system_mobile.R;
-import com.example.support_management_system_mobile.auth.APIClient;
-import com.example.support_management_system_mobile.auth.JWTUtils;
-import com.example.support_management_system_mobile.models.Ticket;
-import com.example.support_management_system_mobile.models.User;
-import com.example.support_management_system_mobile.ui.login.LoginActivity;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.util.ArrayList;
-import java.util.List;
+import dagger.hilt.android.AndroidEntryPoint;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-
+@AndroidEntryPoint
 public class TicketListFragment extends Fragment {
-    private TicketAdapter adapter;
-    private final List<Ticket> tickets = new ArrayList<>();
+    private TicketViewModel viewModel;
+    private TicketAdapter ticketAdapter;
 
-    private TextView ticketListHeader, noTicketsTextView;
+    private RecyclerView recyclerView;
+    private ProgressBar progressBar;
+    private TextView emptyListMessage;
+    private TextView headerTextView;
     private FloatingActionButton addTicketButton;
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_ticket_list, container, false);
+    }
 
-        if (JWTUtils.getToken(requireContext()) == null) {
-            Intent intent = new Intent(getActivity(), LoginActivity.class);
-            startActivity(intent);
-            requireActivity().finish();
-            return null;
-        }
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        viewModel = new ViewModelProvider(requireActivity()).get(TicketViewModel.class);
 
-        View view =  inflater.inflate(R.layout.fragment_ticket_list, container, false);
+        initViews(view);
+        setupRecyclerView();
+        setupClickListeners();
+        observeViewModel();
+    }
 
-        RecyclerView recyclerView = view.findViewById(R.id.ticketRecyclerView);
-        adapter = new TicketAdapter(tickets, this::onTicketClick);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerView.setAdapter(adapter);
-
+    private void initViews(View view) {
+        recyclerView = view.findViewById(R.id.ticketRecyclerView);
+        progressBar = view.findViewById(R.id.progressBar);
+        emptyListMessage = view.findViewById(R.id.noTicketsTextView);
+        headerTextView = view.findViewById(R.id.ticketsHeader);
         addTicketButton = view.findViewById(R.id.addTicketButton);
-        addTicketButton.setOnClickListener(v -> navigateToAddTicket());
-
-        noTicketsTextView = view.findViewById(R.id.noTicketsTextView);
-        ticketListHeader = view.findViewById(R.id.ticketsHeader);
-        loadTickets();
-
-        return view;
     }
 
-    private void onTicketClick(Ticket ticket, Boolean newTicket) {
-        User user = JWTUtils.getCurrentUser(getContext());
-        Fragment fragment = TicketDetailsFragment.newInstance(ticket, user, newTicket);
-
-        requireActivity().getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.mainContainer, fragment)
-                .addToBackStack(null)
-                .commit();
+    private void setupRecyclerView() {
+        ticketAdapter = new TicketAdapter(ticket -> navigateToDetails(ticket.getId()));
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setAdapter(ticketAdapter);
     }
 
-    private void navigateToAddTicket() {
-        Intent intent = new Intent(getContext(), TicketFormActivity.class);
-        //startActivity(intent);
-        addTicketLauncher.launch(intent);
+    private void setupClickListeners() {
+        addTicketButton.setOnClickListener(v -> navigateToForm(null));
     }
 
-    private void loadTickets() {
-        if(JWTUtils.getUserRole(getContext()).equals("ROLE_USER")) {
-            ticketListHeader.setText(R.string.my_tickets_header);
-            loadUserTickets();
-        } else {
-            ticketListHeader.setText(R.string.all_tickets_header);
-            addTicketButton.setVisibility(View.GONE);
-            loadAllTickets();
+    private void observeViewModel() {
+        viewModel.ticketListState.observe(getViewLifecycleOwner(), state -> {
+            progressBar.setVisibility(state instanceof TicketListUIState.Loading ? View.VISIBLE : View.GONE);
+            recyclerView.setVisibility(state instanceof TicketListUIState.Success ? View.VISIBLE : View.GONE);
+            emptyListMessage.setVisibility(state instanceof TicketListUIState.Error ? View.VISIBLE : View.GONE);
+
+            if (state instanceof TicketListUIState.Success) {
+                TicketListUIState.Success successState = (TicketListUIState.Success) state;
+                ticketAdapter.submitList(successState.tickets);
+                addTicketButton.setVisibility(successState.canAddTicket ? View.VISIBLE : View.GONE);
+                headerTextView.setText(successState.headerTextResId);
+
+                if (successState.tickets.isEmpty()) {
+                    emptyListMessage.setText(R.string.no_tickets_found);
+                    emptyListMessage.setVisibility(View.VISIBLE);
+                } else {
+                    emptyListMessage.setVisibility(View.GONE);
+                }
+            } else if (state instanceof TicketListUIState.Error) {
+                emptyListMessage.setText(((TicketListUIState.Error) state).message);
+            }
+        });
+
+        viewModel.toastMessage.observe(getViewLifecycleOwner(), event -> {
+            String message = event.getContentIfNotHandled();
+            if (message != null) {
+                Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void navigateToDetails(long ticketId) {
+        TicketDetailsFragment detailsFragment = new TicketDetailsFragment();
+        Bundle args = new Bundle();
+        args.putLong("ticketId", ticketId);
+        detailsFragment.setArguments(args);
+
+        performTransaction(detailsFragment);
+    }
+
+    private void navigateToForm(@Nullable Long ticketId) {
+        TicketFormFragment formFragment = new TicketFormFragment();
+        if (ticketId != null) {
+            Bundle args = new Bundle();
+            args.putLong("ticketId", ticketId);
+            formFragment.setArguments(args);
+        }
+
+        performTransaction(formFragment);
+    }
+
+    private void performTransaction(Fragment fragment) {
+        if (isAdded() && getActivity() != null) {
+            getParentFragmentManager().beginTransaction()
+                    .replace(R.id.mainContainer, fragment)
+                    .addToBackStack(null)
+                    .commit();
         }
     }
 
-    private void loadAllTickets() {
-        String token = "Bearer " + JWTUtils.getToken(requireContext());
+    @Override
+    public void onResume() {
+        super.onResume();
 
-        APIClient.getAPIService(requireContext()).getAllTickets(token).enqueue(new Callback<List<Ticket>>() {
-            @Override
-            public void onResponse(@NonNull Call<List<Ticket>> call, @NonNull Response<List<Ticket>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    tickets.clear();
-                    tickets.addAll(response.body());
-                    adapter.notifyDataSetChanged();
-
-                    noTicketsTextView.setVisibility(tickets.isEmpty() ? View.VISIBLE : View.GONE);
-                } else {
-                    Toast.makeText(getContext(), R.string.server_error, Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<List<Ticket>> call, @NonNull Throwable t) {
-                Toast.makeText(getContext(), R.string.server_error, Toast.LENGTH_SHORT).show();
-            }
-        });
+        if (viewModel != null) {
+            viewModel.loadTickets();
+        }
     }
-
-    private void loadUserTickets() {
-        String token = "Bearer " + JWTUtils.getToken(requireContext());
-
-        APIClient.getAPIService(requireContext()).getUserTickets(token).enqueue(new Callback<List<Ticket>>() {
-            @Override
-            public void onResponse(@NonNull Call<List<Ticket>> call, @NonNull Response<List<Ticket>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    tickets.clear();
-                    tickets.addAll(response.body());
-                    adapter.notifyDataSetChanged();
-
-                    noTicketsTextView.setVisibility(tickets.isEmpty() ? View.VISIBLE : View.GONE);
-                } else {
-                    Toast.makeText(getContext(), R.string.server_error, Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<List<Ticket>> call, @NonNull Throwable t) {
-                Toast.makeText(getContext(), R.string.server_error, Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private final ActivityResultLauncher<Intent> addTicketLauncher =
-            registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
-                if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
-                    boolean ticketAdded = result.getData().getBooleanExtra("ticket_added", false);
-                    if (ticketAdded) {
-                        Ticket ticket = (Ticket) result.getData().getSerializableExtra("ticket_object");
-                        onTicketClick(ticket, true);
-                    }
-                }
-            });
 }

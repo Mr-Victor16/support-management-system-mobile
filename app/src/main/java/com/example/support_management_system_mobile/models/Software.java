@@ -1,6 +1,9 @@
 package com.example.support_management_system_mobile.models;
 
+import androidx.annotation.NonNull;
+
 import java.io.Serializable;
+import java.util.Objects;
 
 public class Software implements Serializable {
     private Long id;
@@ -37,6 +40,7 @@ public class Software implements Serializable {
         this.description = description;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return name;
@@ -47,13 +51,12 @@ public class Software implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Software software = (Software) o;
-        return id != null && id.equals(software.id);
 
-        //TODO: Poprawić equals i hashcode
+        return Objects.equals(id, software.id);
     }
 
     @Override
     public int hashCode() {
-        return id != null ? id.hashCode() : 0;
+        return Objects.hash(id);
     }
 }

@@ -62,11 +62,7 @@ public class WelcomeFragment extends Fragment {
 
     private void setupClickListeners() {
         loginButton.setOnClickListener(v -> viewModel.onLoginClicked());
-
-        //softwareButton = requireView().findViewById(R.id.toSoftwareButton);
         softwareButton.setOnClickListener(v -> viewModel.onSoftwareClicked());
-
-        //knowledgeButton = requireView().findViewById(R.id.toKnowledgeButton);
         knowledgeButton.setOnClickListener(v -> viewModel.onKnowledgeClicked());
     }
 

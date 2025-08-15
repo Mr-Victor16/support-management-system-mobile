@@ -1,65 +1,61 @@
 package com.example.support_management_system_mobile.ui.ticket;
 
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.util.Base64;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.example.support_management_system_mobile.R;
 import com.example.support_management_system_mobile.models.Image;
 
-import java.util.List;
+public class ImagePagerAdapter extends ListAdapter<Image, ImagePagerAdapter.ImageViewHolder> {
+    public ImagePagerAdapter() {
+        super(DIFF_CALLBACK);
+    }
 
-public class ImagePagerAdapter extends RecyclerView.Adapter<ImagePagerAdapter.ImageViewHolder> {
-
-    private List<Image> images;
-    private Context context;
-
-    public ImagePagerAdapter(List<Image> images, Context context) {
-        this.images = images;
-        this.context = context;
+    @NonNull
+    @Override
+    public ImageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.item_fullscreen_image, parent, false);
+        return new ImageViewHolder(view);
     }
 
     @Override
-    public ImageViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        ImageView imageView = new ImageView(context);
-        imageView.setLayoutParams(new ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT
-        ));
-        imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
-        return new ImageViewHolder(imageView);
-    }
+    public void onBindViewHolder(@NonNull ImageViewHolder holder, int position) {
+        Image image = getItem(position);
 
-    @Override
-    public void onBindViewHolder(ImageViewHolder holder, int position) {
-        Image image = images.get(position);
-        byte[] decoded = Base64.decode(image.getContent(), Base64.DEFAULT);
-        Bitmap bitmap = BitmapFactory.decodeByteArray(decoded, 0, decoded.length);
-        holder.imageView.setImageBitmap(bitmap);
-    }
+        String base64String = "data:image/jpeg;base64," + image.getContent();
 
-    @Override
-    public int getItemCount() {
-        return images.size();
+        Glide.with(holder.itemView.getContext())
+                .load(base64String)
+                .placeholder(R.drawable.ic_placeholder)
+                .error(R.drawable.ic_error_placeholder)
+                .into(holder.imageView);
     }
 
     public static class ImageViewHolder extends RecyclerView.ViewHolder {
         ImageView imageView;
-
-        public ImageViewHolder(View itemView) {
+        public ImageViewHolder(@NonNull View itemView) {
             super(itemView);
-            this.imageView = (ImageView) itemView;
+            imageView = itemView.findViewById(R.id.fullscreen_image_view);
         }
     }
 
-    public void updateImages(List<Image> newImages) {
-        this.images.clear();
-        this.images.addAll(newImages);
-        notifyDataSetChanged();
-    }
+    private static final DiffUtil.ItemCallback<Image> DIFF_CALLBACK = new DiffUtil.ItemCallback<>() {
+        @Override
+        public boolean areItemsTheSame(@NonNull Image oldItem, @NonNull Image newItem) {
+            return oldItem.getId().equals(newItem.getId());
+        }
+        @Override
+        public boolean areContentsTheSame(@NonNull Image oldItem, @NonNull Image newItem) {
+            return oldItem.equals(newItem);
+        }
+    };
 }

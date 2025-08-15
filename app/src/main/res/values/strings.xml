@@ -50,15 +50,15 @@
     <string name="profile_avatar">Profile avatar</string>
     <string name="save_changes_button">Save changes</string>
     <string name="edit_profile_header">Edit profile</string>
-    <string name="profile_updated_successfully">Your profile has been updated successfully.</string>
-    <string name="profile_update_failed">Update failed. Please check your input.</string>
+    <string name="profile_updated_successfully">Your profile has been updated successfully</string>
+    <string name="profile_update_failed">Update failed. Please check your input</string>
 
     <string name="all_tickets_header">All tickets</string>
     <string name="my_tickets_header">My tickets</string>
     <string name="edit_button">Edit</string>
     <string name="delete_button">Delete</string>
     <string name="send_button">Send</string>
-    <string name="change_status">Change status</string>
+    <string name="change_status">Status</string>
     <string name="enter_your_reply">Enter your reply</string>
     <string name="no_replies">No replies yet</string>
     <string name="replies">Replies</string>
@@ -80,10 +80,12 @@
     <string name="confirm_delete_image">Are you sure you want to delete this image?</string>
     <string name="image_deleted">Image deleted</string>
     <string name="image_added">Image added</string>
+    <string name="ticket_added">Ticket added</string>
+    <string name="ticket_updated">Ticket updated</string>
     <string name="file_processing_error">File processing error</string>
     <string name="add_image">Add image</string>
     <string name="add_images">Add images</string>
-    <string name="images_count">"Images: "</string>
+    <string name="images_count">"Images: %1$d"</string>
     <string name="new_ticket">New ticket</string>
     <string name="edit_ticket">Edit ticket</string>
     <string name="save">Save</string>
@@ -94,4 +96,30 @@
     <string name="software">Software</string>
     <string name="software_version">Software version</string>
 
+    <string name="reply_delete_failed">An error occurred while deleting the reply</string>
+    <string name="image_delete_failed">An error occurred while deleting the image</string>
+    <string name="add_image_failed">An error occurred while uploading the image</string>
+    <string name="tickets_load_error">An error occurred while loading the list of tickets</string>
+    <string name="ticket_not_found">The specified ticket was not found</string>
+    <string name="reply_add_failed">An error occurred while adding the reply</string>
+    <string name="status_changed">Ticket status has been changed</string>
+    <string name="status_change_failed">An error occurred while changing the ticket status</string>
+    <string name="ticket_delete_failed">An error occurred while deleting the ticket</string>
+    <string name="no_tickets_found">No tickets to display</string>
+    <string name="ticket_is_closed_notice">Ticket closed</string>
+    <string name="status_load_error">An error occurred while loading the list of statuses</string>
+    <string name="category_format">Category: %1$s</string>
+    <string name="priority_format">Priority: %1$s</string>
+    <string name="software_format">Software: %1$s (version %2$s)</string>
+    <string name="author_format">Author: %1$s</string>
+    <string name="date_format">Creation date: %1$s</string>
+    <string name="change_status_title">Select a new ticket status</string>
+    <string name="ticket_image_description">Image description</string>
+
+    <string name="error_loading_data">An error occurred while loading data</string>
+    <string name="no_photos_to_display">No photos to display</string>
+    <string name="form_data_load_error">Could not load the data required to create a ticket. Please check your connection and try again</string>
+    <string name="add_ticket_error">An error occurred while adding ticket</string>
+    <string name="update_ticket_error">An error occurred while updating ticket</string>
+    <string name="image_prepare_failed">Failed to prepare file for upload</string>
 </resources>

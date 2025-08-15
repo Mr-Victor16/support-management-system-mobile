@@ -2,6 +2,7 @@ package com.example.support_management_system_mobile.models;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.Objects;
 
 public class TicketReply implements Serializable {
     private Long id;
@@ -45,5 +46,21 @@ public class TicketReply implements Serializable {
 
     public void setCreatedDate(LocalDate createdDate) {
         this.createdDate = createdDate;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TicketReply that = (TicketReply) o;
+        return Objects.equals(id, that.id) &&
+                Objects.equals(content, that.content) &&
+                Objects.equals(createdDate, that.createdDate) &&
+                Objects.equals(user, that.user);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, content, createdDate, user);
     }
 }

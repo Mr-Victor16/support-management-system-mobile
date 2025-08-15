@@ -1,13 +1,13 @@
 package com.example.support_management_system_mobile.payload.request;
 
 public class UpdateTicketRequest {
-    Long ticketID;
-    String title;
-    String description;
-    Long categoryID;
-    Long priorityID;
-    String version;
-    Long softwareID;
+    private Long ticketID;
+    private String title;
+    private String description;
+    private Long categoryID;
+    private Long priorityID;
+    private String version;
+    private Long softwareID;
 
     public UpdateTicketRequest(Long ticketID, String title, String description, Long categoryID, Long priorityID, String version, Long softwareID) {
         this.ticketID = ticketID;

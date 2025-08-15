@@ -7,14 +7,19 @@ Android mobile application that serves as a client for the technical support man
 - Retrofit
 - Gson
 - JWT
+- Hilt 
+- Glide
 
 ## Implemented features
 - User registration and login
-- Viewing the knowledge base
-- Viewing the list of supported software
-- Viewing and editing user profile
+- Viewing the knowledge base and list of supported software
+- Creating, editing and deleting tickets
+- Changing ticket statuses
+- Managing ticket images
+- Adding replies to tickets
+- Editing user profile
 
-## To be implemented
-- Creating and editing support tickets
-- Replying to tickets
-- Managing statuses, priorities and categories (for operators and administrators)
+## To be implemented 
+- Managing statuses, priorities and categories
+- Managing software and knowledge base 
+- Managing users

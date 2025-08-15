@@ -103,7 +103,7 @@ public class EditProfileFragment extends Fragment {
                 showLoading(true);
             } else if (result instanceof EditProfileResult.Success) {
                 showLoading(false);
-                Toast.makeText(requireContext(), ((EditProfileResult.Success) result).getMessageRes(), Toast.LENGTH_SHORT).show(); //TODO:
+                Toast.makeText(requireContext(), ((EditProfileResult.Success) result).getMessageRes(), Toast.LENGTH_SHORT).show();
                 navigateToProfileFragment();
             } else if (result instanceof EditProfileResult.Error) {
                 showLoading(false);

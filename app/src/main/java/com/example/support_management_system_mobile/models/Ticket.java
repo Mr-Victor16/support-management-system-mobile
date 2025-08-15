@@ -3,6 +3,7 @@ package com.example.support_management_system_mobile.models;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 
 public class Ticket implements Serializable {
     private Long id;
@@ -112,5 +113,26 @@ public class Ticket implements Serializable {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Ticket ticket = (Ticket) o;
+        return Objects.equals(id, ticket.id) &&
+                Objects.equals(title, ticket.title) &&
+                Objects.equals(description, ticket.description) &&
+                Objects.equals(createdDate, ticket.createdDate) &&
+                Objects.equals(category, ticket.category) &&
+                Objects.equals(priority, ticket.priority) &&
+                Objects.equals(status, ticket.status) &&
+                Objects.equals(version, ticket.version) &&
+                Objects.equals(software, ticket.software);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, title, description, createdDate, category, priority, status, version, software);
     }
 }

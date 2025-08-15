@@ -7,62 +7,45 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.support_management_system_mobile.R;
 import com.example.support_management_system_mobile.models.TicketReply;
-import com.example.support_management_system_mobile.models.User;
 
 import java.time.format.DateTimeFormatter;
-import java.util.List;
+import java.util.Objects;
 
-public class TicketReplyAdapter extends RecyclerView.Adapter<TicketReplyAdapter.ReplyViewHolder> {
-    private final List<TicketReply> replies;
-    private final String currentUserRole;
-    private final OnDeleteClickListener onDeleteClickListener;
-
+public class TicketReplyAdapter extends ListAdapter<TicketReply, TicketReplyAdapter.ReplyViewHolder> {
+    @FunctionalInterface
     public interface OnDeleteClickListener {
         void onDeleteClick(TicketReply reply);
     }
 
-    public TicketReplyAdapter(List<TicketReply> replies, String currentUserRole, OnDeleteClickListener onDeleteClickListener) {
-        this.replies = replies;
-        this.currentUserRole = currentUserRole;
+    private final OnDeleteClickListener onDeleteClickListener;
+    private boolean canDeleteReplies = false;
+
+    public TicketReplyAdapter(OnDeleteClickListener onDeleteClickListener) {
+        super(DIFF_CALLBACK);
         this.onDeleteClickListener = onDeleteClickListener;
+    }
+
+    public void setCanDelete(boolean canDelete) {
+        this.canDeleteReplies = canDelete;
     }
 
     @NonNull
     @Override
-    public TicketReplyAdapter.ReplyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ReplyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_reply, parent, false);
         return new ReplyViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull TicketReplyAdapter.ReplyViewHolder holder, int position) {
-        TicketReply reply = replies.get(position);
-        User user = reply.getUser();
-
-        holder.contentText.setText(reply.getContent());
-        holder.authorText.setText(user.getUsername());
-
-        holder.dateText.setText(reply.getCreatedDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-
-        if ("ROLE_OPERATOR".equals(currentUserRole)) {
-            holder.deleteButton.setVisibility(View.VISIBLE);
-            holder.deleteButton.setOnClickListener(v -> {
-                if (onDeleteClickListener != null) {
-                    onDeleteClickListener.onDeleteClick(reply);
-                }
-            });
-        } else {
-            holder.deleteButton.setVisibility(View.GONE);
-        }
-    }
-
-    @Override
-    public int getItemCount() {
-        return replies.size();
+    public void onBindViewHolder(@NonNull ReplyViewHolder holder, int position) {
+        TicketReply reply = getItem(position);
+        holder.bind(reply, canDeleteReplies, onDeleteClickListener);
     }
 
     public static class ReplyViewHolder extends RecyclerView.ViewHolder {
@@ -76,5 +59,34 @@ public class TicketReplyAdapter extends RecyclerView.Adapter<TicketReplyAdapter.
             dateText = itemView.findViewById(R.id.replyDateTextView);
             deleteButton = itemView.findViewById(R.id.deleteReplyButton);
         }
+
+        public void bind(final TicketReply reply, boolean canDelete, final OnDeleteClickListener listener) {
+            contentText.setText(reply.getContent());
+            authorText.setText(reply.getUser().getUsername());
+
+            if (reply.getCreatedDate() != null) {
+                dateText.setText(reply.getCreatedDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+            }
+
+            if (canDelete) {
+                deleteButton.setVisibility(View.VISIBLE);
+                deleteButton.setOnClickListener(v -> listener.onDeleteClick(reply));
+            } else {
+                deleteButton.setVisibility(View.GONE);
+            }
+        }
     }
+
+    private static final DiffUtil.ItemCallback<TicketReply> DIFF_CALLBACK = new DiffUtil.ItemCallback<>() {
+        @Override
+        public boolean areItemsTheSame(@NonNull TicketReply oldItem, @NonNull TicketReply newItem) {
+            return Objects.equals(oldItem.getId(), newItem.getId());
+
+        }
+
+        @Override
+        public boolean areContentsTheSame(@NonNull TicketReply oldItem, @NonNull TicketReply newItem) {
+            return oldItem.equals(newItem);
+        }
+    };
 }

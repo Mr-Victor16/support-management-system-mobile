@@ -1,6 +1,7 @@
 package com.example.support_management_system_mobile.models;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 public class Image implements Serializable {
     private Long id;
@@ -35,5 +36,20 @@ public class Image implements Serializable {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Image image = (Image) o;
+        return Objects.equals(id, image.id) &&
+                Objects.equals(name, image.name) &&
+                Objects.equals(content, image.content);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, content);
     }
 }

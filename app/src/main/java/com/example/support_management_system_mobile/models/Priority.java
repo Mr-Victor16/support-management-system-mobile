@@ -1,6 +1,9 @@
 package com.example.support_management_system_mobile.models;
 
+import androidx.annotation.NonNull;
+
 import java.io.Serializable;
+import java.util.Objects;
 
 public class Priority implements Serializable {
     private Long id;
@@ -36,6 +39,7 @@ public class Priority implements Serializable {
         this.maxTime = maxTime;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return name;
@@ -46,11 +50,12 @@ public class Priority implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Priority priority = (Priority) o;
-        return id != null && id.equals(priority.id);
+
+        return Objects.equals(id, priority.id);
     }
 
     @Override
     public int hashCode() {
-        return id != null ? id.hashCode() : 0;
+        return Objects.hash(id);
     }
 }

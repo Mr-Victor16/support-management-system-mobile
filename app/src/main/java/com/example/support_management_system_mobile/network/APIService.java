@@ -11,6 +11,7 @@ import com.example.support_management_system_mobile.payload.request.RegisterRequ
 import com.example.support_management_system_mobile.payload.request.UpdateProfileRequest;
 import com.example.support_management_system_mobile.models.Knowledge;
 import com.example.support_management_system_mobile.payload.request.UpdateTicketRequest;
+import com.example.support_management_system_mobile.payload.request.UpdateTicketStatusRequest;
 import com.example.support_management_system_mobile.payload.response.LoginResponse;
 import com.example.support_management_system_mobile.models.Software;
 
@@ -90,4 +91,7 @@ public interface APIService {
 
     @GET("api/priorities")
     Call<List<Priority>> getAllPriorities(@Header("Authorization") String bearerToken);
+
+    @POST("api/tickets/status")
+    Call<Void> changeTicketStatus(@Body UpdateTicketStatusRequest request, @Header("Authorization") String bearerToken);
 }
