@@ -25,8 +25,6 @@
     <string name="ticket_description_error">Ticket description must contain between 5 and 500 characters</string>
     <string name="software_version_error">Software version must contain between 1 and 10 characters</string>
 
-    <string name="to_knowledge_base_button">Go to the knowledge base</string>
-    <string name="to_supported_software">Go to the list of supported software</string>
     <string name="welcome">Welcome to Support Manager System</string>
     <string name="to_login">Go to login</string>
     <string name="software_supported">Software supported</string>
@@ -62,8 +60,6 @@
     <string name="enter_your_reply">Enter your reply</string>
     <string name="no_replies">No replies yet</string>
     <string name="replies">Replies</string>
-    <string name="ticket_details">Ticket details</string>
-    <string name="reply_length_error">Ticket reply must be 5–500 characters</string>
     <string name="add_ticket_button">Add ticket</string>
     <string name="session_expired">Your session has expired</string>
     <string name="reply_added">Reply added</string>
@@ -82,7 +78,6 @@
     <string name="image_added">Image added</string>
     <string name="ticket_added">Ticket added</string>
     <string name="ticket_updated">Ticket updated</string>
-    <string name="file_processing_error">File processing error</string>
     <string name="add_image">Add image</string>
     <string name="add_images">Add images</string>
     <string name="images_count">"Images: %1$d"</string>
@@ -118,7 +113,7 @@
 
     <string name="error_loading_data">An error occurred while loading data</string>
     <string name="no_photos_to_display">No photos to display</string>
-    <string name="form_data_load_error">Could not load the data required to create a ticket. Please check your connection and try again</string>
+    <string name="form_data_load_error">Error loading form data. Please check your connection and try again</string>
     <string name="add_ticket_error">An error occurred while adding ticket</string>
     <string name="update_ticket_error">An error occurred while updating ticket</string>
     <string name="image_prepare_failed">Failed to prepare file for upload</string>

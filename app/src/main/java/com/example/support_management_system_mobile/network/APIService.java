@@ -37,7 +37,7 @@ public interface APIService {
     Call<String> register(@Body RegisterRequest request);
 
     @GET("/api/software")
-    Call<List<Software>> getSupportedSoftwareList();
+    Call<List<Software>> getSoftwareList();
 
     @GET("/api/knowledge-bases")
     Call<List<Knowledge>> getKnowledgeItems();
@@ -76,9 +76,6 @@ public interface APIService {
 
     @GET("api/categories")
     Call<List<Category>> getAllCategories(@Header("Authorization") String bearerToken);
-
-    @GET("api/software")
-    Call<List<Software>> getAllSoftware(@Header("Authorization") String bearerToken);
 
     @POST("api/tickets")
     Call<Void> createTicket(@Body AddTicketRequest request, @Header("Authorization") String bearerToken);

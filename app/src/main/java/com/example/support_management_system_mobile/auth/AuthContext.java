@@ -39,4 +39,8 @@ public class AuthContext {
     public User getCurrentUser() {
         return JWTUtils.getCurrentUser(appContext);
     }
+
+    public void logout(){
+        JWTUtils.clearData(appContext);
+    }
 }

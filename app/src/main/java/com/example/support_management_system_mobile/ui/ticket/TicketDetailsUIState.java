@@ -32,18 +32,23 @@ public abstract class TicketDetailsUIState {
             boolean isOperator = currentUser.getRole().contains("OPERATOR");
             boolean isTicketClosed = ticket.getStatus().isCloseTicket();
 
+            this.imageCount = (ticket.getImages() != null) ? ticket.getImages().size() : 0;
+            boolean hasImages = this.imageCount > 0;
+
+            boolean canEditImages = (isOwner && !isTicketClosed) || isOperator;
+            boolean canShowManageImagesButton = canEditImages || hasImages;
+
             this.controls = new TicketDetailsControlsState(
                     /* canEditTicket: */ (isOwner && !isTicketClosed) || isOperator,
                     /* canDeleteTicket: */ (isOwner && !isTicketClosed) || isOperator,
                     /* canChangeStatus: */ isOperator,
-                    /* canManageImages: */ (isOwner && !isTicketClosed) || isOperator,
-                    /* canAddReply:     */ !isTicketClosed || isOperator,
-                    /* canDeleteReply:  */ isOperator
+                    /* canShowManageImagesButton: */ canShowManageImagesButton,
+                    /* canEditImages: */ canEditImages,
+                    /* canAddReply: */ !isTicketClosed,
+                    /* canDeleteReply: */ isOperator
             );
 
             this.isClosedNoticeVisible = isTicketClosed;
-
-            this.imageCount = (ticket.getImages() != null) ? ticket.getImages().size() : 0;
         }
     }
 }

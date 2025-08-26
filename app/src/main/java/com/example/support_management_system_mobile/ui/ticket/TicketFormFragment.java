@@ -10,7 +10,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.Spinner;
@@ -42,7 +41,6 @@ public class TicketFormFragment extends Fragment {
     private Spinner spinnerCategory, spinnerPriority, spinnerSoftware;
     private Button btnSave;
     private TextInputLayout titleInputLayout, descriptionInputLayout, versionInputLayout;
-    private LinearLayout errorLayout;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -83,7 +81,6 @@ public class TicketFormFragment extends Fragment {
         titleInputLayout = view.findViewById(R.id.titleInputLayout);
         descriptionInputLayout = view.findViewById(R.id.descriptionInputLayout);
         versionInputLayout = view.findViewById(R.id.versionInputLayout);
-        errorLayout = view.findViewById(R.id.errorLayout);
         errorMessageTextView = view.findViewById(R.id.errorMessageTextView);
     }
 
@@ -151,7 +148,7 @@ public class TicketFormFragment extends Fragment {
             boolean isLoading = state instanceof TicketFormUIState.Loading || state instanceof TicketFormUIState.Submitting;
             progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
             formContent.setVisibility(state instanceof TicketFormUIState.Editing ? View.VISIBLE : View.GONE);
-            errorLayout.setVisibility(state instanceof TicketFormUIState.Error ? View.VISIBLE : View.GONE);
+            errorMessageTextView.setVisibility(state instanceof TicketFormUIState.Error ? View.VISIBLE : View.GONE);
 
             if (state instanceof TicketFormUIState.Editing) {
                 formHeader.setText(((TicketFormUIState.Editing) state).headerTextResId);
@@ -249,6 +246,7 @@ public class TicketFormFragment extends Fragment {
             onTextChanged.accept(s.toString());
         }
 
-        @Override public void afterTextChanged(Editable s) { }
+        @Override
+        public void afterTextChanged(Editable s) { }
     }
 }

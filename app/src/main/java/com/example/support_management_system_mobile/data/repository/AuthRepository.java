@@ -17,8 +17,8 @@ public class AuthRepository {
         this.apiService = apiService;
     }
 
-    public void login(LoginRequest req, Callback<LoginResponse> callback) {
-        apiService.login(req).enqueue(callback);
+    public void login(LoginRequest request, Callback<LoginResponse> callback) {
+        apiService.login(request).enqueue(callback);
     }
 
     public void register(RegisterRequest request, Callback<String> callback) {

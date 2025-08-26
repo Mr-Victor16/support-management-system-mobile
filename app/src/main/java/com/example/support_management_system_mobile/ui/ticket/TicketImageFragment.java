@@ -116,14 +116,14 @@ public class TicketImageFragment extends Fragment {
 
                 if (successState.ticket.getId() == ticketId) {
                     boolean hasImages = successState.imageCount > 0;
-
                     viewPager.setVisibility(hasImages ? View.VISIBLE : View.GONE);
                     noImagesTextView.setVisibility(hasImages ? View.GONE : View.VISIBLE);
 
                     pagerAdapter.submitList(successState.ticket.getImages());
 
-                    deleteButton.setVisibility(hasImages && successState.controls.canManageImages ? View.VISIBLE : View.GONE);
-                    addButton.setVisibility(successState.controls.canManageImages ? View.VISIBLE : View.GONE);
+                    boolean canEdit = successState.controls.canEditImages;
+                    deleteButton.setVisibility(hasImages && canEdit ? View.VISIBLE : View.GONE);
+                    addButton.setVisibility(canEdit ? View.VISIBLE : View.GONE);
                 }
             }
         });

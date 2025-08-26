@@ -4,12 +4,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
 import com.example.support_management_system_mobile.ui.MainActivity;
 import com.example.support_management_system_mobile.R;
+
+import org.json.JSONObject;
 
 import java.io.IOException;
 
@@ -18,37 +21,48 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 public class AuthInterceptor implements Interceptor {
-
+    private final AuthContext authContext;
     private final Context context;
 
-    public AuthInterceptor(Context context) {
+    public AuthInterceptor(Context context, AuthContext authContext) {
         this.context = context;
+        this.authContext = authContext;
     }
 
     @NonNull
     @Override
     public Response intercept(Chain chain) throws IOException {
-        Request original = chain.request();
+        Request originalRequest = chain.request();
+        Request.Builder requestBuilder = originalRequest.newBuilder();
 
-        String token = JWTUtils.getToken(context);
-        Request request = original.newBuilder()
-                .header("Authorization", "Bearer " + token)
-                .build();
+        String token = authContext.getAuthToken();
+        if (token != null && !token.isEmpty()) {
+            requestBuilder.addHeader("Authorization", "Bearer " + token);
+        }
 
-        Response response = chain.proceed(request);
+        Request newRequest = requestBuilder.build();
+        Response response = chain.proceed(newRequest);
 
-        if (response.code() == 401 && response.message().contains("expired")) {
-            JWTUtils.clearData(context);
+        if (response.code() == 401) {
+            String responseBodyString = response.peekBody(Long.MAX_VALUE).string();
+            try {
+                JSONObject responseJson = new JSONObject(responseBodyString);
+                String message = responseJson.optString("message", "");
 
-            new Handler(Looper.getMainLooper()).post(() -> {
-                Toast.makeText(context, R.string.session_expired, Toast.LENGTH_SHORT).show();
+                if (message.contains("JWT token has expired")) {
+                    authContext.logout();
 
-                Intent intent = new Intent(context, MainActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                context.startActivity(intent);
-            });
+                    new Handler(Looper.getMainLooper()).post(() -> {
+                        Toast.makeText(context, R.string.session_expired, Toast.LENGTH_SHORT).show();
 
-            throw new IOException(String.valueOf(R.string.session_expired));
+                        Intent intent = new Intent(context, MainActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        context.startActivity(intent);
+                    });
+                }
+            } catch (Exception e) {
+                Log.e("AuthInterceptor", "Failed to parse 401 response body as JSON", e);
+            }
         }
 
         return response;

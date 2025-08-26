@@ -393,7 +393,7 @@ public class TicketViewModel extends ViewModel {
     }
 
     private void loadSoftware(Long ticketId) {
-        softwareRepository.getSupportedSoftwareList(new Callback<List<Software>>() {
+        softwareRepository.getSoftwareList(new Callback<List<Software>>() {
             @Override
             public void onResponse(@NonNull Call<List<Software>> call, @NonNull Response<List<Software>> response) {
                 if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
@@ -464,9 +464,14 @@ public class TicketViewModel extends ViewModel {
         if (Boolean.FALSE.equals(isFormValid.getValue())) return;
         _formState.setValue(new TicketFormUIState.Submitting());
 
-        Long categoryId = selectedCategory.getValue().getId();
-        Long priorityId = selectedPriority.getValue().getId();
-        Long softwareId = selectedSoftware.getValue().getId();
+        Category category = selectedCategory.getValue();
+        Long categoryId = (category != null) ? category.getId() : null;
+
+        Priority priority = selectedPriority.getValue();
+        Long priorityId = (priority != null) ? priority.getId() : null;
+
+        Software software = selectedSoftware.getValue();
+        Long softwareId = (software != null) ? software.getId() : null;
 
         if (currentEditingTicketId == null) {
             AddTicketRequest request = new AddTicketRequest(

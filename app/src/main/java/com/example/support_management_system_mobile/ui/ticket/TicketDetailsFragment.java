@@ -40,7 +40,6 @@ public class TicketDetailsFragment extends Fragment {
 
     private ProgressBar progressBar;
     private ScrollView contentLayout;
-    private LinearLayout errorLayout;
     private TextView errorMessageTextView;
     private TextView ticketTitle, ticketStatus, closedTicketNotice, ticketDescription, ticketCategory, ticketPriority, ticketSoftware, ticketAuthor, ticketDate, noRepliesTextView;
     private Button sendReplyButton;
@@ -81,7 +80,7 @@ public class TicketDetailsFragment extends Fragment {
         } else {
             progressBar.setVisibility(View.GONE);
             contentLayout.setVisibility(View.GONE);
-            errorLayout.setVisibility(View.VISIBLE);
+            errorMessageTextView.setVisibility(View.VISIBLE);
             errorMessageTextView.setText(R.string.ticket_not_found);
         }
     }
@@ -89,7 +88,6 @@ public class TicketDetailsFragment extends Fragment {
     private void initViews(View view) {
         progressBar = view.findViewById(R.id.progressBar);
         contentLayout = view.findViewById(R.id.contentLayout);
-        errorLayout = view.findViewById(R.id.errorLayout);
         errorMessageTextView = view.findViewById(R.id.errorMessageTextView);
         ticketTitle = view.findViewById(R.id.ticketTitle);
         ticketStatus = view.findViewById(R.id.ticketStatus);
@@ -137,11 +135,16 @@ public class TicketDetailsFragment extends Fragment {
         manageImagesButton.setOnClickListener(v -> viewModel.onManageImagesClicked());
 
         replyEditText.addTextChangedListener(new TextWatcher() {
-            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
                 viewModel.replyContent.setValue(s.toString());
             }
-            @Override public void afterTextChanged(Editable s) {}
+
+            @Override
+            public void afterTextChanged(Editable s) {}
         });
     }
 
@@ -149,7 +152,7 @@ public class TicketDetailsFragment extends Fragment {
         viewModel.ticketDetailsState.observe(getViewLifecycleOwner(), state -> {
             progressBar.setVisibility(state instanceof TicketDetailsUIState.Loading ? View.VISIBLE : View.GONE);
             contentLayout.setVisibility(state instanceof TicketDetailsUIState.Success ? View.VISIBLE : View.GONE);
-            errorLayout.setVisibility(state instanceof TicketDetailsUIState.Error ? View.VISIBLE : View.GONE);
+            errorMessageTextView.setVisibility(state instanceof TicketDetailsUIState.Error ? View.VISIBLE : View.GONE);
 
             if (state instanceof TicketDetailsUIState.Success) {
                 bindSuccessState((TicketDetailsUIState.Success) state);
@@ -200,7 +203,7 @@ public class TicketDetailsFragment extends Fragment {
         editTicketButton.setVisibility(controls.canEditTicket ? View.VISIBLE : View.GONE);
         deleteTicketButton.setVisibility(controls.canDeleteTicket ? View.VISIBLE : View.GONE);
         changeStatusButton.setVisibility(controls.canChangeStatus ? View.VISIBLE : View.GONE);
-        manageImagesButton.setVisibility(controls.canManageImages ? View.VISIBLE : View.GONE);
+        manageImagesButton.setVisibility(controls.canViewImages ? View.VISIBLE : View.GONE);
         replyInputLayout.setVisibility(controls.canAddReply ? View.VISIBLE : View.GONE);
         closedTicketNotice.setVisibility(state.isClosedNoticeVisible ? View.VISIBLE : View.GONE);
 

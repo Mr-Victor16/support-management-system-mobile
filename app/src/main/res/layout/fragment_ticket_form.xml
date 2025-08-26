@@ -16,33 +16,20 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <LinearLayout
-        android:id="@+id/errorLayout"
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/errorMessageTextView"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center"
+        android:layout_marginTop="8dp"
+        android:text="@string/error_loading_data"
+        android:layout_marginHorizontal="10dp"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
         android:visibility="gone"
+        android:gravity="center"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <ImageView
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            android:src="@drawable/ic_error"
-            app:tint="?android:attr/textColorSecondary" />
-
-        <TextView
-            android:id="@+id/errorMessageTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="@string/error_loading_data"
-            android:layout_marginHorizontal="10dp"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Body1" />
-    </LinearLayout>
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <ScrollView
         android:id="@+id/formContent"

@@ -63,7 +63,7 @@ public class TicketListFragment extends Fragment {
     }
 
     private void setupClickListeners() {
-        addTicketButton.setOnClickListener(v -> navigateToForm(null));
+        addTicketButton.setOnClickListener(v -> performTransaction(new TicketFormFragment()));
     }
 
     private void observeViewModel() {
@@ -72,11 +72,16 @@ public class TicketListFragment extends Fragment {
             recyclerView.setVisibility(state instanceof TicketListUIState.Success ? View.VISIBLE : View.GONE);
             emptyListMessage.setVisibility(state instanceof TicketListUIState.Error ? View.VISIBLE : View.GONE);
 
+            addTicketButton.setVisibility(View.GONE);
+
             if (state instanceof TicketListUIState.Success) {
                 TicketListUIState.Success successState = (TicketListUIState.Success) state;
                 ticketAdapter.submitList(successState.tickets);
-                addTicketButton.setVisibility(successState.canAddTicket ? View.VISIBLE : View.GONE);
                 headerTextView.setText(successState.headerTextResId);
+
+                if (successState.canAddTicket) {
+                    addTicketButton.setVisibility(View.VISIBLE);
+                }
 
                 if (successState.tickets.isEmpty()) {
                     emptyListMessage.setText(R.string.no_tickets_found);
@@ -104,17 +109,6 @@ public class TicketListFragment extends Fragment {
         detailsFragment.setArguments(args);
 
         performTransaction(detailsFragment);
-    }
-
-    private void navigateToForm(@Nullable Long ticketId) {
-        TicketFormFragment formFragment = new TicketFormFragment();
-        if (ticketId != null) {
-            Bundle args = new Bundle();
-            args.putLong("ticketId", ticketId);
-            formFragment.setArguments(args);
-        }
-
-        performTransaction(formFragment);
     }
 
     private void performTransaction(Fragment fragment) {

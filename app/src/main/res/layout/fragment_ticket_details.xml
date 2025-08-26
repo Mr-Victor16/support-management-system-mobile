@@ -18,32 +18,19 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:visibility="visible" />
 
-    <LinearLayout
-        android:id="@+id/errorLayout"
+    <TextView
+        android:id="@+id/errorMessageTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/error_loading_data"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
         android:gravity="center"
-        android:orientation="vertical"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <ImageView
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            android:src="@drawable/ic_error"
-            app:tint="?android:attr/textColorSecondary" />
-
-        <TextView
-            android:id="@+id/errorMessageTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="@string/error_loading_data"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Body1" />
-    </LinearLayout>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ScrollView
         android:id="@+id/contentLayout"
@@ -80,7 +67,6 @@
                     android:paddingTop="6dp"
                     android:paddingEnd="12dp"
                     android:paddingBottom="6dp"
-                    android:textColor="@android:color/white"
                     android:textStyle="bold" />
             </LinearLayout>
 
@@ -164,6 +150,7 @@
                 android:id="@+id/replyInputLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
                 android:orientation="vertical"
                 android:paddingTop="16dp">
 

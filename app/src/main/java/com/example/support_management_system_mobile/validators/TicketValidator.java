@@ -14,6 +14,6 @@ public class TicketValidator {
     }
 
     public static boolean isTicketVersionValid(String content) {
-        return content != null && content.length() >= 1 && content.length() <= 10;
+        return content != null && !content.isEmpty() && content.length() <= 10;
     }
 }

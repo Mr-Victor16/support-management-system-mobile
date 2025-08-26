@@ -2,6 +2,7 @@ package com.example.support_management_system_mobile.network;
 
 import android.content.Context;
 
+import com.example.support_management_system_mobile.auth.AuthContext;
 import com.example.support_management_system_mobile.auth.AuthInterceptor;
 import com.example.support_management_system_mobile.utils.LocalDateAdapter;
 import com.google.gson.Gson;
@@ -28,8 +29,8 @@ public class NetworkModule {
 
     @Provides
     @Singleton
-    public AuthInterceptor provideAuthInterceptor(@ApplicationContext Context context) {
-        return new AuthInterceptor(context);
+    public AuthInterceptor provideAuthInterceptor(@ApplicationContext Context context, AuthContext authContext) {
+        return new AuthInterceptor(context, authContext);
     }
 
     @Provides

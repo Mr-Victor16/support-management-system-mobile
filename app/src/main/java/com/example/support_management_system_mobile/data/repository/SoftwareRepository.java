@@ -17,7 +17,7 @@ public class SoftwareRepository {
         this.apiService = apiService;
     }
 
-    public void getSupportedSoftwareList(Callback<List<Software>> callback) {
-        apiService.getSupportedSoftwareList().enqueue(callback);
+    public void getSoftwareList(Callback<List<Software>> callback) {
+        apiService.getSoftwareList().enqueue(callback);
     }
 }

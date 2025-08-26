@@ -44,7 +44,7 @@ public class SupportedSoftwareViewModel extends ViewModel {
     public void loadSupportedSoftware() {
         _screenState.setValue(new SoftwareUIState.Loading());
 
-        softwareRepository.getSupportedSoftwareList(new Callback<List<Software>>() {
+        softwareRepository.getSoftwareList(new Callback<List<Software>>() {
             @Override
             public void onResponse(@NonNull Call<List<Software>> call, @NonNull Response<List<Software>> response) {
                 if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
