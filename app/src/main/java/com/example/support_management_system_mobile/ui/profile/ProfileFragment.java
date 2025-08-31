@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import com.example.support_management_system_mobile.databinding.FragmentProfileBinding;
 import com.example.support_management_system_mobile.R;
 import com.example.support_management_system_mobile.ui.MainActivity;
+import com.example.support_management_system_mobile.ui.management.ManagementPanelFragment;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -43,6 +44,7 @@ public class ProfileFragment extends Fragment {
     private void setupButtonListeners() {
         binding.logoutButton.setOnClickListener(v -> viewModel.onLogoutClicked());
         binding.editProfileButton.setOnClickListener(v -> viewModel.onEditProfileClicked());
+        binding.managementPanelButton.setOnClickListener(v -> viewModel.onManagementPanelClicked());
     }
 
     private void observeViewModel() {
@@ -59,11 +61,15 @@ public class ProfileFragment extends Fragment {
                 binding.fullNameText.setText(userData.fullName);
                 binding.emailText.setText(userData.email);
                 binding.roleText.setText(userData.roleResId);
+
+                binding.managementPanelButton.setVisibility(userData.isManagementPanelVisible ? View.VISIBLE : View.GONE);
             }
         });
 
         viewModel.getNavigateToLogin().observe(getViewLifecycleOwner(), event -> {
-            if (event.handle()) {
+            Boolean shouldNavigate = event.getContentIfNotHandled();
+
+            if (shouldNavigate != null && shouldNavigate) {
                 Intent intent = new Intent(requireActivity(), MainActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
@@ -71,9 +77,23 @@ public class ProfileFragment extends Fragment {
         });
 
         viewModel.getNavigateToEditProfile().observe(getViewLifecycleOwner(), event -> {
-            if (event.handle()) {
+            Boolean shouldNavigate = event.getContentIfNotHandled();
+
+            if (shouldNavigate != null && shouldNavigate) {
                 requireActivity().getSupportFragmentManager().beginTransaction()
                         .replace(R.id.mainContainer, new EditProfileFragment())
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
+
+        viewModel.getNavigateToManagementPanel().observe(getViewLifecycleOwner(), event -> {
+            Boolean shouldNavigate = event.getContentIfNotHandled();
+
+
+            if (shouldNavigate != null && shouldNavigate) {
+                requireActivity().getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.mainContainer, new ManagementPanelFragment())
                         .addToBackStack(null)
                         .commit();
             }

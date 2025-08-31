@@ -75,8 +75,15 @@
                     android:id="@+id/editProfileButton"
                     android:text="@string/change_profile_data"
                     android:layout_width="320dp"
+                    android:layout_height="wrap_content" />
+
+                <Button
+                    android:id="@+id/managementPanelButton"
+                    android:layout_width="320dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp" />
+                    android:layout_marginBottom="12dp"
+                    android:text="@string/management_panel"
+                    android:visibility="gone" />
 
                 <Button
                     android:id="@+id/logoutButton"

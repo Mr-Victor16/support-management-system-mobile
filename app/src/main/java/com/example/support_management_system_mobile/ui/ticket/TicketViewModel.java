@@ -24,8 +24,8 @@ import com.example.support_management_system_mobile.models.Software;
 import com.example.support_management_system_mobile.models.Status;
 import com.example.support_management_system_mobile.models.Ticket;
 import com.example.support_management_system_mobile.models.TicketReply;
-import com.example.support_management_system_mobile.payload.request.AddTicketRequest;
-import com.example.support_management_system_mobile.payload.request.UpdateTicketRequest;
+import com.example.support_management_system_mobile.payload.request.add.AddTicketRequest;
+import com.example.support_management_system_mobile.payload.request.update.UpdateTicketRequest;
 import com.example.support_management_system_mobile.validators.TicketValidator;
 
 import java.util.HashSet;

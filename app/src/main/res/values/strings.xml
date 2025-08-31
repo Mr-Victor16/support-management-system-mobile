@@ -117,4 +117,40 @@
     <string name="add_ticket_error">An error occurred while adding ticket</string>
     <string name="update_ticket_error">An error occurred while updating ticket</string>
     <string name="image_prepare_failed">Failed to prepare file for upload</string>
+
+    <string name="management_panel">Management panel</string>
+    <string name="manage_categories">Manage categories</string>
+    <string name="manage_knowledge_base">Manage knowledge base</string>
+    <string name="manage_priorities">Manage priorities</string>
+    <string name="manage_software">Manage software</string>
+    <string name="manage_statuses">Manage statuses</string>
+    <string name="manage_users">Manage users</string>
+    <string name="management_categories_header">Manage categories</string>
+
+    <string name="add_new_category">Add new category</string>
+    <string name="no_categories_defined">No categories defined. Click + to add the first one</string>
+    <string name="usage_count_format">Usage count: %d</string>
+    <string name="edit_category_title">Edit category</string>
+    <string name="delete_category_title">Delete category</string>
+    <string name="confirm_delete_category_message">Are you sure you want to delete the category \'%1$s\' ?</string>
+    <string name="category_deleted_successfully">Category deleted successfully</string>
+    <string name="category_delete_error">Failed to delete category</string>
+    <string name="category_added_successfully">New category added successfully</string>
+    <string name="category_add_error">Error adding category</string>
+    <string name="category_updated_successfully">Category name updated successfully</string>
+    <string name="category_update_error">Error updating category</string>
+    <string name="category_name_error">Name must be between 2 and 20 characters</string>
+
+    <string name="add_new_priority">Add new priority</string>
+    <string name="no_priorities_defined">No priorities defined. Click + to add the first one</string>
+    <string name="edit_priority_title">Edit priority</string>
+    <string name="delete_priority_title">Delete priority</string>
+    <string name="confirm_delete_priority_message">Are you sure you want to delete the priority \'%1$s\' ?</string>
+    <string name="priority_name_error">Name must be between 3 and 20 characters</string>
+    <string name="priority_deleted_successfully">Priority deleted successfully</string>
+    <string name="priority_delete_error">Failed to delete priority</string>
+    <string name="priority_added_successfully">New priority added successfully</string>
+    <string name="priority_add_error">Error adding priority</string>
+    <string name="priority_updated_successfully">Priority updated successfully</string>
+    <string name="priority_update_error">Error updating priority</string>
 </resources>

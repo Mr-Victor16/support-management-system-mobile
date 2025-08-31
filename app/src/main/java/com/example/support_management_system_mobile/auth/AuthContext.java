@@ -36,6 +36,11 @@ public class AuthContext {
         return role != null && (role.contains("OPERATOR") || role.contains("ADMIN"));
     }
 
+    public boolean isAdmin() {
+        String role = getUserRole();
+        return role != null && role.contains("ADMIN");
+    }
+
     public User getCurrentUser() {
         return JWTUtils.getCurrentUser(appContext);
     }

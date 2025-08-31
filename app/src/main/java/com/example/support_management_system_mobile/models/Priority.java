@@ -8,11 +8,10 @@ import java.util.Objects;
 public class Priority implements Serializable {
     private Long id;
     private String name;
-    private Integer maxTime;
 
-    public Priority(String name, Integer maxTime) {
+    public Priority(Long id, String name) {
+        this.id = id;
         this.name = name;
-        this.maxTime = maxTime;
     }
 
     public Long getId() {
@@ -29,14 +28,6 @@ public class Priority implements Serializable {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public Integer getMaxTime() {
-        return maxTime;
-    }
-
-    public void setMaxTime(Integer maxTime) {
-        this.maxTime = maxTime;
     }
 
     @NonNull

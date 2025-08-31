@@ -4,16 +4,22 @@ import com.example.support_management_system_mobile.models.Category;
 import com.example.support_management_system_mobile.models.Priority;
 import com.example.support_management_system_mobile.models.Status;
 import com.example.support_management_system_mobile.models.Ticket;
-import com.example.support_management_system_mobile.payload.request.AddTicketReplyRequest;
-import com.example.support_management_system_mobile.payload.request.AddTicketRequest;
+import com.example.support_management_system_mobile.payload.request.add.AddTicketReplyRequest;
+import com.example.support_management_system_mobile.payload.request.add.AddTicketRequest;
+import com.example.support_management_system_mobile.payload.request.add.AddCategoryRequest;
+import com.example.support_management_system_mobile.payload.request.add.AddPriorityRequest;
 import com.example.support_management_system_mobile.payload.request.LoginRequest;
 import com.example.support_management_system_mobile.payload.request.RegisterRequest;
-import com.example.support_management_system_mobile.payload.request.UpdateProfileRequest;
+import com.example.support_management_system_mobile.payload.request.update.UpdateCategoryRequest;
+import com.example.support_management_system_mobile.payload.request.update.UpdatePriorityRequest;
+import com.example.support_management_system_mobile.payload.request.update.UpdateProfileRequest;
 import com.example.support_management_system_mobile.models.Knowledge;
-import com.example.support_management_system_mobile.payload.request.UpdateTicketRequest;
-import com.example.support_management_system_mobile.payload.request.UpdateTicketStatusRequest;
+import com.example.support_management_system_mobile.payload.request.update.UpdateTicketRequest;
+import com.example.support_management_system_mobile.payload.request.update.UpdateTicketStatusRequest;
+import com.example.support_management_system_mobile.payload.response.CategoryResponse;
 import com.example.support_management_system_mobile.payload.response.LoginResponse;
 import com.example.support_management_system_mobile.models.Software;
+import com.example.support_management_system_mobile.payload.response.PriorityResponse;
 
 import java.util.List;
 
@@ -22,7 +28,6 @@ import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
-import retrofit2.http.Header;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
@@ -30,65 +35,109 @@ import retrofit2.http.Part;
 import retrofit2.http.Path;
 
 public interface APIService {
+
+    // AUTH
     @POST("/api/auth/login")
     Call<LoginResponse> login(@Body LoginRequest request);
 
     @POST("/api/auth/register")
     Call<String> register(@Body RegisterRequest request);
 
+
+    // SOFTWARE
     @GET("/api/software")
     Call<List<Software>> getSoftwareList();
 
+
+    // KNOWLEDGE
     @GET("/api/knowledge-bases")
     Call<List<Knowledge>> getKnowledgeItems();
 
-    @PUT("/api/profiles")
-    Call<Void> updateProfile(@Header("Authorization") String bearerToken, @Body UpdateProfileRequest request);
 
+    // PROFILE
+    @PUT("/api/profiles")
+    Call<Void> updateProfile(@Body UpdateProfileRequest request);
+
+
+    // TICKET
     @GET("/api/tickets/user")
-    Call<List<Ticket>> getUserTickets(@Header("Authorization") String bearerToken);
+    Call<List<Ticket>> getUserTickets();
 
     @GET("/api/tickets")
-    Call<List<Ticket>> getAllTickets(@Header("Authorization") String bearerToken);
+    Call<List<Ticket>> getAllTickets();
 
     @GET("/api/tickets/{ticketID}")
-    Call<Ticket> getTicketById(@Path("ticketID") Long ticketID, @Header("Authorization") String bearerToken);
+    Call<Ticket> getTicketById(@Path("ticketID") Long ticketID);
 
-    @DELETE("api/tickets/reply/{replyID}")
-    Call<Void> deleteReply(@Path("replyID") Long replyID, @Header("Authorization") String bearerToken);
+    @DELETE("/api/tickets/{ticketID}")
+    Call<Void> deleteTicket(@Path("ticketID") Long ticketID);
 
-    @DELETE("api/tickets/{ticketID}")
-    Call<Void> deleteTicket(@Path("ticketID") Long ticketID, @Header("Authorization") String bearerToken);
+    @POST("/api/tickets")
+    Call<Void> createTicket(@Body AddTicketRequest request);
 
-    @POST("api/tickets/reply")
-    Call<Void> addTicketReply(@Body AddTicketReplyRequest request, @Header("Authorization") String bearerToken);
+    @PUT("/api/tickets")
+    Call<Void> updateTicket(@Body UpdateTicketRequest request);
 
+    @POST("/api/tickets/status")
+    Call<Void> changeTicketStatus(@Body UpdateTicketStatusRequest request);
+
+
+    // TICKET REPLY
+    @DELETE("/api/tickets/reply/{replyID}")
+    Call<Void> deleteReply(@Path("replyID") Long replyID);
+
+    @POST("/api/tickets/reply")
+    Call<Void> addTicketReply(@Body AddTicketReplyRequest request);
+
+
+    // TICKET IMAGE
     @Multipart
-    @POST("api/tickets/{ticketID}/image")
+    @POST("/api/tickets/{ticketID}/image")
     Call<Void> uploadTicketImages(
             @Path("ticketID") Long ticketId,
-            @Part List<MultipartBody.Part> files,
-            @Header("Authorization") String bearerToken
+            @Part List<MultipartBody.Part> files
     );
 
-    @DELETE("api/tickets/image/{imageID}")
-    Call<Void> deleteTicketImage(@Path("imageID") Long imageId, @Header("Authorization") String bearerToken);
+    @DELETE("/api/tickets/image/{imageID}")
+    Call<Void> deleteTicketImage(@Path("imageID") Long imageId);
 
-    @GET("api/categories")
-    Call<List<Category>> getAllCategories(@Header("Authorization") String bearerToken);
 
-    @POST("api/tickets")
-    Call<Void> createTicket(@Body AddTicketRequest request, @Header("Authorization") String bearerToken);
+    // TICKET STATUS
+    @GET("/api/statuses")
+    Call<List<Status>> getAllStatuses();
 
-    @PUT("api/tickets")
-    Call<Void> updateTicket(@Body UpdateTicketRequest request, @Header("Authorization") String bearerToken);
 
-    @GET("api/statuses")
-    Call<List<Status>> getAllStatuses(@Header("Authorization") String bearerToken);
+    // CATEGORY
+    @GET("/api/categories")
+    Call<List<Category>> getAllCategories();
 
-    @GET("api/priorities")
-    Call<List<Priority>> getAllPriorities(@Header("Authorization") String bearerToken);
+    @GET("/api/categories/use")
+    Call<List<CategoryResponse>> getAllCategoriesWithUseNumber();
 
-    @POST("api/tickets/status")
-    Call<Void> changeTicketStatus(@Body UpdateTicketStatusRequest request, @Header("Authorization") String bearerToken);
+    @PUT("/api/categories")
+    Call<Void> updateCategory(@Body UpdateCategoryRequest request);
+
+    @POST("/api/categories")
+    Call<Void> addCategory(@Body AddCategoryRequest request);
+
+    @DELETE("/api/categories/{categoryID}")
+    Call<Void> deleteCategory(@Path("categoryID") Long categoryID);
+
+
+    // PRIORITY
+    @GET("/api/priorities")
+    Call<List<Priority>> getAllPriorities();
+
+    @GET("/api/priorities/use")
+    Call<List<PriorityResponse>> getAllPrioritiesWithUseNumber();
+
+    @PUT("/api/priorities")
+    Call<Void> updatePriority(@Body UpdatePriorityRequest request);
+
+    @POST("/api/priorities")
+    Call<Void> addPriority(@Body AddPriorityRequest request);
+
+    @DELETE("/api/priorities/{priorityID}")
+    Call<Void> deletePriority(@Path("priorityID") Long priorityID);
+
 }

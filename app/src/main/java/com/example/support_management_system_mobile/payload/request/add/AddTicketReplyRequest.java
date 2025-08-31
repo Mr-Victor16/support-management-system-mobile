@@ -1,4 +1,4 @@
-package com.example.support_management_system_mobile.payload.request;
+package com.example.support_management_system_mobile.payload.request.add;
 
 public class AddTicketReplyRequest {
     private Long ticketID;

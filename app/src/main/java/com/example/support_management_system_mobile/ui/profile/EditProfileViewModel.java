@@ -11,7 +11,7 @@ import androidx.lifecycle.ViewModel;
 import com.example.support_management_system_mobile.R;
 import com.example.support_management_system_mobile.auth.JWTUtils;
 import com.example.support_management_system_mobile.data.repository.ProfileRepository;
-import com.example.support_management_system_mobile.payload.request.UpdateProfileRequest;
+import com.example.support_management_system_mobile.payload.request.update.UpdateProfileRequest;
 import com.example.support_management_system_mobile.validators.UserValidator;
 
 import java.util.Objects;
@@ -94,9 +94,8 @@ public class EditProfileViewModel extends ViewModel {
         if (!UserValidator.isPasswordValid(pwd)) pwd = "";
 
         UpdateProfileRequest request = new UpdateProfileRequest(fName, sName, pwd);
-        String authToken = "Bearer " + JWTUtils.getToken(application);
 
-        profileRepository.update(authToken, request, new Callback<Void>() {
+        profileRepository.update(request, new Callback<Void>() {
             @Override
             public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
                 if (response.isSuccessful()) {
