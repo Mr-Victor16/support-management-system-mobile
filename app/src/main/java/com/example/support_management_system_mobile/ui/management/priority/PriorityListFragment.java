@@ -77,7 +77,7 @@ public class PriorityListFragment extends Fragment {
             @Override
             public void onDelete(PriorityResponse priority) {
                 new AlertDialog.Builder(requireContext())
-                        .setTitle(R.string.delete_priority_title)
+                        .setTitle(R.string.delete_priority)
                         .setMessage(getString(R.string.confirm_delete_priority_message, priority.getName()))
                         .setPositiveButton(R.string.delete_button, (dialog, which) -> viewModel.deletePriority(priority.getPriorityID()))
                         .setNegativeButton(R.string.cancel_button, null)
@@ -118,7 +118,7 @@ public class PriorityListFragment extends Fragment {
     private void showPriorityDialog(@Nullable PriorityResponse priority) {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         boolean isEditing = priority != null;
-        String title = isEditing ? getString(R.string.edit_priority_title) : getString(R.string.add_new_priority);
+        String title = isEditing ? getString(R.string.edit_priority) : getString(R.string.add_new_priority);
         builder.setTitle(title);
 
         View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_priority, null);
@@ -131,15 +131,20 @@ public class PriorityListFragment extends Fragment {
         builder.setView(dialogView);
 
         nameEditText.addTextChangedListener(new TextWatcher() {
-            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {  }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (isPriorityNameValid(s.toString())) {
                     nameInputLayout.setError(null);
                 } else {
                     nameInputLayout.setError(getString(R.string.priority_name_error));
                 }
             }
-            @Override public void afterTextChanged(Editable s) {}
+
+            @Override
+            public void afterTextChanged(Editable s) {  }
         });
 
         builder.setPositiveButton(R.string.save, null);

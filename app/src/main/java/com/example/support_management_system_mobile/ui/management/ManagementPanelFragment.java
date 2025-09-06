@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 
 import com.example.support_management_system_mobile.R;
 import com.example.support_management_system_mobile.ui.management.category.CategoryListFragment;
+import com.example.support_management_system_mobile.ui.management.knowledge.KnowledgeListFragment;
 import com.example.support_management_system_mobile.ui.management.priority.PriorityListFragment;
 
 public class ManagementPanelFragment extends Fragment {
@@ -27,9 +28,7 @@ public class ManagementPanelFragment extends Fragment {
 
         view.findViewById(R.id.manageCategoriesButton).setOnClickListener(v -> navigateTo(new CategoryListFragment()));
 
-        view.findViewById(R.id.manageKnowledgeButton).setOnClickListener(v -> {
-            // navigateTo(new ManageKnowledgeFragment());
-        });
+        view.findViewById(R.id.manageKnowledgeButton).setOnClickListener(v -> navigateTo(new KnowledgeListFragment()));
 
         view.findViewById(R.id.managePrioritiesButton).setOnClickListener(v -> navigateTo(new PriorityListFragment()));
 

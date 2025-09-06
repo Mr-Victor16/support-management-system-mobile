@@ -41,7 +41,6 @@ public class CategoryManagementViewModel extends ViewModel {
         this.authContext = authContext;
     }
 
-
     public void loadCategories() {
         _categoryListState.setValue(new CategoryListUIState.Loading());
 
@@ -72,6 +71,7 @@ public class CategoryManagementViewModel extends ViewModel {
                     _toastMessage.postValue(new Event<>(application.getString(R.string.category_delete_error)));
                 }
             }
+
             @Override
             public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
                 _toastMessage.postValue(new Event<>(application.getString(R.string.server_error)));
@@ -90,6 +90,7 @@ public class CategoryManagementViewModel extends ViewModel {
                     _toastMessage.postValue(new Event<>(application.getString(R.string.category_add_error)));
                 }
             }
+
             @Override
             public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
                 _toastMessage.postValue(new Event<>(application.getString(R.string.server_error)));
@@ -108,6 +109,7 @@ public class CategoryManagementViewModel extends ViewModel {
                     _toastMessage.postValue(new Event<>(application.getString(R.string.category_update_error)));
                 }
             }
+
             @Override
             public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
                 _toastMessage.postValue(new Event<>(application.getString(R.string.server_error)));

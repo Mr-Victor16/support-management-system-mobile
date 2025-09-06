@@ -131,7 +131,7 @@
     <string name="no_categories_defined">No categories defined. Click + to add the first one</string>
     <string name="usage_count_format">Usage count: %d</string>
     <string name="edit_category_title">Edit category</string>
-    <string name="delete_category_title">Delete category</string>
+    <string name="delete_category">Delete category</string>
     <string name="confirm_delete_category_message">Are you sure you want to delete the category \'%1$s\' ?</string>
     <string name="category_deleted_successfully">Category deleted successfully</string>
     <string name="category_delete_error">Failed to delete category</string>
@@ -143,8 +143,8 @@
 
     <string name="add_new_priority">Add new priority</string>
     <string name="no_priorities_defined">No priorities defined. Click + to add the first one</string>
-    <string name="edit_priority_title">Edit priority</string>
-    <string name="delete_priority_title">Delete priority</string>
+    <string name="edit_priority">Edit priority</string>
+    <string name="delete_priority">Delete priority</string>
     <string name="confirm_delete_priority_message">Are you sure you want to delete the priority \'%1$s\' ?</string>
     <string name="priority_name_error">Name must be between 3 and 20 characters</string>
     <string name="priority_deleted_successfully">Priority deleted successfully</string>
@@ -153,4 +153,20 @@
     <string name="priority_add_error">Error adding priority</string>
     <string name="priority_updated_successfully">Priority updated successfully</string>
     <string name="priority_update_error">Error updating priority</string>
+
+    <string name="add_new_knowledge">Add new entry</string>
+    <string name="no_knowledge_defined">No entries in the knowledge base. Click + to add the first one</string>
+    <string name="edit_knowledge">Edit entry</string>
+    <string name="knowledge_title">Title</string>
+    <string name="knowledge_content">Content</string>
+    <string name="knowledge_title_error">Title must be between 2 and 50 characters</string>
+    <string name="knowledge_content_error">Content must be between 20 and 360 characters</string>
+    <string name="delete_knowledge_title">Delete entry</string>
+    <string name="confirm_delete_knowledge_message">Are you sure you want to delete the entry \'%1$s\' ?</string>
+    <string name="knowledge_deleted_successfully">Entry deleted successfully</string>
+    <string name="knowledge_delete_error">Failed to delete entry</string>
+    <string name="entry_added_successfully">New entry added successfully</string>
+    <string name="entry_add_error">Error adding entry</string>
+    <string name="entry_updated_successfully">Entry updated successfully</string>
+    <string name="entry_update_error">Error updating entry</string>
 </resources>

@@ -4,6 +4,7 @@ import com.example.support_management_system_mobile.models.Category;
 import com.example.support_management_system_mobile.models.Priority;
 import com.example.support_management_system_mobile.models.Status;
 import com.example.support_management_system_mobile.models.Ticket;
+import com.example.support_management_system_mobile.payload.request.add.AddKnowledgeRequest;
 import com.example.support_management_system_mobile.payload.request.add.AddTicketReplyRequest;
 import com.example.support_management_system_mobile.payload.request.add.AddTicketRequest;
 import com.example.support_management_system_mobile.payload.request.add.AddCategoryRequest;
@@ -11,6 +12,7 @@ import com.example.support_management_system_mobile.payload.request.add.AddPrior
 import com.example.support_management_system_mobile.payload.request.LoginRequest;
 import com.example.support_management_system_mobile.payload.request.RegisterRequest;
 import com.example.support_management_system_mobile.payload.request.update.UpdateCategoryRequest;
+import com.example.support_management_system_mobile.payload.request.update.UpdateKnowledgeRequest;
 import com.example.support_management_system_mobile.payload.request.update.UpdatePriorityRequest;
 import com.example.support_management_system_mobile.payload.request.update.UpdateProfileRequest;
 import com.example.support_management_system_mobile.models.Knowledge;
@@ -52,6 +54,18 @@ public interface APIService {
     // KNOWLEDGE
     @GET("/api/knowledge-bases")
     Call<List<Knowledge>> getKnowledgeItems();
+
+    @GET("/api/knowledge-bases/{knowledgeID}")
+    Call<Knowledge> getKnowledgeItemById(@Path("knowledgeID") Long knowledgeID);
+
+    @PUT("/api/knowledge-bases")
+    Call<Void> updateKnowledge(@Body UpdateKnowledgeRequest request);
+
+    @POST("/api/knowledge-bases")
+    Call<Void> addKnowledge(@Body AddKnowledgeRequest request);
+
+    @DELETE("/api/knowledge-bases/{knowledgeID}")
+    Call<Void> deleteKnowledge(@Path("knowledgeID") Long knowledgeID);
 
 
     // PROFILE

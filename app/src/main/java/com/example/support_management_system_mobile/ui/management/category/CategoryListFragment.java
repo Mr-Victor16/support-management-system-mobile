@@ -78,7 +78,7 @@ public class CategoryListFragment extends Fragment {
             @Override
             public void onDelete(CategoryResponse category) {
                 new AlertDialog.Builder(requireContext())
-                        .setTitle(R.string.delete_category_title)
+                        .setTitle(R.string.delete_category)
                         .setMessage(getString(R.string.confirm_delete_category_message, category.getName()))
                         .setPositiveButton(R.string.delete_button, (dialog, which) -> viewModel.deleteCategory(category.getCategoryID()))
                         .setNegativeButton(R.string.cancel_button, null)
@@ -171,9 +171,8 @@ public class CategoryListFragment extends Fragment {
     }
 
     public static boolean isCategoryNameValid(String name) {
-        if (name == null) {
-            return false;
-        }
+        if (name == null) return false;
+
         String trimmedName = name.trim();
         return trimmedName.length() >= 2 && trimmedName.length() <= 20;
     }
