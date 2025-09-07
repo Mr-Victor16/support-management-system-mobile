@@ -2,6 +2,9 @@ package com.example.support_management_system_mobile.data.repository;
 
 import com.example.support_management_system_mobile.models.Software;
 import com.example.support_management_system_mobile.network.APIService;
+import com.example.support_management_system_mobile.payload.request.add.AddSoftwareRequest;
+import com.example.support_management_system_mobile.payload.request.update.UpdateSoftwareRequest;
+import com.example.support_management_system_mobile.payload.response.SoftwareResponse;
 
 import java.util.List;
 
@@ -19,5 +22,21 @@ public class SoftwareRepository {
 
     public void getSoftwareList(Callback<List<Software>> callback) {
         apiService.getSoftwareList().enqueue(callback);
+    }
+
+    public void getSoftwareListWithUseNumber(Callback<List<SoftwareResponse>> callback) {
+        apiService.getSoftwareListWithUseNumber().enqueue(callback);
+    }
+
+    public void createSoftware(String name, String description, Callback<Void> callback) {
+        apiService.addSoftware(new AddSoftwareRequest(name, description)).enqueue(callback);
+    }
+
+    public void updateSoftware(Long softwareId, String name, String description, Callback<Void> callback) {
+        apiService.updateSoftware(new UpdateSoftwareRequest(softwareId, name, description)).enqueue(callback);
+    }
+
+    public void deleteSoftware(Long softwareId, Callback<Void> callback) {
+        apiService.deleteSoftware(softwareId).enqueue(callback);
     }
 }

@@ -5,6 +5,7 @@ import com.example.support_management_system_mobile.models.Priority;
 import com.example.support_management_system_mobile.models.Status;
 import com.example.support_management_system_mobile.models.Ticket;
 import com.example.support_management_system_mobile.payload.request.add.AddKnowledgeRequest;
+import com.example.support_management_system_mobile.payload.request.add.AddSoftwareRequest;
 import com.example.support_management_system_mobile.payload.request.add.AddTicketReplyRequest;
 import com.example.support_management_system_mobile.payload.request.add.AddTicketRequest;
 import com.example.support_management_system_mobile.payload.request.add.AddCategoryRequest;
@@ -16,12 +17,14 @@ import com.example.support_management_system_mobile.payload.request.update.Updat
 import com.example.support_management_system_mobile.payload.request.update.UpdatePriorityRequest;
 import com.example.support_management_system_mobile.payload.request.update.UpdateProfileRequest;
 import com.example.support_management_system_mobile.models.Knowledge;
+import com.example.support_management_system_mobile.payload.request.update.UpdateSoftwareRequest;
 import com.example.support_management_system_mobile.payload.request.update.UpdateTicketRequest;
 import com.example.support_management_system_mobile.payload.request.update.UpdateTicketStatusRequest;
 import com.example.support_management_system_mobile.payload.response.CategoryResponse;
 import com.example.support_management_system_mobile.payload.response.LoginResponse;
 import com.example.support_management_system_mobile.models.Software;
 import com.example.support_management_system_mobile.payload.response.PriorityResponse;
+import com.example.support_management_system_mobile.payload.response.SoftwareResponse;
 
 import java.util.List;
 
@@ -49,6 +52,18 @@ public interface APIService {
     // SOFTWARE
     @GET("/api/software")
     Call<List<Software>> getSoftwareList();
+
+    @GET("/api/software/use")
+    Call<List<SoftwareResponse>> getSoftwareListWithUseNumber();
+
+    @PUT("/api/software")
+    Call<Void> updateSoftware(@Body UpdateSoftwareRequest request);
+
+    @POST("/api/software")
+    Call<Void> addSoftware(@Body AddSoftwareRequest request);
+
+    @DELETE("/api/software/{softwareID}")
+    Call<Void> deleteSoftware(@Path("softwareID") Long softwareID);
 
 
     // KNOWLEDGE

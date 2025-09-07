@@ -169,4 +169,22 @@
     <string name="entry_add_error">Error adding entry</string>
     <string name="entry_updated_successfully">Entry updated successfully</string>
     <string name="entry_update_error">Error updating entry</string>
+
+    <string name="add_new_software">DAdd new software</string>
+    <string name="no_software_defined">No software defined. Click + to add the first one</string>
+    <string name="usage_count_software_format">Tickets: %1$d, Knowledge base: %2$d</string>
+    <string name="add_new_software_title">Add new software</string>
+    <string name="edit_software_title">Edit software</string>
+    <string name="delete_software_title">Delete software</string>
+    <string name="confirm_delete_software_message">Are you sure you want to delete the software \'%1$s\' ?</string>
+    <string name="software_name">Software name</string>
+    <string name="software_description">Description</string>
+    <string name="software_name_error">The name must be between 2 and 30 characters long</string>
+    <string name="software_description_error">The description must be between 10 and 200 characters long</string>
+    <string name="software_deleted_successfully">Software deleted successfully</string>
+    <string name="software_delete_error">Failed to delete software</string>
+    <string name="software_added_successfully">New software added successfully</string>
+    <string name="software_add_error">Error adding software</string>
+    <string name="software_updated_successfully">Software updated successfully</string>
+    <string name="software_update_error">Error updating software</string>
 </resources>

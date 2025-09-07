@@ -18,8 +18,8 @@ Android mobile application that serves as a client for the technical support man
 - Managing ticket images
 - Adding replies to tickets
 - Editing user profile
+- Managing software and knowledge base
 
 ## To be implemented 
 - Managing statuses, priorities and categories
-- Managing software and knowledge base 
 - Managing users
