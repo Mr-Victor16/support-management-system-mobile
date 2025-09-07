@@ -101,8 +101,6 @@ public class KnowledgeListFragment extends Fragment {
             progressBar.setVisibility(state instanceof KnowledgeListUIState.Loading ? View.VISIBLE : View.GONE);
             recyclerView.setVisibility(state instanceof KnowledgeListUIState.Success ? View.VISIBLE : View.GONE);
 
-            fab.setVisibility(View.GONE);
-
             boolean isListEmpty = state instanceof KnowledgeListUIState.Success && ((KnowledgeListUIState.Success) state).knowledgeItems.isEmpty();
             emptyErrorLayout.setVisibility(state instanceof KnowledgeListUIState.Error || isListEmpty ? View.VISIBLE : View.GONE);
 
@@ -110,7 +108,7 @@ public class KnowledgeListFragment extends Fragment {
                 KnowledgeListUIState.Success successState = (KnowledgeListUIState.Success) state;
                 adapter.setCanManage(successState.canManage);
                 adapter.submitList(successState.knowledgeItems);
-                fab.setVisibility(this.canManage ? View.VISIBLE : View.GONE);
+                fab.setVisibility(successState.canManage ? View.VISIBLE : View.GONE);
 
                 if (isListEmpty) {
                     emptyErrorTextView.setText(R.string.no_knowledge_defined);

@@ -1,8 +1,8 @@
 package com.example.support_management_system_mobile.validators;
 
 public class KnowledgeValidator {
-    public static boolean isTitleValid(String content) {
-        return content != null && content.length() >= 2 && content.length() <= 50;
+    public static boolean isTitleValid(String title) {
+        return title != null && title.length() >= 2 && title.length() <= 50;
     }
 
     public static boolean isContentValid(String content) {
