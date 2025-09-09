@@ -170,7 +170,7 @@
     <string name="entry_updated_successfully">Entry updated successfully</string>
     <string name="entry_update_error">Error updating entry</string>
 
-    <string name="add_new_software">DAdd new software</string>
+    <string name="add_new_software">Add new software</string>
     <string name="no_software_defined">No software defined. Click + to add the first one</string>
     <string name="usage_count_software_format">Tickets: %1$d, Knowledge base: %2$d</string>
     <string name="add_new_software_title">Add new software</string>
@@ -187,4 +187,25 @@
     <string name="software_add_error">Error adding software</string>
     <string name="software_updated_successfully">Software updated successfully</string>
     <string name="software_update_error">Error updating software</string>
+
+    <string name="add_new_status">Add new status</string>
+    <string name="no_status_defined">No status defined. Click + to add the first one</string>
+    <string name="usage_count_status_format">Tickets: %1$d</string>
+    <string name="add_new_status_title">Add new status</string>
+    <string name="edit_status_title">Edit status</string>
+    <string name="delete_status_title">Delete status</string>
+    <string name="confirm_delete_status_message">Are you sure you want to delete the status \'%1$s\' ?</string>
+    <string name="status_name">Status name</string>
+    <string name="status_name_error">The name must be between 2 and 20 characters long</string>
+    <string name="status_deleted_successfully">Status deleted successfully</string>
+    <string name="status_delete_error">Failed to delete status</string>
+    <string name="status_added_successfully">New status added successfully</string>
+    <string name="status_add_error">Error adding status</string>
+    <string name="status_updated_successfully">Status updated successfully</string>
+    <string name="status_update_error">Error updating status</string>
+    <string name="closes_ticket_indicator">Closes ticket indicator</string>
+    <string name="default_status_indicator">Default status indicator</string>
+    <string name="status_name_hint">Status name</string>
+    <string name="closes_ticket_label">Closes ticket</string>
+    <string name="default_status_label">Default ticket status</string>
 </resources>

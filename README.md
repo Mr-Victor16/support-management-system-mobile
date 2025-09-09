@@ -19,7 +19,7 @@ Android mobile application that serves as a client for the technical support man
 - Adding replies to tickets
 - Editing user profile
 - Managing software and knowledge base
-
-## To be implemented 
 - Managing statuses, priorities and categories
+
+## To be implemented
 - Managing users

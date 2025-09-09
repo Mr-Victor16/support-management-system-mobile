@@ -15,6 +15,7 @@ import com.example.support_management_system_mobile.ui.management.category.Categ
 import com.example.support_management_system_mobile.ui.management.knowledge.KnowledgeListFragment;
 import com.example.support_management_system_mobile.ui.management.priority.PriorityListFragment;
 import com.example.support_management_system_mobile.ui.management.software.SoftwareListFragment;
+import com.example.support_management_system_mobile.ui.management.status.StatusListFragment;
 
 public class ManagementPanelFragment extends Fragment {
 
@@ -35,9 +36,7 @@ public class ManagementPanelFragment extends Fragment {
 
         view.findViewById(R.id.manageSoftwareButton).setOnClickListener(v -> navigateTo(new SoftwareListFragment()));
 
-        view.findViewById(R.id.manageStatusesButton).setOnClickListener(v -> {
-            // navigateTo(new ManageStatusesFragment());
-        });
+        view.findViewById(R.id.manageStatusesButton).setOnClickListener(v -> navigateTo(new StatusListFragment()));
 
         view.findViewById(R.id.manageUsersButton).setOnClickListener(v -> {
             // navigateTo(new ManageUsersFragment());
