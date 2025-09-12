@@ -2,6 +2,7 @@ package com.example.support_management_system_mobile.network;
 
 import com.example.support_management_system_mobile.models.Category;
 import com.example.support_management_system_mobile.models.Priority;
+import com.example.support_management_system_mobile.models.Role;
 import com.example.support_management_system_mobile.models.Status;
 import com.example.support_management_system_mobile.models.Ticket;
 import com.example.support_management_system_mobile.payload.request.add.AddKnowledgeRequest;
@@ -13,6 +14,7 @@ import com.example.support_management_system_mobile.payload.request.add.AddCateg
 import com.example.support_management_system_mobile.payload.request.add.AddPriorityRequest;
 import com.example.support_management_system_mobile.payload.request.LoginRequest;
 import com.example.support_management_system_mobile.payload.request.RegisterRequest;
+import com.example.support_management_system_mobile.payload.request.add.AddUserRequest;
 import com.example.support_management_system_mobile.payload.request.update.UpdateCategoryRequest;
 import com.example.support_management_system_mobile.payload.request.update.UpdateKnowledgeRequest;
 import com.example.support_management_system_mobile.payload.request.update.UpdatePriorityRequest;
@@ -22,12 +24,14 @@ import com.example.support_management_system_mobile.payload.request.update.Updat
 import com.example.support_management_system_mobile.payload.request.update.UpdateStatusRequest;
 import com.example.support_management_system_mobile.payload.request.update.UpdateTicketRequest;
 import com.example.support_management_system_mobile.payload.request.update.UpdateTicketStatusRequest;
+import com.example.support_management_system_mobile.payload.request.update.UpdateUserRequest;
 import com.example.support_management_system_mobile.payload.response.CategoryResponse;
 import com.example.support_management_system_mobile.payload.response.LoginResponse;
 import com.example.support_management_system_mobile.models.Software;
 import com.example.support_management_system_mobile.payload.response.PriorityResponse;
 import com.example.support_management_system_mobile.payload.response.SoftwareResponse;
 import com.example.support_management_system_mobile.payload.response.StatusResponse;
+import com.example.support_management_system_mobile.payload.response.UserDetailsResponse;
 
 import java.util.List;
 
@@ -184,4 +188,25 @@ public interface APIService {
     @DELETE("/api/priorities/{priorityID}")
     Call<Void> deletePriority(@Path("priorityID") Long priorityID);
 
+
+    // USER
+    @GET("/api/users")
+    Call<List<UserDetailsResponse>> getUsers();
+
+    @GET("/api/users/{userID}")
+    Call<UserDetailsResponse> getUser(@Path("userID") Long userID);
+
+    @PUT("/api/users")
+    Call<Void> updateUser(@Body UpdateUserRequest request);
+
+    @POST("/api/users")
+    Call<Void> addUser(@Body AddUserRequest request);
+
+    @DELETE("/api/users/{userID}")
+    Call<Void> deleteUser(@Path("userID") Long userID);
+
+
+    // ROLE
+    @GET("/api/roles")
+    Call<List<Role>> getRoles();
 }

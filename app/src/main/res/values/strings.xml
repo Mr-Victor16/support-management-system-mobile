@@ -208,4 +208,16 @@
     <string name="status_name_hint">Status name</string>
     <string name="closes_ticket_label">Closes ticket</string>
     <string name="default_status_label">Default ticket status</string>
+
+    <string name="add_new_user">Add new user</string>
+    <string name="user_deleted_successfully">User deleted successfully</string>
+    <string name="user_delete_error">Failed to delete user</string>
+    <string name="user_added_successfully">New user added successfully</string>
+    <string name="user_add_error">Error adding user</string>
+    <string name="user_updated_successfully">User updated successfully</string>
+    <string name="user_update_error">Error updating user</string>
+    <string name="delete_user_title">Delete user</string>
+    <string name="edit_user">Edit user</string>
+    <string name="role">User role</string>
+    <string name="confirm_delete_user_message">Are you sure you want to delete user \'%1$s\' ?</string>
 </resources>

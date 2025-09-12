@@ -1,5 +1,7 @@
 package com.example.support_management_system_mobile.models;
 
+import java.util.Objects;
+
 public class Role {
     private Long id;
     private Types type;
@@ -9,9 +11,19 @@ public class Role {
     }
 
     public enum Types{
-        ROLE_ADMIN,
-        ROLE_OPERATOR,
-        ROLE_USER
+        ROLE_ADMIN("Administrator"),
+        ROLE_OPERATOR("Operator"),
+        ROLE_USER("User");
+
+        private final String displayName;
+
+        Types(String displayName) {
+            this.displayName = displayName;
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
     }
 
     public Role(Long id, Types type) {
@@ -33,5 +45,17 @@ public class Role {
 
     public void setType(Types type) {
         this.type = type;
+    }
+
+    @Override
+    public String toString() {
+        return type.getDisplayName();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Role role = (Role) o;
+        return Objects.equals(id, role.id) && type == role.type;
     }
 }
