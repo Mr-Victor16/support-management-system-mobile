@@ -98,10 +98,11 @@ public class CategoryListFragment extends Fragment {
             boolean isAdmin = viewModel.getAuthContext().isAdmin();
 
             emptyErrorLayout.setVisibility(state instanceof CategoryListUIState.Error || isListEmpty ? View.VISIBLE : View.GONE);
-            fab.setVisibility(state instanceof CategoryListUIState.Error || isAdmin ? View.VISIBLE : View.GONE);
 
             if (state instanceof CategoryListUIState.Success) {
                 adapter.submitList(((CategoryListUIState.Success) state).categories);
+                fab.setVisibility(isAdmin ? View.VISIBLE : View.GONE);
+
                 if (((CategoryListUIState.Success) state).categories.isEmpty()) {
                     emptyErrorTextView.setText(R.string.no_categories_defined);
                 }

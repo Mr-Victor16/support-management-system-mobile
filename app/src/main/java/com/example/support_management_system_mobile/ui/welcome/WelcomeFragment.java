@@ -5,6 +5,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.Group;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -30,7 +31,7 @@ public class WelcomeFragment extends Fragment {
     private Button softwareButton;
     private Button knowledgeButton;
     private ProgressBar progressBar;
-    private ViewGroup contentGroup;
+    private Group contentGroup;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

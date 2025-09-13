@@ -98,10 +98,11 @@ public class PriorityListFragment extends Fragment {
             boolean isAdmin = viewModel.getAuthContext().isAdmin();
 
             emptyErrorLayout.setVisibility(state instanceof PriorityListUIState.Error || isListEmpty ? View.VISIBLE : View.GONE);
-            fab.setVisibility(state instanceof PriorityListUIState.Error || isAdmin ? View.VISIBLE : View.GONE);
 
             if (state instanceof PriorityListUIState.Success) {
                 adapter.submitList(((PriorityListUIState.Success) state).priorities);
+                fab.setVisibility(isAdmin ? View.VISIBLE : View.GONE);
+
                 if (((PriorityListUIState.Success) state).priorities.isEmpty()) {
                     emptyErrorTextView.setText(R.string.no_priorities_defined);
                 }

@@ -25,7 +25,7 @@
     <string name="ticket_description_error">Ticket description must contain between 5 and 500 characters</string>
     <string name="software_version_error">Software version must contain between 1 and 10 characters</string>
 
-    <string name="welcome">Welcome to Support Manager System</string>
+    <string name="welcome">Support Management System</string>
     <string name="to_login">Go to login</string>
     <string name="software_supported">Software supported</string>
     <string name="knowledge_list">Knowledge base</string>
@@ -140,6 +140,7 @@
     <string name="category_updated_successfully">Category name updated successfully</string>
     <string name="category_update_error">Error updating category</string>
     <string name="category_name_error">Name must be between 2 and 20 characters</string>
+    <string name="category_name_hint">Category name</string>
 
     <string name="add_new_priority">Add new priority</string>
     <string name="no_priorities_defined">No priorities defined. Click + to add the first one</string>
@@ -147,6 +148,7 @@
     <string name="delete_priority">Delete priority</string>
     <string name="confirm_delete_priority_message">Are you sure you want to delete the priority \'%1$s\' ?</string>
     <string name="priority_name_error">Name must be between 3 and 20 characters</string>
+    <string name="priority_name_hint">Priority name</string>
     <string name="priority_deleted_successfully">Priority deleted successfully</string>
     <string name="priority_delete_error">Failed to delete priority</string>
     <string name="priority_added_successfully">New priority added successfully</string>
@@ -195,7 +197,6 @@
     <string name="edit_status_title">Edit status</string>
     <string name="delete_status_title">Delete status</string>
     <string name="confirm_delete_status_message">Are you sure you want to delete the status \'%1$s\' ?</string>
-    <string name="status_name">Status name</string>
     <string name="status_name_error">The name must be between 2 and 20 characters long</string>
     <string name="status_deleted_successfully">Status deleted successfully</string>
     <string name="status_delete_error">Failed to delete status</string>
@@ -218,6 +219,6 @@
     <string name="user_update_error">Error updating user</string>
     <string name="delete_user_title">Delete user</string>
     <string name="edit_user">Edit user</string>
-    <string name="role">User role</string>
+    <string name="role">Account type</string>
     <string name="confirm_delete_user_message">Are you sure you want to delete user \'%1$s\' ?</string>
 </resources>
