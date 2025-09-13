@@ -68,15 +68,15 @@ public class UserListFragment extends Fragment {
         adapter = new UserAdapter(new UserAdapter.OnUserInteractionListener() {
             @Override
             public void onEdit(UserDetailsResponse item) {
-                navigateToForm(item.getId());
+                navigateToForm(item.id());
             }
 
             @Override
             public void onDelete(UserDetailsResponse item) {
                 new AlertDialog.Builder(requireContext())
                         .setTitle(R.string.delete_user_title)
-                        .setMessage(getString(R.string.confirm_delete_user_message, item.getUsername()))
-                        .setPositiveButton(R.string.delete_button, (dialog, which) -> viewModel.deleteUser(item.getId()))
+                        .setMessage(getString(R.string.confirm_delete_user_message, item.username()))
+                        .setPositiveButton(R.string.delete_button, (dialog, which) -> viewModel.deleteUser(item.id()))
                         .setNegativeButton(R.string.cancel_button, null)
                         .show();
             }
@@ -93,8 +93,7 @@ public class UserListFragment extends Fragment {
             boolean isListEmpty = state instanceof UserListUIState.Success && ((UserListUIState.Success) state).userList.isEmpty();
             emptyErrorLayout.setVisibility(state instanceof UserListUIState.Error || isListEmpty ? View.VISIBLE : View.GONE);
 
-            if (state instanceof UserListUIState.Success) {
-                UserListUIState.Success successState = (UserListUIState.Success) state;
+            if (state instanceof UserListUIState.Success successState) {
                 adapter.setCanManage(successState.canManage);
                 adapter.submitList(successState.userList);
                 fab.setVisibility(View.VISIBLE);

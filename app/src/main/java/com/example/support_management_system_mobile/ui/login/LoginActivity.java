@@ -22,7 +22,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 @AndroidEntryPoint
 public class LoginActivity extends AppCompatActivity {
     private ActivityLoginBinding binding;
-    private LoginViewModel vm;
+    private LoginViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,12 +36,12 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        vm = new ViewModelProvider(this).get(LoginViewModel.class);
+        viewModel = new ViewModelProvider(this).get(LoginViewModel.class);
 
         setupInputListeners();
         setupObservers();
 
-        binding.loginButton.setOnClickListener(v -> vm.loginUser());
+        binding.loginButton.setOnClickListener(v -> viewModel.loginUser());
         binding.createAccountButton.setOnClickListener(v ->
                 startActivity(new Intent(this, RegisterActivity.class)));
     }
@@ -50,27 +50,27 @@ public class LoginActivity extends AppCompatActivity {
         binding.editUsername.addTextChangedListener(new SimpleTextWatcher() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                vm.username.setValue(s.toString());
+                viewModel.username.setValue(s.toString());
             }
         });
 
         binding.editPassword.addTextChangedListener(new SimpleTextWatcher() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                vm.password.setValue(s.toString());
+                viewModel.password.setValue(s.toString());
             }
         });
     }
 
     private void setupObservers() {
-        vm.getIsLoading().observe(this, isLoading -> {
+        viewModel.getIsLoading().observe(this, isLoading -> {
             binding.progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
             binding.createAccountButton.setEnabled(!isLoading);
         });
 
-        vm.getIsLoginButtonEnabled().observe(this, isEnabled -> binding.loginButton.setEnabled(isEnabled));
+        viewModel.getIsLoginButtonEnabled().observe(this, isEnabled -> binding.loginButton.setEnabled(isEnabled));
 
-        vm.getResult().observe(this, result -> {
+        viewModel.getResult().observe(this, result -> {
             if (result instanceof LoginResult.Success) {
                 JWTUtils.saveData(this, ((LoginResult.Success) result).getData());
                 Toast.makeText(this, R.string.login_success, Toast.LENGTH_SHORT).show();
@@ -87,7 +87,10 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     abstract static class SimpleTextWatcher implements TextWatcher {
-        @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-        @Override public void afterTextChanged(Editable s) {}
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+
+        @Override
+        public void afterTextChanged(Editable s) { }
     }
 }

@@ -19,13 +19,13 @@ public class JWTUtils {
 
     public static void saveData(Context context, LoginResponse response) {
         SharedPreferences.Editor editor = getPrefs(context).edit();
-        editor.putString(TOKEN_KEY, response.getToken());
-        editor.putLong(ID_KEY, response.getId());
-        editor.putString(USERNAME_KEY, response.getUsername());
-        editor.putString(NAME_KEY, response.getName());
-        editor.putString(SURNAME_KEY, response.getSurname());
-        editor.putString(EMAIL_KEY, response.getEmail());
-        editor.putString(ROLE_KEY, response.getRole());
+        editor.putString(TOKEN_KEY, response.token());
+        editor.putLong(ID_KEY, response.id());
+        editor.putString(USERNAME_KEY, response.username());
+        editor.putString(NAME_KEY, response.name());
+        editor.putString(SURNAME_KEY, response.surname());
+        editor.putString(EMAIL_KEY, response.email());
+        editor.putString(ROLE_KEY, response.role());
         editor.apply();
     }
 

@@ -83,8 +83,8 @@ public class SoftwareListFragment extends Fragment {
             public void onDelete(SoftwareResponse item) {
                 new AlertDialog.Builder(requireContext())
                         .setTitle(R.string.delete_software_title)
-                        .setMessage(getString(R.string.confirm_delete_software_message, item.getName()))
-                        .setPositiveButton(R.string.delete_button, (dialog, which) -> viewModel.deleteSoftware(item.getSoftwareID()))
+                        .setMessage(getString(R.string.confirm_delete_software_message, item.name()))
+                        .setPositiveButton(R.string.delete_button, (dialog, which) -> viewModel.deleteSoftware(item.softwareID()))
                         .setNegativeButton(R.string.cancel_button, null)
                         .show();
             }
@@ -101,8 +101,7 @@ public class SoftwareListFragment extends Fragment {
             boolean isListEmpty = state instanceof SoftwareListUIState.Success && ((SoftwareListUIState.Success) state).softwareList.isEmpty();
             emptyErrorLayout.setVisibility(state instanceof SoftwareListUIState.Error || isListEmpty ? View.VISIBLE : View.GONE);
 
-            if (state instanceof SoftwareListUIState.Success) {
-                SoftwareListUIState.Success successState = (SoftwareListUIState.Success) state;
+            if (state instanceof SoftwareListUIState.Success successState) {
                 adapter.setCanManage(successState.canManage);
                 adapter.submitList(successState.softwareList);
                 fab.setVisibility(successState.canManage ? View.VISIBLE : View.GONE);
@@ -134,8 +133,8 @@ public class SoftwareListFragment extends Fragment {
         final EditText descriptionEditText = dialogView.findViewById(R.id.descriptionEditText);
 
         if (isEditing) {
-            nameEditText.setText(software.getName());
-            descriptionEditText.setText(software.getDescription());
+            nameEditText.setText(software.name());
+            descriptionEditText.setText(software.description());
         }
         builder.setView(dialogView);
 
@@ -182,7 +181,7 @@ public class SoftwareListFragment extends Fragment {
 
             if (isNameValid && isDescriptionValid) {
                 if (isEditing) {
-                    viewModel.updateSoftware(software.getSoftwareID(), name, description);
+                    viewModel.updateSoftware(software.softwareID(), name, description);
                 } else {
                     viewModel.createSoftware(name, description);
                 }
@@ -194,8 +193,8 @@ public class SoftwareListFragment extends Fragment {
 
     private void showReadOnlyDialog(SoftwareResponse item) {
         new AlertDialog.Builder(requireContext())
-                .setTitle(item.getName())
-                .setMessage(item.getDescription())
+                .setTitle(item.name())
+                .setMessage(item.description())
                 .setPositiveButton(R.string.close_button, null)
                 .show();
     }

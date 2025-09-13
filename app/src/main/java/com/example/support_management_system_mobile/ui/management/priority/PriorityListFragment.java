@@ -74,12 +74,13 @@ public class PriorityListFragment extends Fragment {
             public void onEdit(PriorityResponse priority) {
                 showPriorityDialog(priority);
             }
+
             @Override
             public void onDelete(PriorityResponse priority) {
                 new AlertDialog.Builder(requireContext())
                         .setTitle(R.string.delete_priority)
-                        .setMessage(getString(R.string.confirm_delete_priority_message, priority.getName()))
-                        .setPositiveButton(R.string.delete_button, (dialog, which) -> viewModel.deletePriority(priority.getPriorityID()))
+                        .setMessage(getString(R.string.confirm_delete_priority_message, priority.name()))
+                        .setPositiveButton(R.string.delete_button, (dialog, which) -> viewModel.deletePriority(priority.priorityID()))
                         .setNegativeButton(R.string.cancel_button, null)
                         .show();
             }
@@ -126,7 +127,7 @@ public class PriorityListFragment extends Fragment {
         final EditText nameEditText = dialogView.findViewById(R.id.nameEditText);
 
         if (isEditing) {
-            nameEditText.setText(priority.getName());
+            nameEditText.setText(priority.name());
         }
         builder.setView(dialogView);
 
@@ -161,7 +162,7 @@ public class PriorityListFragment extends Fragment {
 
             if (isNameValid) {
                 if (isEditing) {
-                    viewModel.updatePriority(priority.getPriorityID(), name);
+                    viewModel.updatePriority(priority.priorityID(), name);
                 } else {
                     viewModel.createPriority(name);
                 }

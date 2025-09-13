@@ -77,8 +77,8 @@ public class StatusListFragment extends Fragment {
             public void onDelete(StatusResponse item) {
                 new AlertDialog.Builder(requireContext())
                         .setTitle(R.string.delete_status_title)
-                        .setMessage(getString(R.string.confirm_delete_status_message, item.getName()))
-                        .setPositiveButton(R.string.delete_button, (dialog, which) -> viewModel.deleteStatus(item.getStatusID()))
+                        .setMessage(getString(R.string.confirm_delete_status_message, item.name()))
+                        .setPositiveButton(R.string.delete_button, (dialog, which) -> viewModel.deleteStatus(item.statusID()))
                         .setNegativeButton(R.string.cancel_button, null)
                         .show();
             }
@@ -95,8 +95,7 @@ public class StatusListFragment extends Fragment {
             boolean isListEmpty = state instanceof StatusListUIState.Success && ((StatusListUIState.Success) state).statusList.isEmpty();
             emptyErrorLayout.setVisibility(state instanceof StatusListUIState.Error || isListEmpty ? View.VISIBLE : View.GONE);
 
-            if (state instanceof StatusListUIState.Success) {
-                StatusListUIState.Success successState = (StatusListUIState.Success) state;
+            if (state instanceof StatusListUIState.Success successState) {
                 adapter.setCanManage(successState.canManage);
                 adapter.submitList(successState.statusList);
                 fab.setVisibility(successState.canManage ? View.VISIBLE : View.GONE);
@@ -127,9 +126,9 @@ public class StatusListFragment extends Fragment {
         final SwitchMaterial defaultStatusSwitch = dialogView.findViewById(R.id.defaultStatusSwitch);
 
         if (isEditing) {
-            nameEditText.setText(status.getName());
-            closesTicketSwitch.setChecked(status.isCloseTicket());
-            defaultStatusSwitch.setChecked(status.isDefaultStatus());
+            nameEditText.setText(status.name());
+            closesTicketSwitch.setChecked(status.closeTicket());
+            defaultStatusSwitch.setChecked(status.defaultStatus());
         }
         builder.setView(dialogView);
 
@@ -162,7 +161,7 @@ public class StatusListFragment extends Fragment {
 
             if (isNameValid) {
                 if (isEditing) {
-                    viewModel.updateStatus(status.getStatusID(), name, closesTicket, isDefault);
+                    viewModel.updateStatus(status.statusID(), name, closesTicket, isDefault);
                 } else {
                     viewModel.createStatus(name, closesTicket, isDefault);
                 }

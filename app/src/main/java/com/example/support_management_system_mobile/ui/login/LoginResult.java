@@ -7,13 +7,25 @@ public abstract class LoginResult {
 
     public static final class Success extends LoginResult {
         private final LoginResponse data;
-        public Success(LoginResponse data) { this.data = data; }
-        public LoginResponse getData() { return data; }
+
+        public Success(LoginResponse data) {
+            this.data = data;
+        }
+
+        public LoginResponse getData() {
+            return data;
+        }
     }
 
     public static final class Error extends LoginResult {
         private final int messageRes;
-        public Error(int messageRes) { this.messageRes = messageRes; }
-        public int getMessageRes() { return messageRes; }
+
+        public Error(int messageRes) {
+            this.messageRes = messageRes;
+        }
+
+        public int getMessageRes() {
+            return messageRes;
+        }
     }
 }

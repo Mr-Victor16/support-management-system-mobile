@@ -1,27 +1,6 @@
 package com.example.support_management_system_mobile.payload.request.add;
 
-public class AddSoftwareRequest {
-    private String name;
-    private String description;
-
-    public AddSoftwareRequest(String name, String description) {
-        this.name = name;
-        this.description = description;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-}
+public record AddSoftwareRequest (
+        String name,
+        String description
+) { }

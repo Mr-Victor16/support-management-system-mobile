@@ -7,11 +7,17 @@ public interface SoftwareUIState {
 
     class Success implements SoftwareUIState {
         public final List<SoftwareUIModel> items;
-        public Success(List<SoftwareUIModel> items) { this.items = items; }
+
+        public Success(List<SoftwareUIModel> items) {
+            this.items = items;
+        }
     }
 
     class Empty implements SoftwareUIState {
         public final String message;
-        public Empty(String message) { this.message = message; }
+
+        public Empty(String message) {
+            this.message = message;
+        }
     }
 }

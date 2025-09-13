@@ -7,7 +7,7 @@ public class Knowledge {
     private Long id;
     private String title;
     private String content;
-    private LocalDate createdDate;
+    private final LocalDate createdDate;
     private Software software;
 
     public Knowledge(Long id, String title, String content, LocalDate createdDate, Software software) {
@@ -46,10 +46,6 @@ public class Knowledge {
         return createdDate;
     }
 
-    public void setCreatedDate(LocalDate createdDate) {
-        this.createdDate = createdDate;
-    }
-
     public Software getSoftware() {
         return software;
     }
@@ -64,7 +60,6 @@ public class Knowledge {
         if (o == null || getClass() != o.getClass()) return false;
 
         Knowledge knowledge = (Knowledge) o;
-
         return Objects.equals(id, knowledge.id) &&
                 Objects.equals(title, knowledge.title) &&
                 Objects.equals(content, knowledge.content) &&

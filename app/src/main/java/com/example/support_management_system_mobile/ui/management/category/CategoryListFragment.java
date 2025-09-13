@@ -79,8 +79,8 @@ public class CategoryListFragment extends Fragment {
             public void onDelete(CategoryResponse category) {
                 new AlertDialog.Builder(requireContext())
                         .setTitle(R.string.delete_category)
-                        .setMessage(getString(R.string.confirm_delete_category_message, category.getName()))
-                        .setPositiveButton(R.string.delete_button, (dialog, which) -> viewModel.deleteCategory(category.getCategoryID()))
+                        .setMessage(getString(R.string.confirm_delete_category_message, category.name()))
+                        .setPositiveButton(R.string.delete_button, (dialog, which) -> viewModel.deleteCategory(category.categoryID()))
                         .setNegativeButton(R.string.cancel_button, null)
                         .show();
             }
@@ -127,7 +127,7 @@ public class CategoryListFragment extends Fragment {
         final EditText input = dialogView.findViewById(R.id.editText);
 
         if (isEditing) {
-            input.setText(category.getName());
+            input.setText(category.name());
         }
         builder.setView(dialogView);
 
@@ -159,7 +159,7 @@ public class CategoryListFragment extends Fragment {
 
             if (isCategoryNameValid(name)) {
                 if (isEditing) {
-                    viewModel.updateCategory(category.getCategoryID(), name);
+                    viewModel.updateCategory(category.categoryID(), name);
                 } else {
                     viewModel.createCategory(name);
                 }

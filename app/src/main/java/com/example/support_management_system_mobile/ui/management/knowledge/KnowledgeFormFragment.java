@@ -97,6 +97,7 @@ public class KnowledgeFormFragment extends Fragment {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 viewModel.selectedSoftware.setValue((Software) parent.getItemAtPosition(position));
             }
+
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
                 viewModel.selectedSoftware.setValue(null);

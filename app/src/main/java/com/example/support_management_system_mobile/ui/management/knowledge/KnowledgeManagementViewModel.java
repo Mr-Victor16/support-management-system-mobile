@@ -204,7 +204,7 @@ public class KnowledgeManagementViewModel extends ViewModel {
 
         Callback<Void> callback = createSaveCallback();
         if (currentEditingKnowledgeId == null) {
-            AddKnowledgeRequest request = new AddKnowledgeRequest(title, content, softwareId);
+            AddKnowledgeRequest request = new AddKnowledgeRequest(softwareId, title, content);
             knowledgeRepository.createKnowledgeItem(request, callback);
         } else {
             UpdateKnowledgeRequest request = new UpdateKnowledgeRequest(currentEditingKnowledgeId, title, content, softwareId);

@@ -53,6 +53,7 @@ public class CategoryManagementViewModel extends ViewModel {
                     _categoryListState.postValue(new CategoryListUIState.Error(application.getString(R.string.error_loading_data)));
                 }
             }
+
             @Override
             public void onFailure(@NonNull Call<List<CategoryResponse>> call, @NonNull Throwable t) {
                 _categoryListState.postValue(new CategoryListUIState.Error(application.getString(R.string.server_error)));

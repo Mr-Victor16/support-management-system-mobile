@@ -114,6 +114,7 @@ public class TicketFormFragment extends Fragment {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 viewModel.selectedCategory.setValue((Category) parent.getItemAtPosition(position));
             }
+
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
                 viewModel.selectedCategory.setValue(null);
@@ -125,6 +126,7 @@ public class TicketFormFragment extends Fragment {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 viewModel.selectedPriority.setValue((Priority) parent.getItemAtPosition(position));
             }
+
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
                 viewModel.selectedPriority.setValue(null);
@@ -136,6 +138,7 @@ public class TicketFormFragment extends Fragment {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 viewModel.selectedSoftware.setValue((Software) parent.getItemAtPosition(position));
             }
+
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
                 viewModel.selectedSoftware.setValue(null);

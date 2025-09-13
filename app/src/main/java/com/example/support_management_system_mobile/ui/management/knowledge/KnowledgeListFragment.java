@@ -33,7 +33,7 @@ public class KnowledgeListFragment extends Fragment {
     private LinearLayout emptyErrorLayout;
     private TextView emptyErrorTextView;
     private FloatingActionButton fab;
-    private boolean canManage = false;
+    private final boolean canManage = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -104,8 +104,7 @@ public class KnowledgeListFragment extends Fragment {
             boolean isListEmpty = state instanceof KnowledgeListUIState.Success && ((KnowledgeListUIState.Success) state).knowledgeItems.isEmpty();
             emptyErrorLayout.setVisibility(state instanceof KnowledgeListUIState.Error || isListEmpty ? View.VISIBLE : View.GONE);
 
-            if (state instanceof KnowledgeListUIState.Success) {
-                KnowledgeListUIState.Success successState = (KnowledgeListUIState.Success) state;
+            if (state instanceof KnowledgeListUIState.Success successState) {
                 adapter.setCanManage(successState.canManage);
                 adapter.submitList(successState.knowledgeItems);
                 fab.setVisibility(successState.canManage ? View.VISIBLE : View.GONE);

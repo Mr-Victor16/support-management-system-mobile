@@ -25,6 +25,7 @@ public class SoftwareUIModel {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         SoftwareUIModel that = (SoftwareUIModel) o;
         return isExpanded == that.isExpanded && software.equals(that.software);
     }

@@ -130,13 +130,35 @@ public class RegisterViewModel extends AndroidViewModel {
         });
     }
 
-    public void onUsernameFocusLost() { isUsernameTouched.setValue(true); }
-    public void onNameFocusLost() { isNameTouched.setValue(true); }
-    public void onSurnameFocusLost() { isSurnameTouched.setValue(true); }
-    public void onEmailFocusLost() { isEmailTouched.setValue(true); }
-    public void onPasswordFocusLost() { isPasswordTouched.setValue(true); }
+    public void onUsernameFocusLost() {
+        isUsernameTouched.setValue(true);
+    }
 
-    public LiveData<RegisterFormState> getFormState() { return formState; }
-    public LiveData<Boolean> getIsLoading() { return isLoading; }
-    public LiveData<RegisterResult> getResult() { return result; }
+    public void onNameFocusLost() {
+        isNameTouched.setValue(true);
+    }
+
+    public void onSurnameFocusLost() {
+        isSurnameTouched.setValue(true);
+    }
+
+    public void onEmailFocusLost() {
+        isEmailTouched.setValue(true);
+    }
+
+    public void onPasswordFocusLost() {
+        isPasswordTouched.setValue(true);
+    }
+
+    public LiveData<RegisterFormState> getFormState() {
+        return formState;
+    }
+
+    public LiveData<Boolean> getIsLoading() {
+        return isLoading;
+    }
+
+    public LiveData<RegisterResult> getResult() {
+        return result;
+    }
 }

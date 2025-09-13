@@ -67,10 +67,10 @@ public class UserAdapter extends ListAdapter<UserDetailsResponse, UserAdapter.Us
         }
 
         public void bind(final UserDetailsResponse item, final UserAdapter.OnUserInteractionListener listener, Long userId) {
-            usernameTextView.setText(item.getUsername());
-            roleTextView.setText(item.getRole().toString());
+            usernameTextView.setText(item.username());
+            roleTextView.setText(item.role().toString());
 
-            boolean canManage = !item.getId().equals(userId);
+            boolean canManage = !item.id().equals(userId);
             int managementButtonsVisibility = canManage ? View.VISIBLE : View.GONE;
 
             editButton.setVisibility(managementButtonsVisibility);
@@ -84,7 +84,7 @@ public class UserAdapter extends ListAdapter<UserDetailsResponse, UserAdapter.Us
     private static final DiffUtil.ItemCallback<UserDetailsResponse> DIFF_CALLBACK = new DiffUtil.ItemCallback<>() {
         @Override
         public boolean areItemsTheSame(@NonNull UserDetailsResponse oldItem, @NonNull UserDetailsResponse newItem) {
-            return oldItem.getId() == newItem.getId();
+            return oldItem.id().equals(newItem.id());
         }
 
         @Override

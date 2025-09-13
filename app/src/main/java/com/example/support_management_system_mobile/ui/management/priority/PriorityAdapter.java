@@ -56,10 +56,10 @@ public class PriorityAdapter extends ListAdapter<PriorityResponse, PriorityAdapt
         }
 
         public void bind(final PriorityResponse priority, final OnPriorityInteractionListener listener, boolean isAdmin) {
-            priorityName.setText(priority.getName());
-            usageCount.setText(itemView.getContext().getString(R.string.usage_count_format, priority.getUseNumber()));
+            priorityName.setText(priority.name());
+            usageCount.setText(itemView.getContext().getString(R.string.usage_count_format, priority.useNumber()));
 
-            boolean canBeModified = priority.getUseNumber() == 0  && isAdmin;
+            boolean canBeModified = priority.useNumber() == 0  && isAdmin;
             editButton.setVisibility(isAdmin ? View.VISIBLE : View.GONE);
             deleteButton.setVisibility(canBeModified ? View.VISIBLE : View.GONE);
             editButton.setOnClickListener(v -> listener.onEdit(priority));
@@ -70,7 +70,7 @@ public class PriorityAdapter extends ListAdapter<PriorityResponse, PriorityAdapt
     private static final DiffUtil.ItemCallback<PriorityResponse> DIFF_CALLBACK = new DiffUtil.ItemCallback<>() {
         @Override
         public boolean areItemsTheSame(@NonNull PriorityResponse oldItem, @NonNull PriorityResponse newItem) {
-            return oldItem.getPriorityID() == newItem.getPriorityID();
+            return oldItem.priorityID().equals(newItem.priorityID());
         }
 
         @Override

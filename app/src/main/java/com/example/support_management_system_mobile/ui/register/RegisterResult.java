@@ -7,7 +7,13 @@ public abstract class RegisterResult {
 
     public static final class Error extends RegisterResult {
         private final int messageRes;
-        public Error(int messageRes) { this.messageRes = messageRes; }
-        public int getMessageRes() { return messageRes; }
+
+        public Error(int messageRes) {
+            this.messageRes = messageRes;
+        }
+
+        public int getMessageRes() {
+            return messageRes;
+        }
     }
 }

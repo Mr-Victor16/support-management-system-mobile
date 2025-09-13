@@ -111,9 +111,7 @@ public class TicketImageFragment extends Fragment {
             progressBar.setVisibility(state instanceof TicketDetailsUIState.Loading ? View.VISIBLE : View.GONE);
             contentLayout.setVisibility(state instanceof TicketDetailsUIState.Success ? View.VISIBLE : View.GONE);
 
-            if (state instanceof TicketDetailsUIState.Success) {
-                TicketDetailsUIState.Success successState = (TicketDetailsUIState.Success) state;
-
+            if (state instanceof TicketDetailsUIState.Success successState) {
                 if (successState.ticket.getId() == ticketId) {
                     boolean hasImages = successState.imageCount > 0;
                     viewPager.setVisibility(hasImages ? View.VISIBLE : View.GONE);

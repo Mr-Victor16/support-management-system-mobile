@@ -73,11 +73,10 @@ public class WelcomeFragment extends Fragment {
             if (state instanceof WelcomeUIState.Loading) {
                 progressBar.setVisibility(View.VISIBLE);
                 contentGroup.setVisibility(View.GONE);
-            } else if (state instanceof WelcomeUIState.Success) {
+            } else if (state instanceof WelcomeUIState.Success successState) {
                 progressBar.setVisibility(View.GONE);
                 contentGroup.setVisibility(View.VISIBLE);
 
-                WelcomeUIState.Success successState = (WelcomeUIState.Success) state;
                 welcomeHeader.setText(successState.getWelcomeMessage());
                 loginButton.setVisibility(successState.isLoginButtonVisible() ? View.VISIBLE : View.GONE);
             }

@@ -53,6 +53,7 @@ public class ImagePagerAdapter extends ListAdapter<Image, ImagePagerAdapter.Imag
         public boolean areItemsTheSame(@NonNull Image oldItem, @NonNull Image newItem) {
             return oldItem.getId().equals(newItem.getId());
         }
+
         @Override
         public boolean areContentsTheSame(@NonNull Image oldItem, @NonNull Image newItem) {
             return oldItem.equals(newItem);

@@ -1,10 +1,12 @@
 package com.example.support_management_system_mobile.models;
 
+import androidx.annotation.NonNull;
+
 import java.util.Objects;
 
 public class Role {
     private Long id;
-    private Types type;
+    private final Types type;
 
     public Role(Types type){
         this.type = type;
@@ -26,11 +28,6 @@ public class Role {
         }
     }
 
-    public Role(Long id, Types type) {
-        this.id = id;
-        this.type = type;
-    }
-
     public Long getId() {
         return id;
     }
@@ -43,11 +40,8 @@ public class Role {
         return type;
     }
 
-    public void setType(Types type) {
-        this.type = type;
-    }
-
     @Override
+    @NonNull
     public String toString() {
         return type.getDisplayName();
     }
@@ -55,6 +49,7 @@ public class Role {
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
+
         Role role = (Role) o;
         return Objects.equals(id, role.id) && type == role.type;
     }

@@ -47,16 +47,8 @@ public class Ticket implements Serializable {
         return images;
     }
 
-    public void setImages(List<Image> images) {
-        this.images = images;
-    }
-
     public LocalDate getCreatedDate() {
         return createdDate;
-    }
-
-    public void setCreatedDate(LocalDate createdDate) {
-        this.createdDate = createdDate;
     }
 
     public Category getCategory() {
@@ -103,10 +95,6 @@ public class Ticket implements Serializable {
         return replies;
     }
 
-    public void setReplies(List<TicketReply> replies) {
-        this.replies = replies;
-    }
-
     public User getUser() {
         return user;
     }
@@ -119,6 +107,7 @@ public class Ticket implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         Ticket ticket = (Ticket) o;
         return Objects.equals(id, ticket.id) &&
                 Objects.equals(title, ticket.title) &&

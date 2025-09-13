@@ -26,8 +26,10 @@ public class ProfileViewModel extends ViewModel {
         public final String username;
         public final String fullName;
         public final String email;
+
         @StringRes
         public final int roleResId;
+
         final boolean isManagementPanelVisible;
 
         ProfileUIState(String username, String fullName, String email, @StringRes int roleResId, boolean isManagementPanelVisible) {

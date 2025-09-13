@@ -74,8 +74,7 @@ public class TicketListFragment extends Fragment {
 
             addTicketButton.setVisibility(View.GONE);
 
-            if (state instanceof TicketListUIState.Success) {
-                TicketListUIState.Success successState = (TicketListUIState.Success) state;
+            if (state instanceof TicketListUIState.Success successState) {
                 ticketAdapter.submitList(successState.tickets);
                 headerTextView.setText(successState.headerTextResId);
 

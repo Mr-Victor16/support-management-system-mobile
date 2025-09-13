@@ -42,7 +42,7 @@ public class KnowledgeAdapter extends ListAdapter<KnowledgeUIModel, KnowledgeAda
         }
 
         public void bind(KnowledgeUIModel model, OnItemClickListener listener) {
-            Knowledge knowledge = model.getKnowledge();
+            Knowledge knowledge = model.knowledge();
 
             title.setText(knowledge.getTitle());
             content.setText(knowledge.getContent());
@@ -85,12 +85,12 @@ public class KnowledgeAdapter extends ListAdapter<KnowledgeUIModel, KnowledgeAda
     private static final DiffUtil.ItemCallback<KnowledgeUIModel> DIFF_CALLBACK = new DiffUtil.ItemCallback<>() {
         @Override
         public boolean areItemsTheSame(@NonNull KnowledgeUIModel oldItem, @NonNull KnowledgeUIModel newItem) {
-            return oldItem.getKnowledge().getId().equals(newItem.getKnowledge().getId());
+            return oldItem.knowledge().getId().equals(newItem.knowledge().getId());
         }
 
         @Override
         public boolean areContentsTheSame(@NonNull KnowledgeUIModel oldItem, @NonNull KnowledgeUIModel newItem) {
-            return oldItem.getKnowledge().equals(newItem.getKnowledge()) &&
+            return oldItem.knowledge().equals(newItem.knowledge()) &&
                     oldItem.isExpanded() == newItem.isExpanded();
         }
     };

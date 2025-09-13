@@ -2,12 +2,10 @@ package com.example.support_management_system_mobile.ui.knowledge;
 
 import java.util.List;
 
-public interface KnowledgeUIState {
+public abstract class KnowledgeUIState {
+    public static class Loading extends KnowledgeUIState { }
 
-    class Loading implements KnowledgeUIState {
-    }
-
-    class Success implements KnowledgeUIState {
+    public static class Success extends KnowledgeUIState {
         public final List<KnowledgeUIModel> items;
 
         public Success(List<KnowledgeUIModel> items) {
@@ -15,7 +13,7 @@ public interface KnowledgeUIState {
         }
     }
 
-    class Empty implements KnowledgeUIState {
+    public static class Empty extends KnowledgeUIState {
         public final String message;
 
         public Empty(String message) {

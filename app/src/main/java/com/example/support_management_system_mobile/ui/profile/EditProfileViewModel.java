@@ -114,7 +114,11 @@ public class EditProfileViewModel extends ViewModel {
         });
     }
 
-    public LiveData<EditProfileFormState> getFormState() { return formState; }
-    public LiveData<EditProfileResult> getUpdateResult() { return updateResult; }
+    public LiveData<EditProfileFormState> getFormState() {
+        return formState;
+    }
 
+    public LiveData<EditProfileResult> getUpdateResult() {
+        return updateResult;
+    }
 }

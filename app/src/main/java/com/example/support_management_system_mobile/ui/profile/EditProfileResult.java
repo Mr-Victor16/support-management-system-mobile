@@ -7,13 +7,25 @@ public abstract class EditProfileResult {
 
     public static class Success extends EditProfileResult {
         private final int messageRes;
-        public Success(int messageRes) { this.messageRes = messageRes; }
-        public int getMessageRes() { return messageRes; }
+
+        public Success(int messageRes) {
+            this.messageRes = messageRes;
+        }
+
+        public int getMessageRes() {
+            return messageRes;
+        }
     }
 
     public static class Error extends EditProfileResult {
         private final int messageRes;
-        public Error(int messageRes) { this.messageRes = messageRes; }
-        public int getMessageRes() { return messageRes; }
+
+        public Error(int messageRes) {
+            this.messageRes = messageRes;
+        }
+
+        public int getMessageRes() {
+            return messageRes;
+        }
     }
 }

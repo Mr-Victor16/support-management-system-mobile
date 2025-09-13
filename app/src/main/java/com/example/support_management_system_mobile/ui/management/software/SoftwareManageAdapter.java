@@ -63,15 +63,15 @@ public class SoftwareManageAdapter extends ListAdapter<SoftwareResponse, Softwar
         }
 
         public void bind(final SoftwareResponse item, final OnSoftwareInteractionListener listener, boolean canManage) {
-            nameTextView.setText(item.getName());
+            nameTextView.setText(item.name());
 
-            String usageText = itemView.getContext().getString(R.string.usage_count_software_format, item.getUseNumberTicket(), item.getUseNumberKnowledge());
+            String usageText = itemView.getContext().getString(R.string.usage_count_software_format, item.useNumberTicket(), item.useNumberKnowledge());
             usageCountTextView.setText(usageText);
 
             int managementButtonsVisibility = canManage ? View.VISIBLE : View.GONE;
             editButton.setVisibility(managementButtonsVisibility);
 
-            boolean isUsed = item.getUseNumberTicket() > 0 || item.getUseNumberKnowledge() > 0;
+            boolean isUsed = item.useNumberTicket() > 0 || item.useNumberKnowledge() > 0;
             if (canManage && !isUsed) deleteButton.setVisibility(View.VISIBLE);
             else deleteButton.setVisibility(View.GONE);
 
@@ -89,7 +89,7 @@ public class SoftwareManageAdapter extends ListAdapter<SoftwareResponse, Softwar
     private static final DiffUtil.ItemCallback<SoftwareResponse> DIFF_CALLBACK = new DiffUtil.ItemCallback<>() {
         @Override
         public boolean areItemsTheSame(@NonNull SoftwareResponse oldItem, @NonNull SoftwareResponse newItem) {
-            return oldItem.getSoftwareID() == newItem.getSoftwareID();
+            return oldItem.softwareID().equals(newItem.softwareID());
         }
 
         @Override

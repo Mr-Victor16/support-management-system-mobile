@@ -66,20 +66,20 @@ public class StatusAdapter extends ListAdapter<StatusResponse, StatusAdapter.Sta
         }
 
         public void bind(final StatusResponse item, final StatusAdapter.OnStatusInteractionListener listener, boolean canManage) {
-            nameTextView.setText(item.getName());
+            nameTextView.setText(item.name());
 
-            String usageText = itemView.getContext().getString(R.string.usage_count_status_format, item.getUseNumber());
+            String usageText = itemView.getContext().getString(R.string.usage_count_status_format, item.useNumber());
             usageCountTextView.setText(usageText);
 
-            closesTicketIcon.setVisibility(item.isCloseTicket() ? View.VISIBLE : View.GONE);
-            defaultStatusIcon.setVisibility(item.isDefaultStatus() ? View.VISIBLE : View.GONE);
+            closesTicketIcon.setVisibility(item.closeTicket() ? View.VISIBLE : View.GONE);
+            defaultStatusIcon.setVisibility(item.defaultStatus() ? View.VISIBLE : View.GONE);
 
             int managementButtonsVisibility = canManage ? View.VISIBLE : View.GONE;
             editButton.setVisibility(managementButtonsVisibility);
 
-            boolean isUsed = item.getUseNumber() > 0;
+            boolean isUsed = item.useNumber() > 0;
 
-            if (canManage && !isUsed && !item.isDefaultStatus()) {
+            if (canManage && !isUsed && !item.defaultStatus()) {
                 deleteButton.setVisibility(View.VISIBLE);
             } else {
                 deleteButton.setVisibility(View.GONE);
@@ -93,7 +93,7 @@ public class StatusAdapter extends ListAdapter<StatusResponse, StatusAdapter.Sta
     private static final DiffUtil.ItemCallback<StatusResponse> DIFF_CALLBACK = new DiffUtil.ItemCallback<>() {
         @Override
         public boolean areItemsTheSame(@NonNull StatusResponse oldItem, @NonNull StatusResponse newItem) {
-            return oldItem.getStatusID() == newItem.getStatusID();
+            return oldItem.statusID().equals(newItem.statusID());
         }
 
         @Override

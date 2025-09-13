@@ -153,7 +153,10 @@ public class EditProfileFragment extends Fragment {
     }
 
     abstract static class SimpleTextWatcher implements TextWatcher {
-        @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-        @Override public void afterTextChanged(Editable s) {}
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+        @Override
+        public void afterTextChanged(Editable s) {}
     }
 }

@@ -8,23 +8,6 @@ public class Status implements Serializable {
     private boolean closeTicket;
     private boolean defaultStatus = false;
 
-    public Status(Long id, String name, boolean closeTicket) {
-        this.id = id;
-        this.name = name;
-        this.closeTicket = closeTicket;
-    }
-
-    public Status(String name, boolean closeTicket, boolean defaultStatus) {
-        this.name = name;
-        this.closeTicket = closeTicket;
-        this.defaultStatus = defaultStatus;
-    }
-
-    public Status(String name, boolean closeTicket) {
-        this.name = name;
-        this.closeTicket = closeTicket;
-    }
-
     public Long getId() {
         return id;
     }

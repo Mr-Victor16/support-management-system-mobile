@@ -56,10 +56,10 @@ public class CategoryAdapter extends ListAdapter<CategoryResponse, CategoryAdapt
         }
 
         public void bind(final CategoryResponse category, final OnCategoryInteractionListener listener, boolean isAdmin) {
-            categoryName.setText(category.getName());
-            usageCount.setText(itemView.getContext().getString(R.string.usage_count_format, category.getUseNumber()));
+            categoryName.setText(category.name());
+            usageCount.setText(itemView.getContext().getString(R.string.usage_count_format, category.useNumber()));
 
-            boolean canBeModified = category.getUseNumber() == 0 && isAdmin;
+            boolean canBeModified = category.useNumber() == 0 && isAdmin;
             editButton.setVisibility(isAdmin ? View.VISIBLE : View.GONE);
             deleteButton.setVisibility(canBeModified ? View.VISIBLE : View.GONE);
             editButton.setOnClickListener(v -> listener.onEdit(category));
@@ -70,7 +70,7 @@ public class CategoryAdapter extends ListAdapter<CategoryResponse, CategoryAdapt
     private static final DiffUtil.ItemCallback<CategoryResponse> DIFF_CALLBACK = new DiffUtil.ItemCallback<>() {
         @Override
         public boolean areItemsTheSame(@NonNull CategoryResponse oldItem, @NonNull CategoryResponse newItem) {
-            return oldItem.getCategoryID().equals(newItem.getCategoryID());
+            return oldItem.categoryID().equals(newItem.categoryID());
         }
 
         @Override

@@ -76,10 +76,10 @@ public class KnowledgeViewModel extends ViewModel {
 
         List<KnowledgeUIModel> newList = new ArrayList<>();
         for (KnowledgeUIModel item : currentList) {
-            if (item.getKnowledge().getId().equals(knowledgeId)) {
-                newList.add(new KnowledgeUIModel(item.getKnowledge(), !item.isExpanded()));
+            if (item.knowledge().getId().equals(knowledgeId)) {
+                newList.add(new KnowledgeUIModel(item.knowledge(), !item.isExpanded()));
             } else {
-                newList.add(new KnowledgeUIModel(item.getKnowledge(), item.isExpanded()));
+                newList.add(new KnowledgeUIModel(item.knowledge(), item.isExpanded()));
 
             }
         }

@@ -77,7 +77,15 @@ public class LoginViewModel extends AndroidViewModel {
         });
     }
 
-    public LiveData<LoginResult> getResult() { return result; }
-    public LiveData<Boolean> getIsLoading() { return isLoading; }
-    public LiveData<Boolean> getIsLoginButtonEnabled() { return isLoginButtonEnabled; }
+    public LiveData<LoginResult> getResult() {
+        return result;
+    }
+
+    public LiveData<Boolean> getIsLoading() {
+        return isLoading;
+    }
+
+    public LiveData<Boolean> getIsLoginButtonEnabled() {
+        return isLoginButtonEnabled;
+    }
 }

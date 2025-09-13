@@ -54,7 +54,7 @@ public class KnowledgeFragment extends Fragment {
 
     private void setupRecyclerView() {
         knowledgeAdapter = new KnowledgeAdapter();
-        knowledgeAdapter.setOnItemClickListener(item -> viewModel.onKnowledgeItemClicked(item.getKnowledge().getId()));
+        knowledgeAdapter.setOnItemClickListener(item -> viewModel.onKnowledgeItemClicked(item.knowledge().getId()));
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(knowledgeAdapter);

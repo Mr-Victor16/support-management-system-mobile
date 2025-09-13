@@ -214,11 +214,11 @@ public class UserManagementViewModel extends ViewModel {
             public void onResponse(@NonNull Call<UserDetailsResponse> call, @NonNull Response<UserDetailsResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     UserDetailsResponse item = response.body();
-                    username.postValue(item.getUsername());
-                    name.postValue(item.getName());
-                    surname.postValue(item.getSurname());
-                    email.postValue(item.getEmail());
-                    selectedRole.postValue(item.getRole());
+                    username.postValue(item.username());
+                    name.postValue(item.name());
+                    surname.postValue(item.surname());
+                    email.postValue(item.email());
+                    selectedRole.postValue(item.role());
 
                     _userFormState.postValue(new UserFormUIState.Editing(R.string.edit_user, R.string.save_changes_button));
                 } else {

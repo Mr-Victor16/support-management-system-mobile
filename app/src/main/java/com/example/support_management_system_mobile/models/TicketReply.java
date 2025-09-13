@@ -8,7 +8,7 @@ public class TicketReply implements Serializable {
     private Long id;
     private User user;
     private String content;
-    private LocalDate createdDate;
+    private final LocalDate createdDate;
 
     public TicketReply(User user, String content, LocalDate createdDate) {
         this.user = user;
@@ -44,14 +44,11 @@ public class TicketReply implements Serializable {
         return createdDate;
     }
 
-    public void setCreatedDate(LocalDate createdDate) {
-        this.createdDate = createdDate;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         TicketReply that = (TicketReply) o;
         return Objects.equals(id, that.id) &&
                 Objects.equals(content, that.content) &&
