@@ -26,6 +26,10 @@ import com.example.support_management_system_mobile.models.Ticket;
 import com.example.support_management_system_mobile.models.TicketReply;
 import com.example.support_management_system_mobile.payload.request.add.AddTicketRequest;
 import com.example.support_management_system_mobile.payload.request.update.UpdateTicketRequest;
+import com.example.support_management_system_mobile.ui.ticket.details.TicketDetailsUIState;
+import com.example.support_management_system_mobile.ui.ticket.form.TicketFormUIState;
+import com.example.support_management_system_mobile.ui.ticket.form.TicketFormValidationState;
+import com.example.support_management_system_mobile.ui.ticket.list.TicketListUIState;
 import com.example.support_management_system_mobile.validators.TicketValidator;
 
 import java.util.HashSet;
@@ -124,23 +128,37 @@ public class TicketViewModel extends ViewModel {
     }
 
     public void loadTickets() {
-        _ticketListState.setValue(new TicketListUIState.Loading());
+        if (authContext.isAdmin()) {
+            final int headerRes = R.string.tickets_header;
+            String errorMessageToast = application.getString(R.string.admin_no_access_tickets);
+            String errorMessage = application.getString(R.string.no_data_to_display);
+
+            _ticketListState.setValue(new TicketListUIState.AccessDenied(errorMessage, headerRes));
+            _toastMessage.setValue(new Event<>(errorMessageToast));
+            return;
+        }
+
         boolean isUserRole = authContext.isUser();
+        final int headerRes = isUserRole ? R.string.my_tickets_header : R.string.all_tickets_header;
+        _ticketListState.setValue(new TicketListUIState.Loading(headerRes));
 
         Callback<List<Ticket>> callback = new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<List<Ticket>> call, Response<List<Ticket>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    int headerRes = isUserRole ? R.string.my_tickets_header : R.string.all_tickets_header;
                     _ticketListState.postValue(new TicketListUIState.Success(response.body(), isUserRole, headerRes));
                 } else {
-                    _ticketListState.postValue(new TicketListUIState.Error(application.getString(R.string.tickets_load_error)));
+                    String errorMessage = application.getString(R.string.no_data_to_display);
+                    _ticketListState.postValue(new TicketListUIState.Error(errorMessage, headerRes));
+                    _toastMessage.postValue(new Event<>(application.getString(R.string.server_error)));
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<List<Ticket>> call, @NonNull Throwable t) {
-                _ticketListState.postValue(new TicketListUIState.Error(application.getString(R.string.server_error)));
+                String errorMessage = application.getString(R.string.no_data_to_display);
+                _ticketListState.postValue(new TicketListUIState.Error(errorMessage, headerRes));
+                _toastMessage.postValue(new Event<>(application.getString(R.string.server_error)));
             }
         };
 

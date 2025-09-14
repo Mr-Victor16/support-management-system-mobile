@@ -1,11 +1,11 @@
-package com.example.support_management_system_mobile.ui.profile;
+package com.example.support_management_system_mobile.ui.profile.edit;
 
-public abstract class EditProfileResult {
-    private EditProfileResult() {}
+public abstract class EditProfileUIState {
+    private EditProfileUIState() {}
 
-    public static class Loading extends EditProfileResult {}
+    public static class Loading extends EditProfileUIState {}
 
-    public static class Success extends EditProfileResult {
+    public static class Success extends EditProfileUIState {
         private final int messageRes;
 
         public Success(int messageRes) {
@@ -17,7 +17,7 @@ public abstract class EditProfileResult {
         }
     }
 
-    public static class Error extends EditProfileResult {
+    public static class Error extends EditProfileUIState {
         private final int messageRes;
 
         public Error(int messageRes) {

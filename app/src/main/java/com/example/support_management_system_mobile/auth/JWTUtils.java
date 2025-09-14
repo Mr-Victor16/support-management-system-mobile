@@ -3,6 +3,7 @@ package com.example.support_management_system_mobile.auth;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.example.support_management_system_mobile.models.Role;
 import com.example.support_management_system_mobile.models.User;
 import com.example.support_management_system_mobile.payload.response.LoginResponse;
 
@@ -88,7 +89,9 @@ public class JWTUtils {
     public static User getCurrentUser(Context context) {
         Long id = getUserId(context);
         String username = getUsername(context);
+
         String role = getUserRole(context);
-        return new User(id, username, role);
+        Role.Types roleType = Role.Types.fromString(role);
+        return new User(id, username, new Role(roleType));
     }
 }

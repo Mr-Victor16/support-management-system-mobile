@@ -12,14 +12,12 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,12 +35,11 @@ public class KnowledgeFormFragment extends Fragment {
 
     private ProgressBar progressBar;
     private ScrollView formContent;
-    private LinearLayout errorLayout;
     private TextView errorMessageTextView, formHeader;
     private TextInputLayout titleInputLayout, contentInputLayout;
     private EditText editTitle, editContent;
-    private Spinner spinnerSoftware;
-    private Button btnSave;
+    private AutoCompleteTextView softwareAutoComplete;
+    private Button saveButton;
 
     @Nullable
     @Override
@@ -68,19 +65,18 @@ public class KnowledgeFormFragment extends Fragment {
     private void initViews(View view) {
         progressBar = view.findViewById(R.id.progressBar);
         formContent = view.findViewById(R.id.formContent);
-        errorLayout = view.findViewById(R.id.errorLayout);
         errorMessageTextView = view.findViewById(R.id.errorMessageTextView);
         formHeader = view.findViewById(R.id.formHeader);
         titleInputLayout = view.findViewById(R.id.titleInputLayout);
         editTitle = view.findViewById(R.id.editTitle);
         contentInputLayout = view.findViewById(R.id.contentInputLayout);
         editContent = view.findViewById(R.id.editContent);
-        spinnerSoftware = view.findViewById(R.id.spinnerSoftware);
-        btnSave = view.findViewById(R.id.btnSave);
+        softwareAutoComplete = view.findViewById(R.id.softwareAutoComplete);
+        saveButton = view.findViewById(R.id.saveButton);
     }
 
     private void setupListeners() {
-        btnSave.setOnClickListener(v -> viewModel.saveKnowledgeItem());
+        saveButton.setOnClickListener(v -> viewModel.saveKnowledgeItem());
 
         editTitle.setOnFocusChangeListener((v, hasFocus) -> {
             if (!hasFocus) viewModel.onFieldTouched(KnowledgeManagementViewModel.FormField.TITLE);
@@ -92,17 +88,16 @@ public class KnowledgeFormFragment extends Fragment {
         editTitle.addTextChangedListener(new SimpleTextWatcher(s -> viewModel.knowledgeTitle.setValue(s)));
         editContent.addTextChangedListener(new SimpleTextWatcher(s -> viewModel.knowledgeContent.setValue(s)));
 
-        spinnerSoftware.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                viewModel.selectedSoftware.setValue((Software) parent.getItemAtPosition(position));
-            }
+        softwareAutoComplete.setOnItemClickListener((parent, view, position, id) -> {
+            Software selectedSoftware = (Software) parent.getItemAtPosition(position);
+            viewModel.selectedSoftware.setValue(selectedSoftware);
+        });
 
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
+        softwareAutoComplete.addTextChangedListener(new SimpleTextWatcher(s -> {
+            if (s.isEmpty()) {
                 viewModel.selectedSoftware.setValue(null);
             }
-        });
+        }));
     }
 
     private void observeViewModel() {
@@ -110,34 +105,32 @@ public class KnowledgeFormFragment extends Fragment {
             boolean isLoading = state instanceof KnowledgeFormUIState.Loading || state instanceof KnowledgeFormUIState.Submitting;
             progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
             formContent.setVisibility(state instanceof KnowledgeFormUIState.Editing ? View.VISIBLE : View.GONE);
-            errorLayout.setVisibility(state instanceof KnowledgeFormUIState.Error ? View.VISIBLE : View.GONE);
 
             if (state instanceof KnowledgeFormUIState.Editing) {
                 formHeader.setText(((KnowledgeFormUIState.Editing) state).headerTextResId);
-                btnSave.setText(((KnowledgeFormUIState.Editing) state).saveButtonTextResId);
+                saveButton.setText(((KnowledgeFormUIState.Editing) state).saveButtonTextResId);
             } else if (state instanceof KnowledgeFormUIState.Success) {
                 getParentFragmentManager().popBackStack();
             } else if (state instanceof KnowledgeFormUIState.Error) {
                 errorMessageTextView.setText(((KnowledgeFormUIState.Error) state).message);
+                errorMessageTextView.setVisibility(View.VISIBLE);
             }
         });
 
-        viewModel.titleError.observe(getViewLifecycleOwner(), errorResId -> {
-            titleInputLayout.setError(errorResId != null ? getString(errorResId) : null);
-        });
-        viewModel.contentError.observe(getViewLifecycleOwner(), errorResId -> {
-            contentInputLayout.setError(errorResId != null ? getString(errorResId) : null);
-        });
-        viewModel.isFormValid.observe(getViewLifecycleOwner(), isValid -> {
-            btnSave.setEnabled(isValid != null && isValid);
-        });
+        viewModel.titleError.observe(getViewLifecycleOwner(), errorResId ->
+                titleInputLayout.setError(errorResId != null ? getString(errorResId) : null));
+
+        viewModel.contentError.observe(getViewLifecycleOwner(), errorResId ->
+                contentInputLayout.setError(errorResId != null ? getString(errorResId) : null));
+
+        viewModel.isFormValid.observe(getViewLifecycleOwner(), isValid ->
+                saveButton.setEnabled(isValid != null && isValid));
 
         viewModel.softwareList.observe(getViewLifecycleOwner(), softwareList -> {
             if (getContext() == null || softwareList == null) return;
-            ArrayAdapter<Software> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, softwareList);
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            spinnerSoftware.setAdapter(adapter);
-            setSpinnerSelection(spinnerSoftware, viewModel.selectedSoftware.getValue());
+
+            ArrayAdapter<Software> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, softwareList);
+            softwareAutoComplete.setAdapter(adapter);
         });
 
         viewModel.knowledgeTitle.observe(getViewLifecycleOwner(), text -> {
@@ -146,9 +139,7 @@ public class KnowledgeFormFragment extends Fragment {
         viewModel.knowledgeContent.observe(getViewLifecycleOwner(), text -> {
             if (!Objects.equals(editContent.getText().toString(), text)) editContent.setText(text);
         });
-        viewModel.selectedSoftware.observe(getViewLifecycleOwner(), selection -> {
-            setSpinnerSelection(spinnerSoftware, selection);
-        });
+        viewModel.selectedSoftware.observe(getViewLifecycleOwner(), this::setAutocompleteSelection);
 
         viewModel.toastMessage.observe(getViewLifecycleOwner(), event -> {
             String message = event.getContentIfNotHandled();
@@ -156,15 +147,11 @@ public class KnowledgeFormFragment extends Fragment {
         });
     }
 
-    private void setSpinnerSelection(Spinner spinner, Software value) {
-        if (value == null || !(spinner.getAdapter() instanceof ArrayAdapter)) return;
+    private void setAutocompleteSelection(Software value) {
+        String newText = (value != null) ? value.toString() : "";
 
-        @SuppressWarnings("unchecked")
-        ArrayAdapter<Software> adapter = (ArrayAdapter<Software>) spinner.getAdapter();
-
-        int position = adapter.getPosition(value);
-        if (position >= 0) {
-            spinner.setSelection(position);
+        if (!softwareAutoComplete.getText().toString().equals(newText)) {
+            softwareAutoComplete.setText(newText, false);
         }
     }
 

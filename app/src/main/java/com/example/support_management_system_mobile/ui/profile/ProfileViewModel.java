@@ -22,27 +22,8 @@ public class ProfileViewModel extends ViewModel {
     private final Application application;
     private final AuthContext authContext;
 
-    public static class ProfileUIState {
-        public final String username;
-        public final String fullName;
-        public final String email;
-
-        @StringRes
-        public final int roleResId;
-
-        final boolean isManagementPanelVisible;
-
-        ProfileUIState(String username, String fullName, String email, @StringRes int roleResId, boolean isManagementPanelVisible) {
-            this.username = username;
-            this.fullName = fullName;
-            this.email = email;
-            this.roleResId = roleResId;
-            this.isManagementPanelVisible = isManagementPanelVisible;
-        }
-    }
-
-    private final MutableLiveData<ProfileScreenState> _screenState = new MutableLiveData<>();
-    public LiveData<ProfileScreenState> getScreenState() {
+    private final MutableLiveData<ProfileUIState> _screenState = new MutableLiveData<>();
+    public LiveData<ProfileUIState> getScreenState() {
         return _screenState;
     }
 
@@ -63,7 +44,7 @@ public class ProfileViewModel extends ViewModel {
     }
 
     public void refreshUserData() {
-        _screenState.setValue(new ProfileScreenState.Loading());
+        _screenState.setValue(new ProfileUIState.Loading());
 
         if (JWTUtils.getToken(application) == null) {
             _navigateToLogin.setValue(new Event<>(true));
@@ -78,8 +59,13 @@ public class ProfileViewModel extends ViewModel {
         String userRole = JWTUtils.getUserRole(application);
         boolean isOperatorOrAdmin = authContext.isOperatorOrAdmin();
 
-        ProfileUIState userData = new ProfileUIState(username, fullName, email, getRoleStringRes(userRole), isOperatorOrAdmin);
-        _screenState.setValue(new ProfileScreenState.Success(userData));
+        _screenState.setValue(new ProfileUIState.Success(
+                username,
+                fullName,
+                email,
+                getRoleStringRes(userRole),
+                isOperatorOrAdmin
+        ));
     }
 
     public void onLogoutClicked() {
@@ -94,16 +80,12 @@ public class ProfileViewModel extends ViewModel {
     @StringRes
     private int getRoleStringRes(String role) {
         if (role == null) return R.string.role_unknown;
-        switch (role) {
-            case "ROLE_USER":
-                return R.string.role_user;
-            case "ROLE_OPERATOR":
-                return R.string.role_operator;
-            case "ROLE_ADMIN":
-                return R.string.role_admin;
-            default:
-                return R.string.role_unknown;
-        }
+        return switch (role) {
+            case "ROLE_USER" -> R.string.role_user;
+            case "ROLE_OPERATOR" -> R.string.role_operator;
+            case "ROLE_ADMIN" -> R.string.role_admin;
+            default -> R.string.role_unknown;
+        };
     }
 
     private final MutableLiveData<Event<Boolean>> _navigateToManagementPanel = new MutableLiveData<>();

@@ -1,7 +1,8 @@
-package com.example.support_management_system_mobile.ui.ticket;
+package com.example.support_management_system_mobile.ui.ticket.details;
 
 import androidx.annotation.StringRes;
 
+import com.example.support_management_system_mobile.models.Role;
 import com.example.support_management_system_mobile.models.Ticket;
 import com.example.support_management_system_mobile.models.User;
 
@@ -29,7 +30,7 @@ public abstract class TicketDetailsUIState {
             this.ticket = ticket;
 
             boolean isOwner = currentUser.getId().equals(ticket.getUser().getId());
-            boolean isOperator = currentUser.getRole().contains("OPERATOR");
+            boolean isOperator = currentUser.getRole().getType().equals(Role.Types.ROLE_OPERATOR);
             boolean isTicketClosed = ticket.getStatus().isCloseTicket();
 
             this.imageCount = (ticket.getImages() != null) ? ticket.getImages().size() : 0;

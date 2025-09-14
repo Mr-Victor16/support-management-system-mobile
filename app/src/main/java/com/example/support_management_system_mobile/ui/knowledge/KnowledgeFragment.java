@@ -25,30 +25,29 @@ public class KnowledgeFragment extends Fragment {
     private KnowledgeViewModel viewModel;
     private KnowledgeAdapter knowledgeAdapter;
     private RecyclerView recyclerView;
-    private ProgressBar loadingSpinner;
+    private ProgressBar progressBar;
     private TextView emptyMessage;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_knowledge, container, false);
-        initViews(view);
-        return view;
+        return inflater.inflate(R.layout.fragment_knowledge, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        viewModel = new ViewModelProvider(this).get(KnowledgeViewModel.class);
+        initViews(view);
 
+        viewModel = new ViewModelProvider(this).get(KnowledgeViewModel.class);
         setupRecyclerView();
         observeViewModel();
     }
 
     private void initViews(View view) {
         recyclerView = view.findViewById(R.id.recyclerViewKnowledge);
-        loadingSpinner = view.findViewById(R.id.loadingSpinner);
+        progressBar = view.findViewById(R.id.progressBar);
         emptyMessage = view.findViewById(R.id.emptyMessage);
     }
 
@@ -63,19 +62,26 @@ public class KnowledgeFragment extends Fragment {
     private void observeViewModel() {
         viewModel.uiState.observe(getViewLifecycleOwner(), state -> {
             if (state instanceof KnowledgeUIState.Loading) {
-                loadingSpinner.setVisibility(View.VISIBLE);
+                progressBar.setVisibility(View.VISIBLE);
                 recyclerView.setVisibility(View.GONE);
                 emptyMessage.setVisibility(View.GONE);
-            } else if (state instanceof KnowledgeUIState.Success) {
-                loadingSpinner.setVisibility(View.GONE);
-                recyclerView.setVisibility(View.VISIBLE);
-                emptyMessage.setVisibility(View.GONE);
-                knowledgeAdapter.submitList(((KnowledgeUIState.Success) state).items);
-            } else if (state instanceof KnowledgeUIState.Empty) {
-                loadingSpinner.setVisibility(View.GONE);
+            } else if (state instanceof KnowledgeUIState.Success successState) {
+                progressBar.setVisibility(View.GONE);
+                knowledgeAdapter.submitList(successState.items);
+
+                if (successState.items.isEmpty()) {
+                    recyclerView.setVisibility(View.GONE);
+                    emptyMessage.setVisibility(View.VISIBLE);
+                    emptyMessage.setText(R.string.no_data_to_display);
+                } else {
+                    recyclerView.setVisibility(View.VISIBLE);
+                    emptyMessage.setVisibility(View.GONE);
+                }
+            } else if (state instanceof KnowledgeUIState.Error errorState) {
+                progressBar.setVisibility(View.GONE);
                 recyclerView.setVisibility(View.GONE);
                 emptyMessage.setVisibility(View.VISIBLE);
-                emptyMessage.setText(((KnowledgeUIState.Empty) state).message);
+                emptyMessage.setText(errorState.message);
             }
         });
 

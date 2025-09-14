@@ -1,64 +1,189 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fillViewport="true"
     tools:context=".ui.management.ManagementPanelFragment">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:padding="16dp">
 
         <TextView
-            android:layout_width="match_parent"
+            android:id="@+id/header"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:gravity="center"
             android:text="@string/management_panel"
             android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
-            android:gravity="center"
-            android:layout_marginBottom="24dp" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/manageCategoriesButton"
-            style="@style/Widget.Material3.Button.OutlinedButton.Icon"
-            android:layout_width="match_parent"
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_vertical"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/manage_categories" />
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.5" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/manageKnowledgeButton"
-            style="@style/Widget.Material3.Button.OutlinedButton.Icon"
-            android:layout_width="match_parent"
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/manageCategoriesCard"
+            style="?attr/materialCardViewFilledStyle"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@string/manage_knowledge_base" />
+            android:layout_marginEnd="8dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackground"
+            app:layout_constraintEnd_toStartOf="@id/guideline_vertical"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/header">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/managePrioritiesButton"
-            style="@style/Widget.Material3.Button.OutlinedButton.Icon"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/manage_priorities" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawablePadding="8dp"
+                android:gravity="center"
+                android:padding="16dp"
+                android:text="@string/manage_categories"
+                android:textAppearance="?attr/textAppearanceLabelLarge"
+                app:drawableTopCompat="@drawable/ic_category"
+                app:drawableTint="?attr/colorPrimary" />
+        </com.google.android.material.card.MaterialCardView>
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/manageSoftwareButton"
-            style="@style/Widget.Material3.Button.OutlinedButton.Icon"
-            android:layout_width="match_parent"
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/manageKnowledgeCard"
+            style="?attr/materialCardViewFilledStyle"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@string/manage_software" />
+            android:layout_marginStart="8dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackground"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/guideline_vertical"
+            app:layout_constraintTop_toTopOf="@id/manageCategoriesCard">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/manageStatusesButton"
-            style="@style/Widget.Material3.Button.OutlinedButton.Icon"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/manage_statuses" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawablePadding="8dp"
+                android:gravity="center"
+                android:padding="16dp"
+                android:text="@string/manage_knowledge_base"
+                android:textAppearance="?attr/textAppearanceLabelLarge"
+                app:drawableTopCompat="@drawable/ic_knowledge"
+                app:drawableTint="?attr/colorPrimary" />
+        </com.google.android.material.card.MaterialCardView>
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/manageUsersButton"
-            style="@style/Widget.Material3.Button.OutlinedButton.Icon"
-            android:layout_width="match_parent"
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/managePrioritiesCard"
+            style="?attr/materialCardViewFilledStyle"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@string/manage_users" />
-    </LinearLayout>
-</ScrollView>
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="8dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackground"
+            app:layout_constraintEnd_toStartOf="@id/guideline_vertical"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/manageCategoriesCard">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawablePadding="8dp"
+                android:gravity="center"
+                android:padding="16dp"
+                android:text="@string/manage_priorities"
+                android:textAppearance="?attr/textAppearanceLabelLarge"
+                app:drawableTopCompat="@drawable/ic_priority"
+                app:drawableTint="?attr/colorPrimary" />
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/manageSoftwareCard"
+            style="?attr/materialCardViewFilledStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackground"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/guideline_vertical"
+            app:layout_constraintTop_toBottomOf="@id/manageKnowledgeCard">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawablePadding="8dp"
+                android:gravity="center"
+                android:padding="16dp"
+                android:text="@string/manage_software"
+                android:textAppearance="?attr/textAppearanceLabelLarge"
+                app:drawableTopCompat="@drawable/ic_software"
+                app:drawableTint="?attr/colorPrimary" />
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/manageStatusesCard"
+            style="?attr/materialCardViewFilledStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="8dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackground"
+            app:layout_constraintEnd_toStartOf="@id/guideline_vertical"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/managePrioritiesCard">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawablePadding="8dp"
+                android:gravity="center"
+                android:padding="16dp"
+                android:text="@string/manage_statuses"
+                android:textAppearance="?attr/textAppearanceLabelLarge"
+                app:drawableTopCompat="@drawable/ic_status"
+                app:drawableTint="?attr/colorPrimary" />
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/manageUsersCard"
+            style="?attr/materialCardViewFilledStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackground"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/guideline_vertical"
+            app:layout_constraintTop_toBottomOf="@id/manageSoftwareCard">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawablePadding="8dp"
+                android:gravity="center"
+                android:padding="16dp"
+                android:text="@string/manage_users"
+                android:textAppearance="?attr/textAppearanceLabelLarge"
+                app:drawableTopCompat="@drawable/ic_manage_accounts"
+                app:drawableTint="?attr/colorPrimary" />
+        </com.google.android.material.card.MaterialCardView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>

@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,7 +29,6 @@ public class KnowledgeListFragment extends Fragment {
     private KnowledgeManageAdapter adapter;
     private RecyclerView recyclerView;
     private ProgressBar progressBar;
-    private LinearLayout emptyErrorLayout;
     private TextView emptyErrorTextView;
     private FloatingActionButton fab;
     private final boolean canManage = false;
@@ -61,7 +59,6 @@ public class KnowledgeListFragment extends Fragment {
     private void initViews(View view) {
         recyclerView = view.findViewById(R.id.knowledgeRecyclerView);
         progressBar = view.findViewById(R.id.progressBar);
-        emptyErrorLayout = view.findViewById(R.id.emptyErrorLayout);
         emptyErrorTextView = view.findViewById(R.id.emptyErrorTextView);
         fab = view.findViewById(R.id.fabAddKnowledge);
 
@@ -98,22 +95,31 @@ public class KnowledgeListFragment extends Fragment {
 
     private void observeViewModel() {
         viewModel.knowledgeListState.observe(getViewLifecycleOwner(), state -> {
-            progressBar.setVisibility(state instanceof KnowledgeListUIState.Loading ? View.VISIBLE : View.GONE);
-            recyclerView.setVisibility(state instanceof KnowledgeListUIState.Success ? View.VISIBLE : View.GONE);
-
-            boolean isListEmpty = state instanceof KnowledgeListUIState.Success && ((KnowledgeListUIState.Success) state).knowledgeItems.isEmpty();
-            emptyErrorLayout.setVisibility(state instanceof KnowledgeListUIState.Error || isListEmpty ? View.VISIBLE : View.GONE);
-
-            if (state instanceof KnowledgeListUIState.Success successState) {
+            if (state instanceof KnowledgeListUIState.Loading) {
+                progressBar.setVisibility(View.VISIBLE);
+                recyclerView.setVisibility(View.GONE);
+                emptyErrorTextView.setVisibility(View.GONE);
+                fab.setVisibility(View.GONE);
+            } else if (state instanceof KnowledgeListUIState.Success successState) {
+                progressBar.setVisibility(View.GONE);
                 adapter.setCanManage(successState.canManage);
                 adapter.submitList(successState.knowledgeItems);
                 fab.setVisibility(successState.canManage ? View.VISIBLE : View.GONE);
 
-                if (isListEmpty) {
+                if (successState.knowledgeItems.isEmpty()) {
+                    recyclerView.setVisibility(View.GONE);
                     emptyErrorTextView.setText(R.string.no_knowledge_defined);
+                    emptyErrorTextView.setVisibility(View.VISIBLE);
+                } else {
+                    recyclerView.setVisibility(View.VISIBLE);
+                    emptyErrorTextView.setVisibility(View.GONE);
                 }
-            } else if (state instanceof KnowledgeListUIState.Error) {
-                emptyErrorTextView.setText(((KnowledgeListUIState.Error) state).message);
+            } else if (state instanceof KnowledgeListUIState.Error errorState) {
+                progressBar.setVisibility(View.GONE);
+                recyclerView.setVisibility(View.GONE);
+                fab.setVisibility(View.GONE);
+                emptyErrorTextView.setText(errorState.message);
+                emptyErrorTextView.setVisibility(View.VISIBLE);
             }
         });
 

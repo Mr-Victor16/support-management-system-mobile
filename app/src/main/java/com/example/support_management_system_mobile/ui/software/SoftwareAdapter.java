@@ -39,7 +39,7 @@ public class SoftwareAdapter extends ListAdapter<SoftwareUIModel, SoftwareAdapte
         }
 
         public void bind(SoftwareUIModel model, OnItemClickListener listener) {
-            Software software = model.getSoftware();
+            Software software = model.software();
             name.setText(software.getName());
             description.setText(software.getDescription());
 
@@ -72,7 +72,7 @@ public class SoftwareAdapter extends ListAdapter<SoftwareUIModel, SoftwareAdapte
     private static final DiffUtil.ItemCallback<SoftwareUIModel> DIFF_CALLBACK = new DiffUtil.ItemCallback<>() {
         @Override
         public boolean areItemsTheSame(@NonNull SoftwareUIModel oldItem, @NonNull SoftwareUIModel newItem) {
-            return oldItem.getSoftware().getId().equals(newItem.getSoftware().getId());
+            return oldItem.software().getId().equals(newItem.software().getId());
         }
 
         @Override

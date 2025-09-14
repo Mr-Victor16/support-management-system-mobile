@@ -1,4 +1,4 @@
-package com.example.support_management_system_mobile.ui.profile;
+package com.example.support_management_system_mobile.ui.profile.edit;
 
 import android.app.Application;
 
@@ -36,7 +36,7 @@ public class EditProfileViewModel extends ViewModel {
     public final MutableLiveData<String> password = new MutableLiveData<>();
 
     private final MediatorLiveData<EditProfileFormState> formState = new MediatorLiveData<>();
-    private final MutableLiveData<EditProfileResult> updateResult = new MutableLiveData<>();
+    private final MutableLiveData<EditProfileUIState> updateResult = new MutableLiveData<>();
 
     @Inject
     public EditProfileViewModel(Application application, ProfileRepository profileRepository) {
@@ -81,11 +81,16 @@ public class EditProfileViewModel extends ViewModel {
                 || !Objects.equals(sName, originalSurname)
                 || (UserValidator.isPasswordValid(pwd));
 
-        formState.setValue(new EditProfileFormState(hasChanges));
+        formState.setValue(new EditProfileFormState(true, hasChanges));
     }
 
     public void saveChanges() {
-        updateResult.setValue(new EditProfileResult.Loading());
+        EditProfileFormState currentState = formState.getValue();
+        if (currentState == null || !currentState.isDataValid() || !currentState.hasChanges()) {
+            return;
+        }
+
+        updateResult.setValue(new EditProfileUIState.Loading());
 
         String fName = firstName.getValue();
         String sName = surname.getValue();
@@ -101,15 +106,15 @@ public class EditProfileViewModel extends ViewModel {
                 if (response.isSuccessful()) {
                     JWTUtils.setName(application, fName);
                     JWTUtils.setSurname(application, sName);
-                    updateResult.postValue(new EditProfileResult.Success(R.string.profile_updated_successfully));
+                    updateResult.postValue(new EditProfileUIState.Success(R.string.profile_updated_successfully));
                 } else {
-                    updateResult.postValue(new EditProfileResult.Error(R.string.profile_update_failed));
+                    updateResult.postValue(new EditProfileUIState.Error(R.string.profile_update_failed));
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
-                updateResult.postValue(new EditProfileResult.Error(R.string.server_error));
+                updateResult.postValue(new EditProfileUIState.Error(R.string.server_error));
             }
         });
     }
@@ -118,7 +123,7 @@ public class EditProfileViewModel extends ViewModel {
         return formState;
     }
 
-    public LiveData<EditProfileResult> getUpdateResult() {
+    public LiveData<EditProfileUIState> getUpdateResult() {
         return updateResult;
     }
 }

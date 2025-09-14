@@ -12,14 +12,12 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,12 +35,15 @@ public class UserFormFragment extends Fragment {
 
     private ProgressBar progressBar;
     private ScrollView formContent;
-    private LinearLayout errorLayout;
-    private TextView errorMessageTextView, formHeader;
-    private TextInputLayout usernameInputLayout, emailInputLayout, nameInputLayout, surnameInputLayout, passwordInputLayout;
+    private TextView errorTextView, formHeader;
+    private TextInputLayout usernameInputLayout;
+    private TextInputLayout emailInputLayout;
+    private TextInputLayout nameInputLayout;
+    private TextInputLayout surnameInputLayout;
+    private TextInputLayout passwordInputLayout;
     private EditText editUsername, editEmail, editName, editSurname, editPassword;
-    private Spinner spinnerRole;
-    private Button btnSave;
+    private AutoCompleteTextView roleAutoComplete;
+    private Button saveButton;
     private Long userId;
 
     @Override
@@ -68,8 +69,7 @@ public class UserFormFragment extends Fragment {
     private void initViews(View view) {
         progressBar = view.findViewById(R.id.progressBar);
         formContent = view.findViewById(R.id.formContent);
-        errorLayout = view.findViewById(R.id.errorLayout);
-        errorMessageTextView = view.findViewById(R.id.errorMessageTextView);
+        errorTextView = view.findViewById(R.id.errorTextView);
         formHeader = view.findViewById(R.id.formHeader);
 
         usernameInputLayout = view.findViewById(R.id.usernameInputLayout);
@@ -84,12 +84,12 @@ public class UserFormFragment extends Fragment {
         editSurname = view.findViewById(R.id.editSurname);
         editPassword = view.findViewById(R.id.editPassword);
 
-        spinnerRole = view.findViewById(R.id.spinnerRole);
-        btnSave = view.findViewById(R.id.btnSave);
+        roleAutoComplete = view.findViewById(R.id.roleAutoComplete);
+        saveButton = view.findViewById(R.id.saveButton);
     }
 
     private void setupListeners() {
-        btnSave.setOnClickListener(v -> viewModel.saveUser());
+        saveButton.setOnClickListener(v -> viewModel.saveUser());
 
         editUsername.setOnFocusChangeListener((v, hasFocus) -> {
             if (!hasFocus) viewModel.onFieldTouched(UserManagementViewModel.FormField.USERNAME);
@@ -113,16 +113,9 @@ public class UserFormFragment extends Fragment {
         editSurname.addTextChangedListener(new UserFormFragment.SimpleTextWatcher(s -> viewModel.surname.setValue(s)));
         editPassword.addTextChangedListener(new UserFormFragment.SimpleTextWatcher(s -> viewModel.password.setValue(s)));
 
-        spinnerRole.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                viewModel.selectedRole.setValue((Role) parent.getItemAtPosition(position));
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                viewModel.selectedRole.setValue(null);
-            }
+        roleAutoComplete.setOnItemClickListener((parent, view, position, id) -> {
+            Role selectedRole = (Role) parent.getItemAtPosition(position);
+            viewModel.selectedRole.setValue(selectedRole);
         });
     }
 
@@ -131,11 +124,12 @@ public class UserFormFragment extends Fragment {
             boolean isLoading = state instanceof UserFormUIState.Loading || state instanceof UserFormUIState.Submitting;
             progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
             formContent.setVisibility(state instanceof UserFormUIState.Editing ? View.VISIBLE : View.GONE);
-            errorLayout.setVisibility(state instanceof UserFormUIState.Error ? View.VISIBLE : View.GONE);
+
+            errorTextView.setVisibility(state instanceof UserFormUIState.Error ? View.VISIBLE : View.GONE);
 
             if (state instanceof UserFormUIState.Editing) {
                 formHeader.setText(((UserFormUIState.Editing) state).headerTextResId);
-                btnSave.setText(((UserFormUIState.Editing) state).saveButtonTextResId);
+                saveButton.setText(((UserFormUIState.Editing) state).saveButtonTextResId);
 
                 boolean isNewUser = userId == null;
                 passwordInputLayout.setVisibility(isNewUser ? View.VISIBLE : View.GONE);
@@ -143,35 +137,34 @@ public class UserFormFragment extends Fragment {
             } else if (state instanceof UserFormUIState.Success) {
                 getParentFragmentManager().popBackStack();
             } else if (state instanceof UserFormUIState.Error) {
-                errorMessageTextView.setText(((UserFormUIState.Error) state).message);
+                errorTextView.setText(((UserFormUIState.Error) state).message);
             }
         });
 
-        viewModel.usernameError.observe(getViewLifecycleOwner(), errorResId -> {
-            usernameInputLayout.setError(errorResId != null ? getString(errorResId) : null);
-        });
-        viewModel.nameError.observe(getViewLifecycleOwner(), errorResId -> {
-            nameInputLayout.setError(errorResId != null ? getString(errorResId) : null);
-        });
-        viewModel.surnameError.observe(getViewLifecycleOwner(), errorResId -> {
-            surnameInputLayout.setError(errorResId != null ? getString(errorResId) : null);
-        });
-        viewModel.emailError.observe(getViewLifecycleOwner(), errorResId -> {
-            emailInputLayout.setError(errorResId != null ? getString(errorResId) : null);
-        });
-        viewModel.passwordError.observe(getViewLifecycleOwner(), errorResId -> {
-            passwordInputLayout.setError(errorResId != null ? getString(errorResId) : null);
-        });
-        viewModel.isFormValid.observe(getViewLifecycleOwner(), isValid -> {
-            btnSave.setEnabled(isValid != null && isValid);
-        });
+        viewModel.usernameError.observe(getViewLifecycleOwner(), errorResId ->
+                usernameInputLayout.setError(errorResId != null ? getString(errorResId) : null));
+
+        viewModel.nameError.observe(getViewLifecycleOwner(), errorResId ->
+                nameInputLayout.setError(errorResId != null ? getString(errorResId) : null));
+
+        viewModel.surnameError.observe(getViewLifecycleOwner(), errorResId ->
+                surnameInputLayout.setError(errorResId != null ? getString(errorResId) : null));
+
+        viewModel.emailError.observe(getViewLifecycleOwner(), errorResId ->
+                emailInputLayout.setError(errorResId != null ? getString(errorResId) : null));
+
+        viewModel.passwordError.observe(getViewLifecycleOwner(), errorResId ->
+                passwordInputLayout.setError(errorResId != null ? getString(errorResId) : null));
+
+        viewModel.isFormValid.observe(getViewLifecycleOwner(), isValid ->
+                saveButton.setEnabled(isValid != null && isValid));
 
         viewModel.roleList.observe(getViewLifecycleOwner(), roleList -> {
             if (getContext() == null || roleList == null) return;
-            ArrayAdapter<Role> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, roleList);
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            spinnerRole.setAdapter(adapter);
-            setSpinnerSelection(spinnerRole, viewModel.selectedRole.getValue());
+
+            ArrayAdapter<Role> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_dropdown_item_1line, roleList);
+            roleAutoComplete.setAdapter(adapter);
+            setDropdownSelection(roleAutoComplete, viewModel.selectedRole.getValue());
         });
 
         viewModel.username.observe(getViewLifecycleOwner(), text -> {
@@ -189,9 +182,8 @@ public class UserFormFragment extends Fragment {
         viewModel.password.observe(getViewLifecycleOwner(), text -> {
             if (!Objects.equals(editPassword.getText().toString(), text)) editPassword.setText(text);
         });
-        viewModel.selectedRole.observe(getViewLifecycleOwner(), selection -> {
-            setSpinnerSelection(spinnerRole, selection);
-        });
+
+        viewModel.selectedRole.observe(getViewLifecycleOwner(), selection -> setDropdownSelection(roleAutoComplete, selection));
 
         viewModel.toastMessage.observe(getViewLifecycleOwner(), event -> {
             String message = event.getContentIfNotHandled();
@@ -199,15 +191,11 @@ public class UserFormFragment extends Fragment {
         });
     }
 
-    private void setSpinnerSelection(Spinner spinner, Role value) {
-        if (value == null || !(spinner.getAdapter() instanceof ArrayAdapter)) return;
-
-        @SuppressWarnings("unchecked")
-        ArrayAdapter<Role> adapter = (ArrayAdapter<Role>) spinner.getAdapter();
-
-        int position = adapter.getPosition(value);
-        if (position >= 0) {
-            spinner.setSelection(position);
+    private void setDropdownSelection(AutoCompleteTextView dropdown, Role value) {
+        if (value != null) {
+            dropdown.setText(value.toString(), false);
+        } else {
+            dropdown.setText("", false);
         }
     }
 

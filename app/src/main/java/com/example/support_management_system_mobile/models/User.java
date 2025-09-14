@@ -1,7 +1,6 @@
 package com.example.support_management_system_mobile.models;
 
 import java.io.Serializable;
-import java.util.List;
 
 public class User implements Serializable {
     private Long id;
@@ -10,10 +9,9 @@ public class User implements Serializable {
     private String email;
     private String name;
     private String surname;
-    private String role;
-    private List<Ticket> tickets;
+    private Role role;
 
-    public User(Long id, String username, String role) {
+    public User(Long id, String username, Role role) {
         this.id = id;
         this.username = username;
         this.role = role;
@@ -67,11 +65,11 @@ public class User implements Serializable {
         this.surname = surname;
     }
 
-    public String getRole() {
+    public Role getRole() {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(Role role) {
         this.role = role;
     }
 }

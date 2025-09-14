@@ -1,4 +1,4 @@
-package com.example.support_management_system_mobile.ui.ticket;
+package com.example.support_management_system_mobile.ui.ticket.form;
 
 import android.os.Bundle;
 import android.text.Editable;
@@ -6,17 +6,16 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
-import android.widget.ScrollView;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -24,6 +23,7 @@ import com.example.support_management_system_mobile.R;
 import com.example.support_management_system_mobile.models.Category;
 import com.example.support_management_system_mobile.models.Priority;
 import com.example.support_management_system_mobile.models.Software;
+import com.example.support_management_system_mobile.ui.ticket.TicketViewModel;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.Objects;
@@ -35,11 +35,11 @@ public class TicketFormFragment extends Fragment {
     private TicketViewModel viewModel;
 
     private ProgressBar progressBar;
-    private ScrollView formContent;
+    private NestedScrollView formContent;
     private TextView formHeader, errorMessageTextView;
     private EditText editTitle, editDescription, editVersion;
-    private Spinner spinnerCategory, spinnerPriority, spinnerSoftware;
-    private Button btnSave;
+    private AutoCompleteTextView categoryAutoComplete, priorityAutoComplete, softwareAutoComplete;
+    private Button buttonSave;
     private TextInputLayout titleInputLayout, descriptionInputLayout, versionInputLayout;
 
     @Override
@@ -74,10 +74,10 @@ public class TicketFormFragment extends Fragment {
         editTitle = view.findViewById(R.id.editTitle);
         editDescription = view.findViewById(R.id.editDescription);
         editVersion = view.findViewById(R.id.editVersion);
-        spinnerCategory = view.findViewById(R.id.spinnerCategory);
-        spinnerPriority = view.findViewById(R.id.spinnerPriority);
-        spinnerSoftware = view.findViewById(R.id.spinnerSoftware);
-        btnSave = view.findViewById(R.id.btnSave);
+        categoryAutoComplete = view.findViewById(R.id.categoryAutoComplete);
+        priorityAutoComplete = view.findViewById(R.id.priorityAutoComplete);
+        softwareAutoComplete = view.findViewById(R.id.softwareAutoComplete);
+        buttonSave = view.findViewById(R.id.saveButton);
         titleInputLayout = view.findViewById(R.id.titleInputLayout);
         descriptionInputLayout = view.findViewById(R.id.descriptionInputLayout);
         versionInputLayout = view.findViewById(R.id.versionInputLayout);
@@ -85,7 +85,7 @@ public class TicketFormFragment extends Fragment {
     }
 
     private void setupInputListeners() {
-        btnSave.setOnClickListener(v -> viewModel.saveTicket());
+        buttonSave.setOnClickListener(v -> viewModel.saveTicket());
 
         editTitle.setOnFocusChangeListener((view, hasFocus) -> {
             if (!hasFocus) {
@@ -109,41 +109,12 @@ public class TicketFormFragment extends Fragment {
         editDescription.addTextChangedListener(new SimpleTextWatcher(s -> viewModel.ticketDescription.setValue(s)));
         editVersion.addTextChangedListener(new SimpleTextWatcher(s -> viewModel.ticketVersion.setValue(s)));
 
-        spinnerCategory.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                viewModel.selectedCategory.setValue((Category) parent.getItemAtPosition(position));
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                viewModel.selectedCategory.setValue(null);
-            }
-        });
-
-        spinnerPriority.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                viewModel.selectedPriority.setValue((Priority) parent.getItemAtPosition(position));
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                viewModel.selectedPriority.setValue(null);
-            }
-        });
-
-        spinnerSoftware.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                viewModel.selectedSoftware.setValue((Software) parent.getItemAtPosition(position));
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                viewModel.selectedSoftware.setValue(null);
-            }
-        });
+        categoryAutoComplete.setOnItemClickListener((parent, view, position, id) ->
+                viewModel.selectedCategory.setValue((Category) parent.getItemAtPosition(position)));
+        priorityAutoComplete.setOnItemClickListener((parent, view, position, id) ->
+                viewModel.selectedPriority.setValue((Priority) parent.getItemAtPosition(position)));
+        softwareAutoComplete.setOnItemClickListener((parent, view, position, id) ->
+                viewModel.selectedSoftware.setValue((Software) parent.getItemAtPosition(position)));
     }
 
     private void observeViewModel() {
@@ -155,7 +126,7 @@ public class TicketFormFragment extends Fragment {
 
             if (state instanceof TicketFormUIState.Editing) {
                 formHeader.setText(((TicketFormUIState.Editing) state).headerTextResId);
-                btnSave.setText(((TicketFormUIState.Editing) state).saveButtonTextResId);
+                buttonSave.setText(((TicketFormUIState.Editing) state).saveButtonTextResId);
             } else if (state instanceof TicketFormUIState.Success) {
                 getParentFragmentManager().popBackStack();
             } else if (state instanceof TicketFormUIState.Error) {
@@ -170,33 +141,36 @@ public class TicketFormFragment extends Fragment {
             descriptionInputLayout.setError(state.descriptionError != null ? getString(state.descriptionError) : null);
             versionInputLayout.setError(state.versionError != null ? getString(state.versionError) : null);
 
-            btnSave.setEnabled(state.isSaveButtonEnabled);
+            buttonSave.setEnabled(state.isSaveButtonEnabled);
         });
 
         viewModel.categories.observe(getViewLifecycleOwner(), categories -> {
             if (getContext() == null || categories == null) return;
-            ArrayAdapter<Category> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, categories);
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            spinnerCategory.setAdapter(adapter);
+
+            ArrayAdapter<Category> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, categories);
+            categoryAutoComplete.setAdapter(adapter);
         });
 
         viewModel.priorities.observe(getViewLifecycleOwner(), priorities -> {
             if (getContext() == null || priorities == null) return;
-            ArrayAdapter<Priority> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, priorities);
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            spinnerPriority.setAdapter(adapter);
+
+            ArrayAdapter<Priority> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, priorities);
+            priorityAutoComplete.setAdapter(adapter);
         });
 
         viewModel.software.observe(getViewLifecycleOwner(), softwareList -> {
             if (getContext() == null || softwareList == null) return;
-            ArrayAdapter<Software> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, softwareList);
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            spinnerSoftware.setAdapter(adapter);
+
+            ArrayAdapter<Software> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, softwareList);
+            softwareAutoComplete.setAdapter(adapter);
         });
 
-        viewModel.selectedCategory.observe(getViewLifecycleOwner(), selection -> setSpinnerSelection(spinnerCategory, selection));
-        viewModel.selectedPriority.observe(getViewLifecycleOwner(), selection -> setSpinnerSelection(spinnerPriority, selection));
-        viewModel.selectedSoftware.observe(getViewLifecycleOwner(), selection -> setSpinnerSelection(spinnerSoftware, selection));
+        viewModel.selectedCategory.observe(getViewLifecycleOwner(), selection ->
+                setAutocompleteSelection(categoryAutoComplete, selection));
+        viewModel.selectedPriority.observe(getViewLifecycleOwner(), selection ->
+                setAutocompleteSelection(priorityAutoComplete, selection));
+        viewModel.selectedSoftware.observe(getViewLifecycleOwner(), selection ->
+                setAutocompleteSelection(softwareAutoComplete, selection));
 
         viewModel.ticketTitle.observe(getViewLifecycleOwner(), title -> {
             if (!Objects.equals(editTitle.getText().toString(), title)) {
@@ -217,20 +191,12 @@ public class TicketFormFragment extends Fragment {
         });
     }
 
-    private <T> void setSpinnerSelection(Spinner spinner, T value) {
-        if (value == null || spinner.getAdapter() == null) {
-            return;
-        }
+    private <T> void setAutocompleteSelection(AutoCompleteTextView autoComplete, T value) {
+        if (autoComplete.getAdapter() == null) return;
 
-        if (spinner.getAdapter() instanceof ArrayAdapter) {
-            @SuppressWarnings("unchecked")
-            ArrayAdapter<T> adapter = (ArrayAdapter<T>) spinner.getAdapter();
-
-            int position = adapter.getPosition(value);
-
-            if (position >= 0) {
-                spinner.setSelection(position);
-            }
+        String newText = (value != null) ? value.toString() : "";
+        if (!autoComplete.getText().toString().equals(newText)) {
+            autoComplete.setText(newText, false);
         }
     }
 

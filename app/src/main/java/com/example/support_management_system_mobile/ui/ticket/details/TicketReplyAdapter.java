@@ -1,4 +1,4 @@
-package com.example.support_management_system_mobile.ui.ticket;
+package com.example.support_management_system_mobile.ui.ticket.details;
 
 import android.view.LayoutInflater;
 import android.view.View;

@@ -1,4 +1,4 @@
-package com.example.support_management_system_mobile.ui.profile;
+package com.example.support_management_system_mobile.ui.profile.edit;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -17,21 +17,24 @@ public class EditProfileFormState {
     private final Integer passwordError;
 
     private final boolean isDataValid;
+    private final boolean hasChanges;
 
     public EditProfileFormState(@Nullable @StringRes Integer firstNameError,
-                         @Nullable @StringRes Integer surnameError,
-                         @Nullable @StringRes Integer passwordError) {
+                                @Nullable @StringRes Integer surnameError,
+                                @Nullable @StringRes Integer passwordError) {
         this.firstNameError = firstNameError;
         this.surnameError = surnameError;
         this.passwordError = passwordError;
         this.isDataValid = false;
+        this.hasChanges = false;
     }
 
-    public EditProfileFormState(boolean isDataValid) {
+    public EditProfileFormState(boolean isDataValid, boolean hasChanges) {
         this.firstNameError = null;
         this.surnameError = null;
         this.passwordError = null;
         this.isDataValid = isDataValid;
+        this.hasChanges = hasChanges;
     }
 
     @Nullable
@@ -54,5 +57,9 @@ public class EditProfileFormState {
 
     public boolean isDataValid() {
         return isDataValid;
+    }
+
+    public boolean hasChanges() {
+        return hasChanges;
     }
 }

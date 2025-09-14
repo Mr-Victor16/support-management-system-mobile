@@ -1,4 +1,4 @@
-package com.example.support_management_system_mobile.ui.profile;
+package com.example.support_management_system_mobile.ui.profile.edit;
 
 import android.os.Bundle;
 
@@ -19,12 +19,15 @@ import android.widget.Toast;
 
 import com.example.support_management_system_mobile.R;
 import com.example.support_management_system_mobile.auth.JWTUtils;
+import com.google.android.material.textfield.TextInputLayout;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
 public class EditProfileFragment extends Fragment {
     private EditProfileViewModel viewModel;
+
+    private TextInputLayout firstNameLayout, surnameLayout, passwordLayout;
     private EditText firstNameEdit, surnameEdit, passwordEdit;
     private Button saveChangesButton;
     private ProgressBar progressBar;
@@ -54,22 +57,27 @@ public class EditProfileFragment extends Fragment {
     }
 
     private void initViews(View view) {
+        firstNameLayout = view.findViewById(R.id.editNameLayout);
+        surnameLayout = view.findViewById(R.id.editSurnameLayout);
+        passwordLayout = view.findViewById(R.id.editPasswordLayout);
+
         firstNameEdit = view.findViewById(R.id.editName);
         surnameEdit = view.findViewById(R.id.editSurname);
         passwordEdit = view.findViewById(R.id.editPassword);
+
         saveChangesButton = view.findViewById(R.id.saveChangesButton);
         progressBar = view.findViewById(R.id.progressBar);
     }
 
     private void setupObservers() {
         viewModel.firstName.observe(getViewLifecycleOwner(), name -> {
-            if (!name.equals(firstNameEdit.getText().toString())) {
+            if (firstNameEdit != null && !name.equals(firstNameEdit.getText().toString())) {
                 firstNameEdit.setText(name);
             }
         });
 
         viewModel.surname.observe(getViewLifecycleOwner(), surname -> {
-            if (!surname.equals(surnameEdit.getText().toString())) {
+            if (surnameEdit != null && !surname.equals(surnameEdit.getText().toString())) {
                 surnameEdit.setText(surname);
             }
         });
@@ -77,60 +85,64 @@ public class EditProfileFragment extends Fragment {
         viewModel.getFormState().observe(getViewLifecycleOwner(), formState -> {
             if (formState == null) return;
 
-            saveChangesButton.setEnabled(formState.isDataValid());
+            saveChangesButton.setEnabled(formState.isDataValid() && formState.hasChanges());
 
-            if (formState.getFirstNameError() != null) {
-                firstNameEdit.setError(getString(formState.getFirstNameError()));
-            } else {
-                firstNameEdit.setError(null);
-            }
-
-            if (formState.getSurnameError() != null) {
-                surnameEdit.setError(getString(formState.getSurnameError()));
-            } else {
-                surnameEdit.setError(null);
-            }
-
-            if (formState.getPasswordError() != null) {
-                passwordEdit.setError(getString(formState.getPasswordError()));
-            } else {
-                passwordEdit.setError(null);
-            }
+            firstNameLayout.setError(formState.getFirstNameError() != null ? getString(formState.getFirstNameError()) : null);
+            surnameLayout.setError(formState.getSurnameError() != null ? getString(formState.getSurnameError()) : null);
+            passwordLayout.setError(formState.getPasswordError() != null ? getString(formState.getPasswordError()) : null);
         });
 
         viewModel.getUpdateResult().observe(getViewLifecycleOwner(), result -> {
-            if (result instanceof EditProfileResult.Loading) {
+            if (result instanceof EditProfileUIState.Loading) {
                 showLoading(true);
-            } else if (result instanceof EditProfileResult.Success) {
+            } else if (result instanceof EditProfileUIState.Success) {
                 showLoading(false);
-                Toast.makeText(requireContext(), ((EditProfileResult.Success) result).getMessageRes(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), ((EditProfileUIState.Success) result).getMessageRes(), Toast.LENGTH_SHORT).show();
                 navigateToProfileFragment();
-            } else if (result instanceof EditProfileResult.Error) {
+            } else if (result instanceof EditProfileUIState.Error) {
                 showLoading(false);
-                Toast.makeText(requireContext(), ((EditProfileResult.Error) result).getMessageRes(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), ((EditProfileUIState.Error) result).getMessageRes(), Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     private void addTextWatchers() {
-        firstNameEdit.addTextChangedListener(new SimpleTextWatcher() {
+        firstNameEdit.addTextChangedListener(new TextWatcher() {
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                viewModel.firstName.setValue(firstNameEdit.getText().toString());
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) { }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                viewModel.firstName.setValue(s.toString());
             }
         });
 
-        surnameEdit.addTextChangedListener(new SimpleTextWatcher() {
+        surnameEdit.addTextChangedListener(new TextWatcher() {
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                viewModel.surname.setValue(surnameEdit.getText().toString());
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) { }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                viewModel.surname.setValue(s.toString());
             }
         });
 
-        passwordEdit.addTextChangedListener(new SimpleTextWatcher() {
+        passwordEdit.addTextChangedListener(new TextWatcher() {
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                viewModel.password.setValue(passwordEdit.getText().toString());
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) { }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                viewModel.password.setValue(s.toString());
             }
         });
     }
@@ -140,9 +152,7 @@ public class EditProfileFragment extends Fragment {
     }
 
     private void showLoading(boolean isLoading) {
-        if (progressBar != null) {
-            progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
-        }
+        progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
         saveChangesButton.setEnabled(!isLoading);
     }
 
@@ -150,13 +160,5 @@ public class EditProfileFragment extends Fragment {
         if (isAdded()) {
             requireActivity().getSupportFragmentManager().popBackStack();
         }
-    }
-
-    abstract static class SimpleTextWatcher implements TextWatcher {
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-        @Override
-        public void afterTextChanged(Editable s) {}
     }
 }

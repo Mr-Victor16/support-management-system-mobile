@@ -13,10 +13,10 @@ public abstract class KnowledgeUIState {
         }
     }
 
-    public static class Empty extends KnowledgeUIState {
+    public static class Error extends KnowledgeUIState {
         public final String message;
 
-        public Empty(String message) {
+        public Error(String message) {
             this.message = message;
         }
     }

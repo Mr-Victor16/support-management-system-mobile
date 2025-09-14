@@ -1,10 +1,12 @@
-package com.example.support_management_system_mobile.ui.ticket;
+package com.example.support_management_system_mobile.ui.ticket.details;
 
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -17,15 +19,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.support_management_system_mobile.R;
 import com.example.support_management_system_mobile.models.Status;
+import com.example.support_management_system_mobile.models.Ticket;
 import com.example.support_management_system_mobile.models.TicketReply;
+import com.example.support_management_system_mobile.ui.ticket.form.TicketFormFragment;
+import com.example.support_management_system_mobile.ui.ticket.TicketViewModel;
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.List;
 import java.util.Objects;
@@ -39,15 +44,14 @@ public class TicketDetailsFragment extends Fragment {
     private long ticketId = -1;
 
     private ProgressBar progressBar;
-    private ScrollView contentLayout;
+    private NestedScrollView contentLayout;
     private TextView errorMessageTextView;
     private TextView ticketTitle, ticketStatus, closedTicketNotice, ticketDescription, ticketCategory, ticketPriority, ticketSoftware, ticketAuthor, ticketDate, noRepliesTextView;
     private Button sendReplyButton;
-    private Button editTicketButton, deleteTicketButton, changeStatusButton, manageImagesButton;
+    private ImageButton editTicketButton, deleteTicketButton, changeStatusButton, manageImagesButton;
     private RecyclerView repliesRecyclerView;
     private EditText replyEditText;
-    private LinearLayout replyInputLayout;
-
+    private TextInputLayout replyTextInputLayout;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -78,10 +82,7 @@ public class TicketDetailsFragment extends Fragment {
         if (ticketId > 0) {
             viewModel.loadTicketDetails(ticketId);
         } else {
-            progressBar.setVisibility(View.GONE);
-            contentLayout.setVisibility(View.GONE);
-            errorMessageTextView.setVisibility(View.VISIBLE);
-            errorMessageTextView.setText(R.string.ticket_not_found);
+            showErrorState(R.string.ticket_not_found);
         }
     }
 
@@ -104,35 +105,23 @@ public class TicketDetailsFragment extends Fragment {
         manageImagesButton = view.findViewById(R.id.manageImagesButton);
         repliesRecyclerView = view.findViewById(R.id.repliesRecyclerView);
         noRepliesTextView = view.findViewById(R.id.noRepliesTextView);
-        replyInputLayout = view.findViewById(R.id.replyInputLayout);
+        replyTextInputLayout = view.findViewById(R.id.replyTextInputLayout);
         replyEditText = view.findViewById(R.id.replyEditText);
         sendReplyButton = view.findViewById(R.id.sendReplyButton);
     }
 
     private void setupRecyclerView() {
-        replyAdapter = new TicketReplyAdapter(reply -> new AlertDialog.Builder(requireContext())
-                .setTitle(R.string.delete_reply)
-                .setMessage(R.string.confirm_delete_reply)
-                .setPositiveButton(R.string.delete_button, (d, w) -> viewModel.deleteReply(reply))
-                .setNegativeButton(R.string.cancel_button, null)
-                .show());
+        replyAdapter = new TicketReplyAdapter(this::showDeleteReplyDialog);
         repliesRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         repliesRecyclerView.setAdapter(replyAdapter);
     }
 
     private void setupClickListeners() {
         sendReplyButton.setOnClickListener(v -> viewModel.addReply());
-
-        deleteTicketButton.setOnClickListener(v -> new AlertDialog.Builder(requireContext())
-                .setTitle(R.string.delete_ticket)
-                .setMessage(R.string.confirm_delete_ticket)
-                .setPositiveButton(R.string.delete_button, (d, w) -> viewModel.deleteTicket())
-                .setNegativeButton(R.string.cancel_button, null)
-                .show());
-
-        changeStatusButton.setOnClickListener(v -> viewModel.loadStatuses());
         editTicketButton.setOnClickListener(v -> viewModel.onEditTicketClicked());
         manageImagesButton.setOnClickListener(v -> viewModel.onManageImagesClicked());
+        changeStatusButton.setOnClickListener(v -> viewModel.loadStatuses());
+        deleteTicketButton.setOnClickListener(v -> showDeleteTicketDialog());
 
         replyEditText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -149,18 +138,7 @@ public class TicketDetailsFragment extends Fragment {
     }
 
     private void observeViewModel() {
-        viewModel.ticketDetailsState.observe(getViewLifecycleOwner(), state -> {
-            progressBar.setVisibility(state instanceof TicketDetailsUIState.Loading ? View.VISIBLE : View.GONE);
-            contentLayout.setVisibility(state instanceof TicketDetailsUIState.Success ? View.VISIBLE : View.GONE);
-            errorMessageTextView.setVisibility(state instanceof TicketDetailsUIState.Error ? View.VISIBLE : View.GONE);
-
-            if (state instanceof TicketDetailsUIState.Success) {
-                bindSuccessState((TicketDetailsUIState.Success) state);
-            } else if (state instanceof TicketDetailsUIState.Error) {
-                errorMessageTextView.setText(((TicketDetailsUIState.Error) state).messageTextResId);
-            }
-        });
-
+        viewModel.ticketDetailsState.observe(getViewLifecycleOwner(), this::updateUIForState);
         viewModel.isReplyValid.observe(getViewLifecycleOwner(), isValid -> sendReplyButton.setEnabled(isValid));
 
         viewModel.getStatusesEvent().observe(getViewLifecycleOwner(), event -> {
@@ -177,9 +155,7 @@ public class TicketDetailsFragment extends Fragment {
 
         viewModel.detailsNavigation.observe(getViewLifecycleOwner(), event -> {
             TicketViewModel.DetailsNavigation target = event.getContentIfNotHandled();
-            if (target != null) {
-                handleNavigation(target);
-            }
+            if (target != null) handleNavigation(target);
         });
 
         viewModel.replyContent.observe(getViewLifecycleOwner(), text -> {
@@ -189,39 +165,58 @@ public class TicketDetailsFragment extends Fragment {
         });
     }
 
-    private void bindSuccessState(TicketDetailsUIState.Success state) {
-        ticketTitle.setText(state.ticket.getTitle());
-        ticketStatus.setText(state.ticket.getStatus().getName());
-        ticketDescription.setText(state.ticket.getDescription());
-        ticketCategory.setText(getString(R.string.category_format, state.ticket.getCategory().getName()));
-        ticketPriority.setText(getString(R.string.priority_format, state.ticket.getPriority().getName()));
-        ticketSoftware.setText(getString(R.string.software_format, state.ticket.getSoftware().getName(), state.ticket.getVersion()));
-        ticketAuthor.setText(getString(R.string.author_format, state.ticket.getUser().getUsername()));
-        ticketDate.setText(getString(R.string.date_format, state.ticket.getCreatedDate().toString()));
+    private void updateUIForState(TicketDetailsUIState state) {
+        progressBar.setVisibility(state instanceof TicketDetailsUIState.Loading ? View.VISIBLE : View.GONE);
+        contentLayout.setVisibility(state instanceof TicketDetailsUIState.Success ? View.VISIBLE : View.GONE);
+        errorMessageTextView.setVisibility(state instanceof TicketDetailsUIState.Error ? View.VISIBLE : View.GONE);
 
-        TicketDetailsControlsState controls = state.controls;
-        editTicketButton.setVisibility(controls.canEditTicket ? View.VISIBLE : View.GONE);
-        deleteTicketButton.setVisibility(controls.canDeleteTicket ? View.VISIBLE : View.GONE);
-        changeStatusButton.setVisibility(controls.canChangeStatus ? View.VISIBLE : View.GONE);
-        manageImagesButton.setVisibility(controls.canViewImages ? View.VISIBLE : View.GONE);
-        replyInputLayout.setVisibility(controls.canAddReply ? View.VISIBLE : View.GONE);
-        closedTicketNotice.setVisibility(state.isClosedNoticeVisible ? View.VISIBLE : View.GONE);
-
-        int imageCount = state.imageCount;
-        if (imageCount > 0) {
-            manageImagesButton.setText(getString(R.string.images_count, imageCount));
-        } else {
-            manageImagesButton.setText(R.string.add_images);
+        if (state instanceof TicketDetailsUIState.Success) {
+            bindSuccessState((TicketDetailsUIState.Success) state);
+        } else if (state instanceof TicketDetailsUIState.Error) {
+            errorMessageTextView.setText(((TicketDetailsUIState.Error) state).messageTextResId);
         }
+    }
 
-        replyAdapter.setCanDelete(controls.canDeleteReply);
-        List<TicketReply> replies = state.ticket.getReplies();
-        if (replies == null || replies.isEmpty()) {
-            repliesRecyclerView.setVisibility(View.GONE);
-            noRepliesTextView.setVisibility(View.VISIBLE);
+    private void bindSuccessState(TicketDetailsUIState.Success state) {
+        bindTicketData(state.ticket);
+        bindControlStates(state.controls, state.imageCount, state.isClosedNoticeVisible);
+        bindReplies(state.ticket.getReplies(), state.controls.canDeleteReply());
+    }
+
+    private void bindTicketData(Ticket ticket) {
+        ticketTitle.setText(ticket.getTitle());
+        ticketStatus.setText(ticket.getStatus().getName());
+        ticketDescription.setText(ticket.getDescription());
+        ticketCategory.setText(getString(R.string.category_format, ticket.getCategory().getName()));
+        ticketPriority.setText(getString(R.string.priority_format, ticket.getPriority().getName()));
+        ticketSoftware.setText(getString(R.string.software_format, ticket.getSoftware().getName(), ticket.getVersion()));
+        ticketAuthor.setText(getString(R.string.author_format, ticket.getUser().getUsername()));
+        ticketDate.setText(getString(R.string.date_format, ticket.getCreatedDate().toString()));
+    }
+
+    private void bindControlStates(TicketDetailsControlsState controls, int imageCount, boolean isClosedNoticeVisible) {
+        editTicketButton.setVisibility(controls.canEditTicket() ? View.VISIBLE : View.GONE);
+        deleteTicketButton.setVisibility(controls.canDeleteTicket() ? View.VISIBLE : View.GONE);
+        changeStatusButton.setVisibility(controls.canChangeStatus() ? View.VISIBLE : View.GONE);
+        manageImagesButton.setVisibility(controls.canViewImages() ? View.VISIBLE : View.GONE);
+        replyTextInputLayout.setVisibility(controls.canAddReply() ? View.VISIBLE : View.GONE);
+        closedTicketNotice.setVisibility(isClosedNoticeVisible ? View.VISIBLE : View.GONE);
+        sendReplyButton.setVisibility(isClosedNoticeVisible ? View.GONE : View.VISIBLE);
+
+        if (imageCount > 0) {
+            manageImagesButton.setColorFilter(Color.GREEN);
         } else {
-            repliesRecyclerView.setVisibility(View.VISIBLE);
-            noRepliesTextView.setVisibility(View.GONE);
+            manageImagesButton.setColorFilter(Color.RED);
+        }
+    }
+
+    private void bindReplies(List<TicketReply> replies, boolean canDelete) {
+        replyAdapter.setCanDelete(canDelete);
+        boolean hasReplies = replies != null && !replies.isEmpty();
+        repliesRecyclerView.setVisibility(hasReplies ? View.VISIBLE : View.GONE);
+        noRepliesTextView.setVisibility(hasReplies ? View.GONE : View.VISIBLE);
+
+        if (hasReplies) {
             replyAdapter.submitList(replies);
         }
     }
@@ -238,39 +233,60 @@ public class TicketDetailsFragment extends Fragment {
                 .show();
     }
 
-    private void handleNavigation(TicketViewModel.DetailsNavigation target) {
-        if (getActivity() == null) return;
+    private void showDeleteTicketDialog() {
+        new AlertDialog.Builder(requireContext())
+                .setTitle(R.string.delete_ticket)
+                .setMessage(R.string.confirm_delete_ticket)
+                .setPositiveButton(R.string.delete_button, (d, w) -> viewModel.deleteTicket())
+                .setNegativeButton(R.string.cancel_button, null)
+                .show();
+    }
 
-        long currentTicketId = getArguments() != null ? getArguments().getLong("ticketId", -1) : -1;
-        if (currentTicketId == -1) return;
+    private void showDeleteReplyDialog(TicketReply reply) {
+        new AlertDialog.Builder(requireContext())
+                .setTitle(R.string.delete_reply)
+                .setMessage(R.string.confirm_delete_reply)
+                .setPositiveButton(R.string.delete_button, (d, w) -> viewModel.deleteReply(reply))
+                .setNegativeButton(R.string.cancel_button, null)
+                .show();
+    }
+
+    private void showErrorState(int messageResId) {
+        progressBar.setVisibility(View.GONE);
+        contentLayout.setVisibility(View.GONE);
+        errorMessageTextView.setVisibility(View.VISIBLE);
+        errorMessageTextView.setText(messageResId);
+    }
+
+    private void handleNavigation(TicketViewModel.DetailsNavigation target) {
+        if (!isAdded()) return;
+
+        Fragment fragment;
+        Bundle args = new Bundle();
+        args.putLong("ticketId", ticketId);
 
         switch (target) {
             case GO_BACK:
                 getParentFragmentManager().popBackStack();
-                break;
+                return;
             case GO_TO_EDIT:
-                TicketFormFragment formFragment = new TicketFormFragment();
-                Bundle editArgs = new Bundle();
-                editArgs.putLong("ticketId", currentTicketId);
-                formFragment.setArguments(editArgs);
-                performTransaction(formFragment);
+                fragment = new TicketFormFragment();
                 break;
             case GO_TO_IMAGES:
-                TicketImageFragment imageFragment = new TicketImageFragment();
-                Bundle imageArgs = new Bundle();
-                imageArgs.putLong("ticketId", currentTicketId);
-                imageFragment.setArguments(imageArgs);
-                performTransaction(imageFragment);
+                fragment = new TicketImageFragment();
                 break;
+            default:
+                return;
         }
+
+        fragment.setArguments(args);
+        performTransaction(fragment);
     }
 
     private void performTransaction(Fragment fragment) {
-        if (isAdded() && getActivity() != null) {
-            getParentFragmentManager().beginTransaction()
-                    .replace(R.id.mainContainer, fragment)
-                    .addToBackStack(null)
-                    .commit();
-        }
+        getParentFragmentManager().beginTransaction()
+                .replace(R.id.mainContainer, fragment)
+                .addToBackStack(null)
+                .commit();
     }
 }

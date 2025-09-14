@@ -1,4 +1,4 @@
-package com.example.support_management_system_mobile.ui.ticket;
+package com.example.support_management_system_mobile.ui.ticket.details;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -26,6 +26,7 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.example.support_management_system_mobile.R;
 import com.example.support_management_system_mobile.models.Image;
 import com.example.support_management_system_mobile.models.Ticket;
+import com.example.support_management_system_mobile.ui.ticket.TicketViewModel;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -119,7 +120,7 @@ public class TicketImageFragment extends Fragment {
 
                     pagerAdapter.submitList(successState.ticket.getImages());
 
-                    boolean canEdit = successState.controls.canEditImages;
+                    boolean canEdit = successState.controls.canEditImages();
                     deleteButton.setVisibility(hasImages && canEdit ? View.VISIBLE : View.GONE);
                     addButton.setVisibility(canEdit ? View.VISIBLE : View.GONE);
                 }

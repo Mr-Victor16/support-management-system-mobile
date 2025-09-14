@@ -16,6 +16,7 @@ import com.example.support_management_system_mobile.databinding.FragmentProfileB
 import com.example.support_management_system_mobile.R;
 import com.example.support_management_system_mobile.ui.MainActivity;
 import com.example.support_management_system_mobile.ui.management.ManagementPanelFragment;
+import com.example.support_management_system_mobile.ui.profile.edit.EditProfileFragment;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -49,20 +50,19 @@ public class ProfileFragment extends Fragment {
 
     private void observeViewModel() {
         viewModel.getScreenState().observe(getViewLifecycleOwner(), state -> {
-            if (state instanceof ProfileScreenState.Loading) {
+            if (state instanceof ProfileUIState.Loading) {
                 binding.progressBar.setVisibility(View.VISIBLE);
                 binding.contentGroup.setVisibility(View.GONE);
-            } else if (state instanceof ProfileScreenState.Success) {
+            } else if (state instanceof ProfileUIState.Success successState) {
                 binding.progressBar.setVisibility(View.GONE);
                 binding.contentGroup.setVisibility(View.VISIBLE);
 
-                ProfileViewModel.ProfileUIState userData = ((ProfileScreenState.Success) state).userData;
-                binding.usernameText.setText(userData.username);
-                binding.fullNameText.setText(userData.fullName);
-                binding.emailText.setText(userData.email);
-                binding.roleText.setText(userData.roleResId);
+                binding.usernameText.setText(successState.username);
+                binding.fullNameText.setText(successState.fullName);
+                binding.emailText.setText(successState.email);
+                binding.roleText.setText(successState.roleResId);
 
-                binding.managementPanelButton.setVisibility(userData.isManagementPanelVisible ? View.VISIBLE : View.GONE);
+                binding.managementPanelButton.setVisibility(successState.isManagementPanelVisible ? View.VISIBLE : View.GONE);
             }
         });
 

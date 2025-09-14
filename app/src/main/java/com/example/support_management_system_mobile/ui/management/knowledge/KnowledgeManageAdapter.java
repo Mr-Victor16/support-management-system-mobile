@@ -49,19 +49,22 @@ public class KnowledgeManageAdapter extends ListAdapter<Knowledge, KnowledgeMana
     }
 
     static class KnowledgeViewHolder extends RecyclerView.ViewHolder {
-        TextView titleTextView, softwareTextView;
+        TextView titleTextView, softwareTextView, dateTextView;
         ImageButton editButton, deleteButton;
 
         public KnowledgeViewHolder(@NonNull View itemView) {
             super(itemView);
             titleTextView = itemView.findViewById(R.id.knowledgeTitleTextView);
             softwareTextView = itemView.findViewById(R.id.knowledgeSoftwareTextView);
+            dateTextView = itemView.findViewById(R.id.dateTextView);
             editButton = itemView.findViewById(R.id.editButton);
             deleteButton = itemView.findViewById(R.id.deleteButton);
         }
 
         public void bind(final Knowledge item, final OnKnowledgeInteractionListener listener, boolean canManage) {
             titleTextView.setText(item.getTitle());
+            dateTextView.setText(item.getCreatedDate().toString());
+            softwareTextView.setText(item.getSoftware().getName());
 
             int visibility = canManage ? View.VISIBLE : View.GONE;
             editButton.setVisibility(visibility);

@@ -12,7 +12,6 @@ import com.example.support_management_system_mobile.data.repository.KnowledgeRep
 import com.example.support_management_system_mobile.models.Knowledge;
 import com.example.support_management_system_mobile.models.Event;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -47,42 +46,40 @@ public class KnowledgeViewModel extends ViewModel {
         knowledgeRepository.getKnowledgeItems(new Callback<List<Knowledge>>() {
             @Override
             public void onResponse(@NonNull Call<List<Knowledge>> call, @NonNull Response<List<Knowledge>> response) {
-                if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
+                if (response.isSuccessful() && response.body() != null) {
                     List<KnowledgeUIModel> uiModels = response.body().stream()
                             .map(knowledge -> new KnowledgeUIModel(knowledge, false))
                             .collect(Collectors.toList());
                     _uiState.postValue(new KnowledgeUIState.Success(uiModels));
                 } else {
-                    _uiState.postValue(new KnowledgeUIState.Empty(application.getString(R.string.no_data_to_display)));
+                    _uiState.postValue(new KnowledgeUIState.Error(application.getString(R.string.no_data_to_display)));
+                    _toastEvent.postValue(new Event<>(application.getString(R.string.server_error)));
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<List<Knowledge>> call, @NonNull Throwable t) {
+                _uiState.postValue(new KnowledgeUIState.Error(application.getString(R.string.no_data_to_display)));
                 _toastEvent.postValue(new Event<>(application.getString(R.string.server_error)));
-                _uiState.postValue(new KnowledgeUIState.Empty(application.getString(R.string.no_data_to_display)));
             }
         });
     }
 
     public void onKnowledgeItemClicked(Long knowledgeId) {
         KnowledgeUIState currentState = _uiState.getValue();
-
         if (!(currentState instanceof KnowledgeUIState.Success)) {
             return;
         }
 
         List<KnowledgeUIModel> currentList = ((KnowledgeUIState.Success) currentState).items;
-
-        List<KnowledgeUIModel> newList = new ArrayList<>();
-        for (KnowledgeUIModel item : currentList) {
-            if (item.knowledge().getId().equals(knowledgeId)) {
-                newList.add(new KnowledgeUIModel(item.knowledge(), !item.isExpanded()));
-            } else {
-                newList.add(new KnowledgeUIModel(item.knowledge(), item.isExpanded()));
-
-            }
-        }
+        List<KnowledgeUIModel> newList = currentList.stream()
+                .map(item -> {
+                    if (item.knowledge().getId().equals(knowledgeId)) {
+                        return new KnowledgeUIModel(item.knowledge(), !item.isExpanded());
+                    }
+                    return item;
+                })
+                .collect(Collectors.toList());
 
         _uiState.setValue(new KnowledgeUIState.Success(newList));
     }

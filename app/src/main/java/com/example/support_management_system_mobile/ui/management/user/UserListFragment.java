@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,7 +30,6 @@ public class UserListFragment extends Fragment {
     private UserAdapter adapter;
     private RecyclerView recyclerView;
     private ProgressBar progressBar;
-    private LinearLayout emptyErrorLayout;
     private TextView emptyErrorTextView;
     private FloatingActionButton fab;
 
@@ -55,7 +53,6 @@ public class UserListFragment extends Fragment {
     private void initViews(View view) {
         recyclerView = view.findViewById(R.id.userRecyclerView);
         progressBar = view.findViewById(R.id.progressBar);
-        emptyErrorLayout = view.findViewById(R.id.emptyErrorLayout);
         emptyErrorTextView = view.findViewById(R.id.emptyErrorTextView);
         fab = view.findViewById(R.id.fabAddUser);
 
@@ -87,22 +84,31 @@ public class UserListFragment extends Fragment {
 
     private void observeViewModel() {
         viewModel.userListState.observe(getViewLifecycleOwner(), state -> {
-            progressBar.setVisibility(state instanceof UserListUIState.Loading ? View.VISIBLE : View.GONE);
-            recyclerView.setVisibility(state instanceof UserListUIState.Success ? View.VISIBLE : View.GONE);
-
-            boolean isListEmpty = state instanceof UserListUIState.Success && ((UserListUIState.Success) state).userList.isEmpty();
-            emptyErrorLayout.setVisibility(state instanceof UserListUIState.Error || isListEmpty ? View.VISIBLE : View.GONE);
-
-            if (state instanceof UserListUIState.Success successState) {
+            if (state instanceof UserListUIState.Loading) {
+                progressBar.setVisibility(View.VISIBLE);
+                recyclerView.setVisibility(View.GONE);
+                emptyErrorTextView.setVisibility(View.GONE);
+                fab.setVisibility(View.GONE);
+            } else if (state instanceof UserListUIState.Success successState) {
+                progressBar.setVisibility(View.GONE);
                 adapter.setCanManage(successState.canManage);
                 adapter.submitList(successState.userList);
                 fab.setVisibility(View.VISIBLE);
 
-                if (isListEmpty) {
+                if (successState.userList.isEmpty()) {
+                    recyclerView.setVisibility(View.GONE);
                     emptyErrorTextView.setText(R.string.server_error);
+                    emptyErrorTextView.setVisibility(View.VISIBLE);
+                } else {
+                    recyclerView.setVisibility(View.VISIBLE);
+                    emptyErrorTextView.setVisibility(View.GONE);
                 }
-            } else if (state instanceof UserListUIState.Error) {
-                emptyErrorTextView.setText(((UserListUIState.Error) state).message);
+            } else if (state instanceof UserListUIState.Error errorState) {
+                progressBar.setVisibility(View.GONE);
+                recyclerView.setVisibility(View.GONE);
+                fab.setVisibility(View.GONE);
+                emptyErrorTextView.setText(errorState.message);
+                emptyErrorTextView.setVisibility(View.VISIBLE);
             }
         });
 

@@ -17,55 +17,62 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:visibility="gone" />
 
-    <LinearLayout
-        android:id="@+id/errorLayout"
+    <TextView
+        android:id="@+id/errorTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:drawablePadding="8dp"
         android:gravity="center"
-        android:orientation="vertical"
+        android:text="@string/form_data_load_error"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:visibility="gone">
-
-        <TextView
-            android:id="@+id/errorMessageTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
-            tools:text="@string/form_data_load_error" />
-    </LinearLayout>
+        tools:visibility="gone" />
 
     <ScrollView
         android:id="@+id/formContent"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:fillViewport="true"
+        android:paddingBottom="16dp"
         android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         tools:visibility="visible">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp">
+            android:padding="24dp">
 
             <TextView
                 android:id="@+id/formHeader"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
                 android:gravity="center"
-                android:layout_marginBottom="16dp"
-                android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium" />
+                android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/titleInputLayout"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:hint="@string/knowledge_title">
+                android:layout_marginTop="16dp"
+                android:hint="@string/knowledge_title"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/formHeader"
+                app:layout_constraintWidth_max="480dp">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/editTitle"
@@ -78,41 +85,54 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/contentInputLayout"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:hint="@string/knowledge_content">
+                android:layout_marginTop="16dp"
+                android:hint="@string/knowledge_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/titleInputLayout"
+                app:layout_constraintWidth_max="480dp">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/editContent"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="top"
-                    android:inputType="textMultiLine"
-                    android:minLines="5"
-                    android:maxLength="2000" />
+                    android:inputType="textMultiLine|textCapSentences"
+                    android:maxLength="2000"
+                    android:minLines="5" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <TextView
-                android:layout_width="wrap_content"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/softwareMenu"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="@string/software"
-                android:labelFor="@id/spinnerSoftware"/>
+                android:hint="@string/software"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/contentInputLayout"
+                app:layout_constraintWidth_max="480dp">
 
-            <Spinner
-                android:id="@+id/spinnerSoftware"
-                android:layout_width="match_parent"
-                android:layout_height="48dp" />
+                <AutoCompleteTextView
+                    android:id="@+id/softwareAutoComplete"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="none" />
+
+            </com.google.android.material.textfield.TextInputLayout>
 
             <Button
-                android:id="@+id/btnSave"
+                android:id="@+id/saveButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="end"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="32dp"
+                app:layout_constraintEnd_toEndOf="@id/softwareMenu"
+                app:layout_constraintTop_toBottomOf="@id/softwareMenu"
                 tools:text="@string/save" />
 
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

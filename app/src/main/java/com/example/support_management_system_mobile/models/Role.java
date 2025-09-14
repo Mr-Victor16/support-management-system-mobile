@@ -26,6 +26,18 @@ public class Role {
         public String getDisplayName() {
             return displayName;
         }
+
+        public static Types fromString(String text) {
+            if (text != null) {
+                for (Types b : Types.values()) {
+                    if (text.equalsIgnoreCase(b.name())) {
+                        return b;
+                    }
+                }
+            }
+
+            return ROLE_USER;
+        }
     }
 
     public Long getId() {

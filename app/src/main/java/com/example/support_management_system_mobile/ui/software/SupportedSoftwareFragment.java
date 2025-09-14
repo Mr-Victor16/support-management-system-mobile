@@ -26,18 +26,18 @@ public class SupportedSoftwareFragment extends Fragment {
     private SoftwareAdapter softwareAdapter;
     private RecyclerView recyclerView;
     private TextView emptyMessage;
-    private ProgressBar loadingSpinner;
+    private ProgressBar progressBar;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_supported_software, container, false);
-        initViews(view);
-        return view;
+        return inflater.inflate(R.layout.fragment_supported_software, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        initViews(view);
 
         viewModel = new ViewModelProvider(this).get(SupportedSoftwareViewModel.class);
         setupRecyclerView();
@@ -46,7 +46,7 @@ public class SupportedSoftwareFragment extends Fragment {
 
     private void initViews(View view) {
         recyclerView = view.findViewById(R.id.recyclerViewSoftware);
-        loadingSpinner = view.findViewById(R.id.loadingSpinner);
+        progressBar = view.findViewById(R.id.progressBar);
         emptyMessage = view.findViewById(R.id.emptyMessage);
     }
 
@@ -60,20 +60,26 @@ public class SupportedSoftwareFragment extends Fragment {
     private void observeViewModel() {
         viewModel.screenState.observe(getViewLifecycleOwner(), state -> {
             if (state instanceof SoftwareUIState.Loading) {
-                loadingSpinner.setVisibility(View.VISIBLE);
+                progressBar.setVisibility(View.VISIBLE);
                 recyclerView.setVisibility(View.GONE);
                 emptyMessage.setVisibility(View.GONE);
-            } else if (state instanceof SoftwareUIState.Success) {
-                loadingSpinner.setVisibility(View.GONE);
-                emptyMessage.setVisibility(View.GONE);
-                recyclerView.setVisibility(View.VISIBLE);
+            } else if (state instanceof SoftwareUIState.Success successState) {
+                progressBar.setVisibility(View.GONE);
+                softwareAdapter.submitList(successState.items);
 
-                softwareAdapter.submitList(((SoftwareUIState.Success) state).items);
-            } else if (state instanceof SoftwareUIState.Empty) {
-                loadingSpinner.setVisibility(View.GONE);
+                if (successState.items.isEmpty()) {
+                    recyclerView.setVisibility(View.GONE);
+                    emptyMessage.setVisibility(View.VISIBLE);
+                    emptyMessage.setText(R.string.no_data_to_display);
+                } else {
+                    recyclerView.setVisibility(View.VISIBLE);
+                    emptyMessage.setVisibility(View.GONE);
+                }
+            } else if (state instanceof SoftwareUIState.Error errorState) {
+                progressBar.setVisibility(View.GONE);
                 recyclerView.setVisibility(View.GONE);
                 emptyMessage.setVisibility(View.VISIBLE);
-                emptyMessage.setText(((SoftwareUIState.Empty) state).message);
+                emptyMessage.setText(errorState.message);
             }
         });
 

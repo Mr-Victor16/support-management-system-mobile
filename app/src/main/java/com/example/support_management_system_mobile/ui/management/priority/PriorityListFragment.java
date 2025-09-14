@@ -16,7 +16,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -36,7 +35,6 @@ public class PriorityListFragment extends Fragment {
     private RecyclerView recyclerView;
     private ProgressBar progressBar;
     private FloatingActionButton fab;
-    private LinearLayout emptyErrorLayout;
     private TextView emptyErrorTextView;
 
     @Nullable
@@ -60,7 +58,6 @@ public class PriorityListFragment extends Fragment {
     private void initViews(View view) {
         recyclerView = view.findViewById(R.id.prioritiesRecyclerView);
         progressBar = view.findViewById(R.id.progressBar);
-        emptyErrorLayout = view.findViewById(R.id.emptyErrorLayout);
         emptyErrorTextView = view.findViewById(R.id.emptyErrorTextView);
         fab = view.findViewById(R.id.fabAddPriority);
         fab.setOnClickListener(v -> showPriorityDialog(null));
@@ -91,23 +88,32 @@ public class PriorityListFragment extends Fragment {
 
     private void observeViewModel() {
         viewModel.priorityListState.observe(getViewLifecycleOwner(), state -> {
-            progressBar.setVisibility(state instanceof PriorityListUIState.Loading ? View.VISIBLE : View.GONE);
-            recyclerView.setVisibility(state instanceof PriorityListUIState.Success ? View.VISIBLE : View.GONE);
+            if (state instanceof PriorityListUIState.Loading) {
+                progressBar.setVisibility(View.VISIBLE);
+                recyclerView.setVisibility(View.GONE);
+                emptyErrorTextView.setVisibility(View.GONE);
+                fab.setVisibility(View.GONE);
+            } else if (state instanceof PriorityListUIState.Success successState) {
+                boolean isAdmin = viewModel.getAuthContext().isAdmin();
 
-            boolean isListEmpty = state instanceof PriorityListUIState.Success && ((PriorityListUIState.Success) state).priorities.isEmpty();
-            boolean isAdmin = viewModel.getAuthContext().isAdmin();
-
-            emptyErrorLayout.setVisibility(state instanceof PriorityListUIState.Error || isListEmpty ? View.VISIBLE : View.GONE);
-
-            if (state instanceof PriorityListUIState.Success) {
-                adapter.submitList(((PriorityListUIState.Success) state).priorities);
+                progressBar.setVisibility(View.GONE);
+                adapter.submitList(successState.priorities);
                 fab.setVisibility(isAdmin ? View.VISIBLE : View.GONE);
 
-                if (((PriorityListUIState.Success) state).priorities.isEmpty()) {
+                if (successState.priorities.isEmpty()) {
+                    recyclerView.setVisibility(View.GONE);
                     emptyErrorTextView.setText(R.string.no_priorities_defined);
+                    emptyErrorTextView.setVisibility(View.VISIBLE);
+                } else {
+                    recyclerView.setVisibility(View.VISIBLE);
+                    emptyErrorTextView.setVisibility(View.GONE);
                 }
             } else if (state instanceof PriorityListUIState.Error) {
+                progressBar.setVisibility(View.GONE);
+                recyclerView.setVisibility(View.GONE);
+                fab.setVisibility(View.GONE);
                 emptyErrorTextView.setText(((PriorityListUIState.Error) state).message);
+                emptyErrorTextView.setVisibility(View.VISIBLE);
             }
         });
 

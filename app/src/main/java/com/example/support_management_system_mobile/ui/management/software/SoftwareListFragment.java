@@ -16,7 +16,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,7 +34,6 @@ public class SoftwareListFragment extends Fragment {
     private SoftwareManageAdapter adapter;
     private RecyclerView recyclerView;
     private ProgressBar progressBar;
-    private LinearLayout emptyErrorLayout;
     private TextView emptyErrorTextView;
     private FloatingActionButton fab;
 
@@ -60,7 +58,6 @@ public class SoftwareListFragment extends Fragment {
     private void initViews(View view) {
         recyclerView = view.findViewById(R.id.softwareRecyclerView);
         progressBar = view.findViewById(R.id.progressBar);
-        emptyErrorLayout = view.findViewById(R.id.emptyErrorLayout);
         emptyErrorTextView = view.findViewById(R.id.emptyErrorTextView);
         fab = view.findViewById(R.id.fabAddSoftware);
 
@@ -95,22 +92,31 @@ public class SoftwareListFragment extends Fragment {
 
     private void observeViewModel() {
         viewModel.softwareListState.observe(getViewLifecycleOwner(), state -> {
-            progressBar.setVisibility(state instanceof SoftwareListUIState.Loading ? View.VISIBLE : View.GONE);
-            recyclerView.setVisibility(state instanceof SoftwareListUIState.Success ? View.VISIBLE : View.GONE);
-
-            boolean isListEmpty = state instanceof SoftwareListUIState.Success && ((SoftwareListUIState.Success) state).softwareList.isEmpty();
-            emptyErrorLayout.setVisibility(state instanceof SoftwareListUIState.Error || isListEmpty ? View.VISIBLE : View.GONE);
-
-            if (state instanceof SoftwareListUIState.Success successState) {
+            if (state instanceof SoftwareListUIState.Loading) {
+                progressBar.setVisibility(View.VISIBLE);
+                recyclerView.setVisibility(View.GONE);
+                emptyErrorTextView.setVisibility(View.GONE);
+                fab.setVisibility(View.GONE);
+            } else if (state instanceof SoftwareListUIState.Success successState) {
+                progressBar.setVisibility(View.GONE);
                 adapter.setCanManage(successState.canManage);
                 adapter.submitList(successState.softwareList);
                 fab.setVisibility(successState.canManage ? View.VISIBLE : View.GONE);
 
-                if (isListEmpty) {
+                if (successState.softwareList.isEmpty()) {
+                    recyclerView.setVisibility(View.GONE);
                     emptyErrorTextView.setText(R.string.no_software_defined);
+                    emptyErrorTextView.setVisibility(View.VISIBLE);
+                } else {
+                    recyclerView.setVisibility(View.VISIBLE);
+                    emptyErrorTextView.setVisibility(View.GONE);
                 }
-            } else if (state instanceof SoftwareListUIState.Error) {
-                emptyErrorTextView.setText(((SoftwareListUIState.Error) state).message);
+            } else if (state instanceof SoftwareListUIState.Error errorState) {
+                progressBar.setVisibility(View.GONE);
+                recyclerView.setVisibility(View.GONE);
+                fab.setVisibility(View.GONE);
+                emptyErrorTextView.setText(errorState.message);
+                emptyErrorTextView.setVisibility(View.VISIBLE);
             }
         });
 

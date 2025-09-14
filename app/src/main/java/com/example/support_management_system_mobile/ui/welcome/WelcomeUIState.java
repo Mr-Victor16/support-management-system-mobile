@@ -1,9 +1,9 @@
 package com.example.support_management_system_mobile.ui.welcome;
 
-public interface WelcomeUIState {
-    class Loading implements WelcomeUIState {}
+public abstract class WelcomeUIState {
+    public static final class Loading extends WelcomeUIState {}
 
-    class Success implements WelcomeUIState {
+    public static final class Success extends WelcomeUIState {
         private final String welcomeMessage;
         private final boolean isLoginButtonVisible;
 

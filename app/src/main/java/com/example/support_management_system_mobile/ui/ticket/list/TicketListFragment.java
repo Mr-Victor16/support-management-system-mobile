@@ -1,4 +1,4 @@
-package com.example.support_management_system_mobile.ui.ticket;
+package com.example.support_management_system_mobile.ui.ticket.list;
 
 import android.os.Bundle;
 
@@ -17,6 +17,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.support_management_system_mobile.R;
+import com.example.support_management_system_mobile.ui.ticket.details.TicketDetailsFragment;
+import com.example.support_management_system_mobile.ui.ticket.form.TicketFormFragment;
+import com.example.support_management_system_mobile.ui.ticket.TicketViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -68,15 +71,18 @@ public class TicketListFragment extends Fragment {
 
     private void observeViewModel() {
         viewModel.ticketListState.observe(getViewLifecycleOwner(), state -> {
-            progressBar.setVisibility(state instanceof TicketListUIState.Loading ? View.VISIBLE : View.GONE);
-            recyclerView.setVisibility(state instanceof TicketListUIState.Success ? View.VISIBLE : View.GONE);
-            emptyListMessage.setVisibility(state instanceof TicketListUIState.Error ? View.VISIBLE : View.GONE);
-
+            progressBar.setVisibility(View.GONE);
+            recyclerView.setVisibility(View.GONE);
+            emptyListMessage.setVisibility(View.GONE);
             addTicketButton.setVisibility(View.GONE);
 
-            if (state instanceof TicketListUIState.Success successState) {
-                ticketAdapter.submitList(successState.tickets);
+            if (state instanceof TicketListUIState.Loading loadingState) {
+                headerTextView.setText(loadingState.headerTextResId);
+                progressBar.setVisibility(View.VISIBLE);
+            } else if (state instanceof TicketListUIState.Success successState) {
                 headerTextView.setText(successState.headerTextResId);
+                ticketAdapter.submitList(successState.tickets);
+                recyclerView.setVisibility(View.VISIBLE);
 
                 if (successState.canAddTicket) {
                     addTicketButton.setVisibility(View.VISIBLE);
@@ -88,8 +94,14 @@ public class TicketListFragment extends Fragment {
                 } else {
                     emptyListMessage.setVisibility(View.GONE);
                 }
-            } else if (state instanceof TicketListUIState.Error) {
-                emptyListMessage.setText(((TicketListUIState.Error) state).message);
+            } else if (state instanceof TicketListUIState.Error errorState) {
+                headerTextView.setText(errorState.headerTextResId);
+                emptyListMessage.setText(errorState.message);
+                emptyListMessage.setVisibility(View.VISIBLE);
+            } else if (state instanceof TicketListUIState.AccessDenied deniedState) {
+                headerTextView.setText(deniedState.headerTextResId);
+                emptyListMessage.setText(deniedState.message);
+                emptyListMessage.setVisibility(View.VISIBLE);
             }
         });
 

@@ -15,7 +15,7 @@ import com.example.support_management_system_mobile.R;
 import com.example.support_management_system_mobile.auth.JWTUtils;
 import com.example.support_management_system_mobile.ui.login.LoginActivity;
 import com.example.support_management_system_mobile.ui.profile.ProfileFragment;
-import com.example.support_management_system_mobile.ui.ticket.TicketListFragment;
+import com.example.support_management_system_mobile.ui.ticket.list.TicketListFragment;
 import com.example.support_management_system_mobile.ui.welcome.WelcomeFragment;
 import com.google.android.material.navigation.NavigationBarView;
 

@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.support_management_system_mobile.R;
+import com.example.support_management_system_mobile.databinding.FragmentManagementPanelBinding;
 import com.example.support_management_system_mobile.ui.management.category.CategoryListFragment;
 import com.example.support_management_system_mobile.ui.management.knowledge.KnowledgeListFragment;
 import com.example.support_management_system_mobile.ui.management.priority.PriorityListFragment;
@@ -19,27 +20,27 @@ import com.example.support_management_system_mobile.ui.management.status.StatusL
 import com.example.support_management_system_mobile.ui.management.user.UserListFragment;
 
 public class ManagementPanelFragment extends Fragment {
+    private FragmentManagementPanelBinding binding;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_management_panel, container, false);
+        binding = FragmentManagementPanelBinding.inflate(inflater, container, false);
+        return binding.getRoot();
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        setupClickListeners();
+    }
 
-        view.findViewById(R.id.manageCategoriesButton).setOnClickListener(v -> navigateTo(new CategoryListFragment()));
-
-        view.findViewById(R.id.manageKnowledgeButton).setOnClickListener(v -> navigateTo(new KnowledgeListFragment()));
-
-        view.findViewById(R.id.managePrioritiesButton).setOnClickListener(v -> navigateTo(new PriorityListFragment()));
-
-        view.findViewById(R.id.manageSoftwareButton).setOnClickListener(v -> navigateTo(new SoftwareListFragment()));
-
-        view.findViewById(R.id.manageStatusesButton).setOnClickListener(v -> navigateTo(new StatusListFragment()));
-
-        view.findViewById(R.id.manageUsersButton).setOnClickListener(v -> navigateTo(new UserListFragment()));
+    private void setupClickListeners() {
+        binding.manageUsersCard.setOnClickListener(v -> navigateTo(new UserListFragment()));
+        binding.manageCategoriesCard.setOnClickListener(v -> navigateTo(new CategoryListFragment()));
+        binding.manageKnowledgeCard.setOnClickListener(v -> navigateTo(new KnowledgeListFragment()));
+        binding.managePrioritiesCard.setOnClickListener(v -> navigateTo(new PriorityListFragment()));
+        binding.manageSoftwareCard.setOnClickListener(v -> navigateTo(new SoftwareListFragment()));
+        binding.manageStatusesCard.setOnClickListener(v -> navigateTo(new StatusListFragment()));
     }
 
     private void navigateTo(Fragment destinationFragment) {
@@ -49,5 +50,11 @@ public class ManagementPanelFragment extends Fragment {
                     .addToBackStack(null)
                     .commit();
         }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
     }
 }

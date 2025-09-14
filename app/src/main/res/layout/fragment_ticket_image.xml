@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@android:color/black"
     android:animateLayoutChanges="true"
-    tools:context=".ui.ticket.TicketImageFragment">
+    tools:context=".ui.ticket.details.TicketImageFragment">
 
     <ProgressBar
         android:id="@+id/progressBar"

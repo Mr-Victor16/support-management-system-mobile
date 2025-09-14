@@ -16,7 +16,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -36,7 +35,6 @@ public class CategoryListFragment extends Fragment {
     private RecyclerView recyclerView;
     private ProgressBar progressBar;
     private FloatingActionButton fab;
-    private LinearLayout emptyErrorLayout;
     private TextView emptyErrorTextView;
 
     @Nullable
@@ -60,7 +58,6 @@ public class CategoryListFragment extends Fragment {
     private void initViews(View view) {
         recyclerView = view.findViewById(R.id.categoriesRecyclerView);
         progressBar = view.findViewById(R.id.progressBar);
-        emptyErrorLayout = view.findViewById(R.id.emptyErrorLayout);
         emptyErrorTextView = view.findViewById(R.id.emptyErrorTextView);
         fab = view.findViewById(R.id.fabAddCategory);
         fab.setOnClickListener(v -> showCategoryDialog(null));
@@ -91,23 +88,32 @@ public class CategoryListFragment extends Fragment {
 
     private void observeViewModel() {
         viewModel.categoryListState.observe(getViewLifecycleOwner(), state -> {
-            progressBar.setVisibility(state instanceof CategoryListUIState.Loading ? View.VISIBLE : View.GONE);
-            recyclerView.setVisibility(state instanceof CategoryListUIState.Success ? View.VISIBLE : View.GONE);
+            if (state instanceof CategoryListUIState.Loading) {
+                progressBar.setVisibility(View.VISIBLE);
+                recyclerView.setVisibility(View.GONE);
+                emptyErrorTextView.setVisibility(View.GONE);
+                fab.setVisibility(View.GONE);
+            } else if (state instanceof CategoryListUIState.Success successState) {
+                boolean isAdmin = viewModel.getAuthContext().isAdmin();
 
-            boolean isListEmpty = state instanceof CategoryListUIState.Success && ((CategoryListUIState.Success) state).categories.isEmpty();
-            boolean isAdmin = viewModel.getAuthContext().isAdmin();
-
-            emptyErrorLayout.setVisibility(state instanceof CategoryListUIState.Error || isListEmpty ? View.VISIBLE : View.GONE);
-
-            if (state instanceof CategoryListUIState.Success) {
-                adapter.submitList(((CategoryListUIState.Success) state).categories);
+                progressBar.setVisibility(View.GONE);
+                adapter.submitList(successState.categories);
                 fab.setVisibility(isAdmin ? View.VISIBLE : View.GONE);
 
-                if (((CategoryListUIState.Success) state).categories.isEmpty()) {
+                if (successState.categories.isEmpty()) {
+                    recyclerView.setVisibility(View.GONE);
                     emptyErrorTextView.setText(R.string.no_categories_defined);
+                    emptyErrorTextView.setVisibility(View.VISIBLE);
+                } else {
+                    recyclerView.setVisibility(View.VISIBLE);
+                    emptyErrorTextView.setVisibility(View.GONE);
                 }
-            } else if (state instanceof CategoryListUIState.Error) {
-                emptyErrorTextView.setText(((CategoryListUIState.Error) state).message);
+            } else if (state instanceof CategoryListUIState.Error errorState) {
+                progressBar.setVisibility(View.GONE);
+                recyclerView.setVisibility(View.GONE);
+                fab.setVisibility(View.GONE);
+                emptyErrorTextView.setText(errorState.message);
+                emptyErrorTextView.setVisibility(View.VISIBLE);
             }
         });
 

@@ -53,6 +53,8 @@
 
     <string name="all_tickets_header">All tickets</string>
     <string name="my_tickets_header">My tickets</string>
+    <string name="admin_no_access_tickets">The administrator does not have access to the list of tickets</string>
+    <string name="tickets_header">Tickets</string>
     <string name="edit_button">Edit</string>
     <string name="delete_button">Delete</string>
     <string name="send_button">Send</string>
@@ -79,8 +81,6 @@
     <string name="ticket_added">Ticket added</string>
     <string name="ticket_updated">Ticket updated</string>
     <string name="add_image">Add image</string>
-    <string name="add_images">Add images</string>
-    <string name="images_count">"Images: %1$d"</string>
     <string name="new_ticket">New ticket</string>
     <string name="edit_ticket">Edit ticket</string>
     <string name="save">Save</string>
@@ -128,7 +128,7 @@
     <string name="management_categories_header">Manage categories</string>
 
     <string name="add_new_category">Add new category</string>
-    <string name="no_categories_defined">No categories defined. Click + to add the first one</string>
+    <string name="no_categories_defined">No categories defined. \nClick + to add the first one</string>
     <string name="usage_count_format">Usage count: %d</string>
     <string name="edit_category_title">Edit category</string>
     <string name="delete_category">Delete category</string>
@@ -143,7 +143,7 @@
     <string name="category_name_hint">Category name</string>
 
     <string name="add_new_priority">Add new priority</string>
-    <string name="no_priorities_defined">No priorities defined. Click + to add the first one</string>
+    <string name="no_priorities_defined">No priorities defined. \nClick + to add the first one</string>
     <string name="edit_priority">Edit priority</string>
     <string name="delete_priority">Delete priority</string>
     <string name="confirm_delete_priority_message">Are you sure you want to delete the priority \'%1$s\' ?</string>
@@ -157,7 +157,7 @@
     <string name="priority_update_error">Error updating priority</string>
 
     <string name="add_new_knowledge">Add new entry</string>
-    <string name="no_knowledge_defined">No entries in the knowledge base. Click + to add the first one</string>
+    <string name="no_knowledge_defined">No entries in the knowledge base. \nClick + to add the first one</string>
     <string name="edit_knowledge">Edit entry</string>
     <string name="knowledge_title">Title</string>
     <string name="knowledge_content">Content</string>
@@ -173,7 +173,7 @@
     <string name="entry_update_error">Error updating entry</string>
 
     <string name="add_new_software">Add new software</string>
-    <string name="no_software_defined">No software defined. Click + to add the first one</string>
+    <string name="no_software_defined">No software defined. \nClick + to add the first one</string>
     <string name="usage_count_software_format">Tickets: %1$d, Knowledge base: %2$d</string>
     <string name="add_new_software_title">Add new software</string>
     <string name="edit_software_title">Edit software</string>
@@ -191,7 +191,7 @@
     <string name="software_update_error">Error updating software</string>
 
     <string name="add_new_status">Add new status</string>
-    <string name="no_status_defined">No status defined. Click + to add the first one</string>
+    <string name="no_status_defined">No status defined. \nClick + to add the first one</string>
     <string name="usage_count_status_format">Tickets: %1$d</string>
     <string name="add_new_status_title">Add new status</string>
     <string name="edit_status_title">Edit status</string>

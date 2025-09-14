@@ -1,4 +1,4 @@
-package com.example.support_management_system_mobile.ui.ticket;
+package com.example.support_management_system_mobile.ui.ticket.form;
 
 import androidx.annotation.StringRes;
 
