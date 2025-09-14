@@ -94,7 +94,6 @@
     <string name="reply_delete_failed">An error occurred while deleting the reply</string>
     <string name="image_delete_failed">An error occurred while deleting the image</string>
     <string name="add_image_failed">An error occurred while uploading the image</string>
-    <string name="tickets_load_error">An error occurred while loading the list of tickets</string>
     <string name="ticket_not_found">The specified ticket was not found</string>
     <string name="reply_add_failed">An error occurred while adding the reply</string>
     <string name="status_changed">Ticket status has been changed</string>
@@ -125,7 +124,6 @@
     <string name="manage_software">Manage software</string>
     <string name="manage_statuses">Manage statuses</string>
     <string name="manage_users">Manage users</string>
-    <string name="management_categories_header">Manage categories</string>
 
     <string name="add_new_category">Add new category</string>
     <string name="no_categories_defined">No categories defined. \nClick + to add the first one</string>

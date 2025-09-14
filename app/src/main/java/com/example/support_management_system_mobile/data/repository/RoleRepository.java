@@ -1,7 +1,7 @@
 package com.example.support_management_system_mobile.data.repository;
 
-import com.example.support_management_system_mobile.models.Role;
-import com.example.support_management_system_mobile.network.APIService;
+import com.example.support_management_system_mobile.data.models.Role;
+import com.example.support_management_system_mobile.data.api.APIService;
 
 import java.util.List;
 

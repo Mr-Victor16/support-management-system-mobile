@@ -8,8 +8,8 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.support_management_system_mobile.R;
-import com.example.support_management_system_mobile.auth.JWTUtils;
-import com.example.support_management_system_mobile.models.Event;
+import com.example.support_management_system_mobile.utils.AuthContext;
+import com.example.support_management_system_mobile.data.models.Event;
 
 import javax.inject.Inject;
 
@@ -26,6 +26,9 @@ public class WelcomeViewModel extends ViewModel {
     public final LiveData<Event<NavigationTarget>> navigation = _navigation;
 
     @Inject
+    AuthContext authContext;
+
+    @Inject
     public WelcomeViewModel(@NonNull Application application) {
         this.application = application;
     }
@@ -33,13 +36,12 @@ public class WelcomeViewModel extends ViewModel {
     public void loadData() {
         _uiState.setValue(new WelcomeUIState.Loading());
 
-        if (JWTUtils.getToken(application) == null) {
+        if (authContext.isLoggedIn()) {
+            String welcomeText = application.getString(R.string.welcome_header_format, authContext.getCurrentUser().getName());
+            _uiState.setValue(new WelcomeUIState.Success(welcomeText, false));
+        } else {
             String welcomeText = application.getString(R.string.welcome);
             _uiState.setValue(new WelcomeUIState.Success(welcomeText, true));
-        } else {
-            String name = JWTUtils.getName(application);
-            String welcomeText = application.getString(R.string.welcome_header_format, name);
-            _uiState.setValue(new WelcomeUIState.Success(welcomeText, false));
         }
     }
 
@@ -54,5 +56,4 @@ public class WelcomeViewModel extends ViewModel {
     public void onKnowledgeClicked() {
         _navigation.setValue(new Event<>(NavigationTarget.KNOWLEDGE));
     }
-
 }

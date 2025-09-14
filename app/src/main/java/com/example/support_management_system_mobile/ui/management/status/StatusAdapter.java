@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.support_management_system_mobile.R;
-import com.example.support_management_system_mobile.payload.response.StatusResponse;
+import com.example.support_management_system_mobile.data.payload.response.StatusResponse;
 
 public class StatusAdapter extends ListAdapter<StatusResponse, StatusAdapter.StatusViewHolder> {
     public interface OnStatusInteractionListener {

@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.support_management_system_mobile.R;
-import com.example.support_management_system_mobile.models.Knowledge;
+import com.example.support_management_system_mobile.data.models.Knowledge;
 
 import java.util.Objects;
 

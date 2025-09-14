@@ -1,7 +1,5 @@
 package com.example.support_management_system_mobile.ui.profile.edit;
 
-import android.app.Application;
-
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
@@ -9,10 +7,10 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.support_management_system_mobile.R;
-import com.example.support_management_system_mobile.auth.JWTUtils;
+import com.example.support_management_system_mobile.utils.AuthContext;
 import com.example.support_management_system_mobile.data.repository.ProfileRepository;
-import com.example.support_management_system_mobile.payload.request.update.UpdateProfileRequest;
-import com.example.support_management_system_mobile.validators.UserValidator;
+import com.example.support_management_system_mobile.data.payload.request.update.UpdateProfileRequest;
+import com.example.support_management_system_mobile.utils.validators.UserValidator;
 
 import java.util.Objects;
 
@@ -26,10 +24,12 @@ import retrofit2.Response;
 @HiltViewModel
 public class EditProfileViewModel extends ViewModel {
     private final ProfileRepository profileRepository;
-    private final Application application;
 
     private String originalFirstName;
     private String originalSurname;
+
+    @Inject
+    AuthContext authContext;
 
     public final MutableLiveData<String> firstName = new MutableLiveData<>();
     public final MutableLiveData<String> surname = new MutableLiveData<>();
@@ -39,8 +39,7 @@ public class EditProfileViewModel extends ViewModel {
     private final MutableLiveData<EditProfileUIState> updateResult = new MutableLiveData<>();
 
     @Inject
-    public EditProfileViewModel(Application application, ProfileRepository profileRepository) {
-        this.application = application;
+    public EditProfileViewModel(ProfileRepository profileRepository) {
         this.profileRepository = profileRepository;
 
         formState.addSource(firstName, value -> validateForm());
@@ -104,8 +103,7 @@ public class EditProfileViewModel extends ViewModel {
             @Override
             public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
                 if (response.isSuccessful()) {
-                    JWTUtils.setName(application, fName);
-                    JWTUtils.setSurname(application, sName);
+                    authContext.setFullName(fName, sName);
                     updateResult.postValue(new EditProfileUIState.Success(R.string.profile_updated_successfully));
                 } else {
                     updateResult.postValue(new EditProfileUIState.Error(R.string.profile_update_failed));

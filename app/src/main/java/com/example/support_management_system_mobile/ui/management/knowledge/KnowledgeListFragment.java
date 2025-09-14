@@ -18,7 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.support_management_system_mobile.R;
-import com.example.support_management_system_mobile.models.Knowledge;
+import com.example.support_management_system_mobile.data.models.Knowledge;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import dagger.hilt.android.AndroidEntryPoint;

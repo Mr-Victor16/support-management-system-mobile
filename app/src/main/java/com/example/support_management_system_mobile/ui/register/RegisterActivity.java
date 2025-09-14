@@ -5,176 +5,116 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.support_management_system_mobile.utils.AuthContext;
 import com.example.support_management_system_mobile.ui.MainActivity;
 import com.example.support_management_system_mobile.R;
-import com.example.support_management_system_mobile.auth.JWTUtils;
-import com.example.support_management_system_mobile.databinding.ActivityRegisterBinding;
 import com.example.support_management_system_mobile.ui.login.LoginActivity;
+import com.google.android.material.textfield.TextInputLayout;
 
-import java.util.Objects;
+import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
 public class RegisterActivity extends AppCompatActivity {
-    private ActivityRegisterBinding binding;
-    private RegisterViewModel vm;
+    private RegisterViewModel viewModel;
+
+    private EditText editUsername, editName, editSurname, editEmail, editPassword;
+    private TextInputLayout usernameLayout, nameLayout, surnameLayout, emailLayout, passwordLayout;
+    private Button registerButton;
+    private ProgressBar progressBar;
+
+    @Inject
+    AuthContext authContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        binding = ActivityRegisterBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
+        setContentView(R.layout.activity_register);
 
-        if (JWTUtils.getToken(this) != null) {
+        if (authContext.isLoggedIn()) {
             startActivity(new Intent(this, MainActivity.class));
             finish();
             return;
         }
 
-        vm = new ViewModelProvider(this).get(RegisterViewModel.class);
+        viewModel = new ViewModelProvider(this).get(RegisterViewModel.class);
 
+        initViews();
         setupInputListeners();
         setupObservers();
 
-        binding.registerButton.setOnClickListener(v -> vm.register());
+        registerButton.setOnClickListener(v -> viewModel.register());
+    }
+
+    private void initViews() {
+        editUsername = findViewById(R.id.editUsername);
+        editName = findViewById(R.id.editName);
+        editSurname = findViewById(R.id.editSurname);
+        editEmail = findViewById(R.id.editEmail);
+        editPassword = findViewById(R.id.editPassword);
+
+        usernameLayout = findViewById(R.id.usernameLayout);
+        nameLayout = findViewById(R.id.nameLayout);
+        surnameLayout = findViewById(R.id.surnameLayout);
+        emailLayout = findViewById(R.id.emailLayout);
+        passwordLayout = findViewById(R.id.passwordLayout);
+
+        registerButton = findViewById(R.id.registerButton);
+        progressBar = findViewById(R.id.progressBar);
     }
 
     private void setupInputListeners() {
-        binding.editUsername.addTextChangedListener(new SimpleTextWatcher() {
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                vm.username.setValue(s.toString());
-            }
-        });
-
-        binding.editName.addTextChangedListener(new SimpleTextWatcher() {
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                vm.name.setValue(s.toString());
-            }
-        });
-
-        binding.editSurname.addTextChangedListener(new SimpleTextWatcher() {
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                vm.surname.setValue(s.toString());
-            }
-        });
-
-        binding.editEmail.addTextChangedListener(new SimpleTextWatcher() {
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                vm.email.setValue(s.toString());
-            }
-        });
-
-        binding.editPassword.addTextChangedListener(new SimpleTextWatcher() {
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                vm.password.setValue(s.toString());
-            }
-        });
-
-        binding.editUsername.setOnFocusChangeListener((v, hasFocus) -> {
-            if (!hasFocus) vm.onUsernameFocusLost();
-        });
-
-        binding.editName.setOnFocusChangeListener((v, hasFocus) -> {
-            if (!hasFocus) vm.onNameFocusLost();
-        });
-
-        binding.editSurname.setOnFocusChangeListener((v, hasFocus) -> {
-            if (!hasFocus) vm.onSurnameFocusLost();
-        });
-
-        binding.editEmail.setOnFocusChangeListener((v, hasFocus) -> {
-            if (!hasFocus) vm.onEmailFocusLost();
-        });
-
-        binding.editPassword.setOnFocusChangeListener((v, hasFocus) -> {
-            if (!hasFocus) vm.onPasswordFocusLost();
-        });
+        editUsername.addTextChangedListener((SimpleTextWatcher) (s, start, before, count) -> viewModel.onUsernameChanged(s.toString()));
+        editName.addTextChangedListener((SimpleTextWatcher) (s, start, before, count) -> viewModel.onNameChanged(s.toString()));
+        editSurname.addTextChangedListener((SimpleTextWatcher) (s, start, before, count) -> viewModel.onSurnameChanged(s.toString()));
+        editEmail.addTextChangedListener((SimpleTextWatcher) (s, start, before, count) -> viewModel.onEmailChanged(s.toString()));
+        editPassword.addTextChangedListener((SimpleTextWatcher) (s, start, before, count) -> viewModel.onPasswordChanged(s.toString()));
     }
 
     private void setupObservers() {
-        vm.getFormState().observe(this, state -> {
+        viewModel.getFormState().observe(this, state -> {
             if (state == null) return;
-
-            if (state.getUsernameError() != null) {
-                if (!Objects.equals(binding.editUsername.getError(), getString(state.getUsernameError()))) {
-                    binding.editUsername.setError(getString(state.getUsernameError()));
-                }
-            } else {
-                binding.editUsername.setError(null);
-            }
-
-            if (state.getNameError() != null) {
-                if (!Objects.equals(binding.editName.getError(), getString(state.getNameError()))) {
-                    binding.editName.setError(getString(state.getNameError()));
-                }
-            } else {
-                binding.editName.setError(null);
-            }
-
-            if (state.getSurnameError() != null) {
-                if (!Objects.equals(binding.editSurname.getError(), getString(state.getSurnameError()))) {
-                    binding.editSurname.setError(getString(state.getSurnameError()));
-                }
-            } else {
-                binding.editSurname.setError(null);
-            }
-
-            if (state.getEmailError() != null) {
-                if (!Objects.equals(binding.editEmail.getError(), getString(state.getEmailError()))) {
-                    binding.editEmail.setError(getString(state.getEmailError()));
-                }
-            } else {
-                binding.editEmail.setError(null);
-            }
-
-            if (state.getPasswordError() != null) {
-                if (!Objects.equals(binding.editPassword.getError(), getString(state.getPasswordError()))) {
-                    binding.editPassword.setError(getString(state.getPasswordError()));
-                }
-            } else {
-                binding.editPassword.setError(null);
-            }
-
-            boolean isLoading = vm.getIsLoading().getValue() != null && vm.getIsLoading().getValue();
-            binding.registerButton.setEnabled(state.isDataValid() && !isLoading);
+            usernameLayout.setError(state.getUsernameError() != null ? getString(state.getUsernameError()) : null);
+            nameLayout.setError(state.getNameError() != null ? getString(state.getNameError()) : null);
+            surnameLayout.setError(state.getSurnameError() != null ? getString(state.getSurnameError()) : null);
+            emailLayout.setError(state.getEmailError() != null ? getString(state.getEmailError()) : null);
+            passwordLayout.setError(state.getPasswordError() != null ? getString(state.getPasswordError()) : null);
         });
 
-        vm.getIsLoading().observe(this, isLoading -> {
-            binding.progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
-            if (vm.getFormState().getValue() != null) {
-                binding.registerButton.setEnabled(!isLoading && vm.getFormState().getValue().isDataValid());
-            }
-        });
+        viewModel.getIsLoading().observe(this, isLoading ->
+                progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE));
 
-        vm.getResult().observe(this, result -> {
-            if (result instanceof RegisterResult.Success) {
+        viewModel.getIsRegisterButtonEnabled().observe(this, isEnabled ->
+                registerButton.setEnabled(isEnabled));
+
+        viewModel.getResult().observe(this, result -> {
+            if (result instanceof RegisterUIState.Success) {
                 Toast.makeText(this, R.string.successfully_registered, Toast.LENGTH_SHORT).show();
                 startActivity(new Intent(this, LoginActivity.class));
                 finish();
-            } else if (result instanceof RegisterResult.Error) {
-                Toast.makeText(this, getString(((RegisterResult.Error) result).getMessageRes()), Toast.LENGTH_SHORT).show();
+            } else if (result instanceof RegisterUIState.Error) {
+                Toast.makeText(this, getString(((RegisterUIState.Error) result).getMessageRes()), Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    abstract static class SimpleTextWatcher implements TextWatcher {
+    @FunctionalInterface
+    interface SimpleTextWatcher extends TextWatcher {
         @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+        default void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
         @Override
-        public void afterTextChanged(Editable s) {}
+        default void afterTextChanged(Editable s) {}
     }
 }

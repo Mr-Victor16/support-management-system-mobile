@@ -15,109 +15,132 @@
 
         <TextView
             android:id="@+id/registerHeader"
+            style="@style/TextAppearance.Material3.HeadlineLarge"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
             android:text="@string/register_header"
-            android:textSize="24sp"
-            android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <EditText
-            android:id="@+id/editUsername"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/usernameLayout"
+            style="?attr/textInputFilledStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"
             android:layout_marginTop="24dp"
             android:layout_marginEnd="32dp"
-            android:autofillHints="username"
             android:hint="@string/username"
-            android:inputType="text"
-            android:minHeight="48dp"
-            android:paddingVertical="12dp"
-            android:textColorHint="#6D676D"
+            app:errorEnabled="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/registerHeader"
-            app:layout_constraintWidth_max="420dp" />
+            app:layout_constraintWidth_max="480dp">
 
-        <EditText
-            android:id="@+id/editName"
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editUsername"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:maxLines="1" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/nameLayout"
+            style="?attr/textInputFilledStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:autofillHints="givenName"
+            android:layout_marginTop="8dp"
             android:hint="@string/name"
-            android:inputType="text"
-            android:minHeight="48dp"
-            android:paddingVertical="12dp"
-            android:textColorHint="#6D676D"
-            app:layout_constraintEnd_toEndOf="@+id/editUsername"
-            app:layout_constraintStart_toStartOf="@+id/editUsername"
-            app:layout_constraintTop_toBottomOf="@+id/editUsername" />
+            app:errorEnabled="true"
+            app:layout_constraintEnd_toEndOf="@+id/usernameLayout"
+            app:layout_constraintStart_toStartOf="@+id/usernameLayout"
+            app:layout_constraintTop_toBottomOf="@+id/usernameLayout">
 
-        <EditText
-            android:id="@+id/editSurname"
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPersonName"
+                android:maxLines="1" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/surnameLayout"
+            style="?attr/textInputFilledStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:autofillHints="familyName"
+            android:layout_marginTop="8dp"
             android:hint="@string/surname"
-            android:inputType="text"
-            android:minHeight="48dp"
-            android:paddingVertical="12dp"
-            android:textColorHint="#6D676D"
-            app:layout_constraintEnd_toEndOf="@+id/editName"
-            app:layout_constraintStart_toStartOf="@+id/editName"
-            app:layout_constraintTop_toBottomOf="@+id/editName" />
+            app:errorEnabled="true"
+            app:layout_constraintEnd_toEndOf="@+id/nameLayout"
+            app:layout_constraintStart_toStartOf="@+id/nameLayout"
+            app:layout_constraintTop_toBottomOf="@+id/nameLayout">
 
-        <EditText
-            android:id="@+id/editEmail"
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editSurname"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPersonName"
+                android:maxLines="1" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/emailLayout"
+            style="?attr/textInputFilledStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:autofillHints="emailAddress"
+            android:layout_marginTop="8dp"
             android:hint="@string/email"
-            android:inputType="textEmailAddress"
-            android:minHeight="48dp"
-            android:paddingVertical="12dp"
-            android:textColorHint="#6D676D"
-            app:layout_constraintEnd_toEndOf="@+id/editSurname"
-            app:layout_constraintStart_toStartOf="@+id/editSurname"
-            app:layout_constraintTop_toBottomOf="@+id/editSurname" />
+            app:errorEnabled="true"
+            app:layout_constraintEnd_toEndOf="@+id/surnameLayout"
+            app:layout_constraintStart_toStartOf="@+id/surnameLayout"
+            app:layout_constraintTop_toBottomOf="@+id/surnameLayout">
 
-        <EditText
-            android:id="@+id/editPassword"
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editEmail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textEmailAddress"
+                android:maxLines="1" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/passwordLayout"
+            style="?attr/textInputFilledStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:autofillHints="password"
+            android:layout_marginTop="8dp"
             android:hint="@string/password"
-            android:inputType="textPassword"
-            android:minHeight="48dp"
-            android:paddingVertical="12dp"
-            android:textColorHint="#6D676D"
-            app:layout_constraintEnd_toEndOf="@+id/editEmail"
-            app:layout_constraintStart_toStartOf="@+id/editEmail"
-            app:layout_constraintTop_toBottomOf="@+id/editEmail" />
+            app:endIconMode="password_toggle"
+            app:errorEnabled="true"
+            app:layout_constraintEnd_toEndOf="@+id/emailLayout"
+            app:layout_constraintStart_toStartOf="@+id/emailLayout"
+            app:layout_constraintTop_toBottomOf="@+id/emailLayout">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPassword"
+                android:maxLines="1" />
+        </com.google.android.material.textfield.TextInputLayout>
 
         <Button
             android:id="@+id/registerButton"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="24dp"
             android:enabled="false"
-            android:paddingHorizontal="48dp"
             android:text="@string/register_button"
-            app:layout_constraintEnd_toEndOf="@+id/editPassword"
-            app:layout_constraintStart_toStartOf="@+id/editPassword"
-            app:layout_constraintTop_toBottomOf="@+id/editPassword" />
+            app:layout_constraintEnd_toEndOf="@+id/passwordLayout"
+            app:layout_constraintStart_toStartOf="@+id/passwordLayout"
+            app:layout_constraintTop_toBottomOf="@+id/passwordLayout" />
 
         <ProgressBar
             android:id="@+id/progressBar"
-            style="?android:attr/progressBarStyleLarge"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"

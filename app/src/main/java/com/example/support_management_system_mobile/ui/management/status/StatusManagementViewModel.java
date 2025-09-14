@@ -8,12 +8,12 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.support_management_system_mobile.R;
-import com.example.support_management_system_mobile.auth.AuthContext;
+import com.example.support_management_system_mobile.utils.AuthContext;
 import com.example.support_management_system_mobile.data.repository.StatusRepository;
-import com.example.support_management_system_mobile.models.Event;
-import com.example.support_management_system_mobile.payload.request.add.AddStatusRequest;
-import com.example.support_management_system_mobile.payload.request.update.UpdateStatusRequest;
-import com.example.support_management_system_mobile.payload.response.StatusResponse;
+import com.example.support_management_system_mobile.data.models.Event;
+import com.example.support_management_system_mobile.data.payload.request.add.AddStatusRequest;
+import com.example.support_management_system_mobile.data.payload.request.update.UpdateStatusRequest;
+import com.example.support_management_system_mobile.data.payload.response.StatusResponse;
 
 import java.util.List;
 

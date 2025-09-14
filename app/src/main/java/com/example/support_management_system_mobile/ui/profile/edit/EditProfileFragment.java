@@ -18,14 +18,19 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.example.support_management_system_mobile.R;
-import com.example.support_management_system_mobile.auth.JWTUtils;
+import com.example.support_management_system_mobile.utils.AuthContext;
 import com.google.android.material.textfield.TextInputLayout;
+
+import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
 public class EditProfileFragment extends Fragment {
     private EditProfileViewModel viewModel;
+
+    @Inject
+    AuthContext authContext;
 
     private TextInputLayout firstNameLayout, surnameLayout, passwordLayout;
     private EditText firstNameEdit, surnameEdit, passwordEdit;
@@ -45,10 +50,7 @@ public class EditProfileFragment extends Fragment {
         initViews(view);
 
         if (savedInstanceState == null) {
-            viewModel.start(
-                    JWTUtils.getName(requireContext()),
-                    JWTUtils.getSurname(requireContext())
-            );
+            viewModel.start(authContext.getName(), authContext.getSurname());
         }
 
         setupObservers();

@@ -2,9 +2,9 @@ package com.example.support_management_system_mobile.ui.ticket.details;
 
 import androidx.annotation.StringRes;
 
-import com.example.support_management_system_mobile.models.Role;
-import com.example.support_management_system_mobile.models.Ticket;
-import com.example.support_management_system_mobile.models.User;
+import com.example.support_management_system_mobile.data.models.Role;
+import com.example.support_management_system_mobile.data.models.Ticket;
+import com.example.support_management_system_mobile.data.models.User;
 
 public abstract class TicketDetailsUIState {
     private TicketDetailsUIState() { }

@@ -1,6 +1,6 @@
 package com.example.support_management_system_mobile.ui.management.category;
 
-import com.example.support_management_system_mobile.payload.response.CategoryResponse;
+import com.example.support_management_system_mobile.data.payload.response.CategoryResponse;
 
 import java.util.List;
 

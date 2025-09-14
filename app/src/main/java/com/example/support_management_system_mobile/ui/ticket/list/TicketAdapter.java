@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.support_management_system_mobile.R;
-import com.example.support_management_system_mobile.models.Ticket;
+import com.example.support_management_system_mobile.data.models.Ticket;
 
 import java.time.format.DateTimeFormatter;
 

@@ -12,17 +12,22 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 
 import com.example.support_management_system_mobile.R;
-import com.example.support_management_system_mobile.auth.JWTUtils;
+import com.example.support_management_system_mobile.utils.AuthContext;
 import com.example.support_management_system_mobile.ui.login.LoginActivity;
 import com.example.support_management_system_mobile.ui.profile.ProfileFragment;
 import com.example.support_management_system_mobile.ui.ticket.list.TicketListFragment;
 import com.example.support_management_system_mobile.ui.welcome.WelcomeFragment;
 import com.google.android.material.navigation.NavigationBarView;
 
+import javax.inject.Inject;
+
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
 public class MainActivity extends AppCompatActivity {
+    @Inject
+    AuthContext authContext;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
             int itemId = item.getItemId();
 
             if (itemId == R.id.nav_tickets || itemId == R.id.nav_account) {
-                if (JWTUtils.getToken(this) == null) {
+                if (!authContext.isLoggedIn()) {
                     startActivity(new Intent(this, LoginActivity.class));
 
                     return false;

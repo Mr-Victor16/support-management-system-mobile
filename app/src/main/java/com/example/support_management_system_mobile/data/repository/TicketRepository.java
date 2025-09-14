@@ -3,12 +3,12 @@ package com.example.support_management_system_mobile.data.repository;
 import android.net.Uri;
 
 import com.example.support_management_system_mobile.R;
-import com.example.support_management_system_mobile.models.Ticket;
-import com.example.support_management_system_mobile.network.APIService;
-import com.example.support_management_system_mobile.payload.request.add.AddTicketReplyRequest;
-import com.example.support_management_system_mobile.payload.request.add.AddTicketRequest;
-import com.example.support_management_system_mobile.payload.request.update.UpdateTicketRequest;
-import com.example.support_management_system_mobile.payload.request.update.UpdateTicketStatusRequest;
+import com.example.support_management_system_mobile.data.models.Ticket;
+import com.example.support_management_system_mobile.data.api.APIService;
+import com.example.support_management_system_mobile.data.payload.request.add.AddTicketReplyRequest;
+import com.example.support_management_system_mobile.data.payload.request.add.AddTicketRequest;
+import com.example.support_management_system_mobile.data.payload.request.update.UpdateTicketRequest;
+import com.example.support_management_system_mobile.data.payload.request.update.UpdateTicketStatusRequest;
 import com.example.support_management_system_mobile.utils.FilePreparer;
 
 import java.io.IOException;

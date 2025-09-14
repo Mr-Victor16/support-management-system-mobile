@@ -9,15 +9,15 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.support_management_system_mobile.R;
-import com.example.support_management_system_mobile.auth.AuthContext;
+import com.example.support_management_system_mobile.utils.AuthContext;
 import com.example.support_management_system_mobile.data.repository.KnowledgeRepository;
 import com.example.support_management_system_mobile.data.repository.SoftwareRepository;
-import com.example.support_management_system_mobile.models.Event;
-import com.example.support_management_system_mobile.models.Knowledge;
-import com.example.support_management_system_mobile.models.Software;
-import com.example.support_management_system_mobile.payload.request.add.AddKnowledgeRequest;
-import com.example.support_management_system_mobile.payload.request.update.UpdateKnowledgeRequest;
-import com.example.support_management_system_mobile.validators.KnowledgeValidator;
+import com.example.support_management_system_mobile.data.models.Event;
+import com.example.support_management_system_mobile.data.models.Knowledge;
+import com.example.support_management_system_mobile.data.models.Software;
+import com.example.support_management_system_mobile.data.payload.request.add.AddKnowledgeRequest;
+import com.example.support_management_system_mobile.data.payload.request.update.UpdateKnowledgeRequest;
+import com.example.support_management_system_mobile.utils.validators.KnowledgeValidator;
 
 import java.util.HashSet;
 import java.util.List;

@@ -1,9 +1,9 @@
 package com.example.support_management_system_mobile.data.repository;
 
-import com.example.support_management_system_mobile.models.Knowledge;
-import com.example.support_management_system_mobile.network.APIService;
-import com.example.support_management_system_mobile.payload.request.add.AddKnowledgeRequest;
-import com.example.support_management_system_mobile.payload.request.update.UpdateKnowledgeRequest;
+import com.example.support_management_system_mobile.data.models.Knowledge;
+import com.example.support_management_system_mobile.data.api.APIService;
+import com.example.support_management_system_mobile.data.payload.request.add.AddKnowledgeRequest;
+import com.example.support_management_system_mobile.data.payload.request.update.UpdateKnowledgeRequest;
 
 import java.util.List;
 

@@ -8,10 +8,10 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.support_management_system_mobile.R;
-import com.example.support_management_system_mobile.auth.AuthContext;
+import com.example.support_management_system_mobile.utils.AuthContext;
 import com.example.support_management_system_mobile.data.repository.PriorityRepository;
-import com.example.support_management_system_mobile.models.Event;
-import com.example.support_management_system_mobile.payload.response.PriorityResponse;
+import com.example.support_management_system_mobile.data.models.Event;
+import com.example.support_management_system_mobile.data.payload.response.PriorityResponse;
 
 import java.util.List;
 

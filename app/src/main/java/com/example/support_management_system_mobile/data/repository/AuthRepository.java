@@ -1,9 +1,9 @@
 package com.example.support_management_system_mobile.data.repository;
 
-import com.example.support_management_system_mobile.network.APIService;
-import com.example.support_management_system_mobile.payload.request.LoginRequest;
-import com.example.support_management_system_mobile.payload.request.RegisterRequest;
-import com.example.support_management_system_mobile.payload.response.LoginResponse;
+import com.example.support_management_system_mobile.data.api.APIService;
+import com.example.support_management_system_mobile.data.payload.request.LoginRequest;
+import com.example.support_management_system_mobile.data.payload.request.RegisterRequest;
+import com.example.support_management_system_mobile.data.payload.response.LoginResponse;
 
 import javax.inject.Inject;
 

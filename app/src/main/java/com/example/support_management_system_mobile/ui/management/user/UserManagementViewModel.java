@@ -9,15 +9,15 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.support_management_system_mobile.R;
-import com.example.support_management_system_mobile.auth.AuthContext;
+import com.example.support_management_system_mobile.utils.AuthContext;
 import com.example.support_management_system_mobile.data.repository.RoleRepository;
 import com.example.support_management_system_mobile.data.repository.UserRepository;
-import com.example.support_management_system_mobile.models.Event;
-import com.example.support_management_system_mobile.models.Role;
-import com.example.support_management_system_mobile.payload.request.add.AddUserRequest;
-import com.example.support_management_system_mobile.payload.request.update.UpdateUserRequest;
-import com.example.support_management_system_mobile.payload.response.UserDetailsResponse;
-import com.example.support_management_system_mobile.validators.UserValidator;
+import com.example.support_management_system_mobile.data.models.Event;
+import com.example.support_management_system_mobile.data.models.Role;
+import com.example.support_management_system_mobile.data.payload.request.add.AddUserRequest;
+import com.example.support_management_system_mobile.data.payload.request.update.UpdateUserRequest;
+import com.example.support_management_system_mobile.data.payload.response.UserDetailsResponse;
+import com.example.support_management_system_mobile.utils.validators.UserValidator;
 
 import java.util.HashSet;
 import java.util.List;

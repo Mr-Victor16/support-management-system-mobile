@@ -12,8 +12,8 @@ import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.support_management_system_mobile.R;
-import com.example.support_management_system_mobile.auth.AuthContext;
-import com.example.support_management_system_mobile.payload.response.PriorityResponse;
+import com.example.support_management_system_mobile.utils.AuthContext;
+import com.example.support_management_system_mobile.data.payload.response.PriorityResponse;
 
 public class PriorityAdapter extends ListAdapter<PriorityResponse, PriorityAdapter.PriorityViewHolder> {
     public interface OnPriorityInteractionListener {

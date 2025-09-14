@@ -2,7 +2,7 @@ package com.example.support_management_system_mobile.ui.ticket.list;
 
 import androidx.annotation.StringRes;
 
-import com.example.support_management_system_mobile.models.Ticket;
+import com.example.support_management_system_mobile.data.models.Ticket;
 
 import java.util.List;
 

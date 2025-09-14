@@ -22,7 +22,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.support_management_system_mobile.R;
-import com.example.support_management_system_mobile.models.Software;
+import com.example.support_management_system_mobile.data.models.Software;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.Objects;

@@ -10,8 +10,8 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.example.support_management_system_mobile.R;
 import com.example.support_management_system_mobile.data.repository.AuthRepository;
-import com.example.support_management_system_mobile.payload.request.RegisterRequest;
-import com.example.support_management_system_mobile.validators.UserValidator;
+import com.example.support_management_system_mobile.data.payload.request.RegisterRequest;
+import com.example.support_management_system_mobile.utils.validators.UserValidator;
 
 import javax.inject.Inject;
 
@@ -24,141 +24,109 @@ import retrofit2.Response;
 public class RegisterViewModel extends AndroidViewModel {
     private final AuthRepository authRepository;
 
-    public final MutableLiveData<String> username = new MutableLiveData<>("");
-    public final MutableLiveData<String> name = new MutableLiveData<>("");
-    public final MutableLiveData<String> surname = new MutableLiveData<>("");
-    public final MutableLiveData<String> email = new MutableLiveData<>("");
-    public final MutableLiveData<String> password = new MutableLiveData<>("");
+    private final MutableLiveData<String> _username = new MutableLiveData<>("");
+    private final MutableLiveData<String> _name = new MutableLiveData<>("");
+    private final MutableLiveData<String> _surname = new MutableLiveData<>("");
+    private final MutableLiveData<String> _email = new MutableLiveData<>("");
+    private final MutableLiveData<String> _password = new MutableLiveData<>("");
 
-    private final MutableLiveData<Boolean> isUsernameTouched = new MutableLiveData<>(false);
-    private final MutableLiveData<Boolean> isNameTouched = new MutableLiveData<>(false);
-    private final MutableLiveData<Boolean> isSurnameTouched = new MutableLiveData<>(false);
-    private final MutableLiveData<Boolean> isEmailTouched = new MutableLiveData<>(false);
-    private final MutableLiveData<Boolean> isPasswordTouched = new MutableLiveData<>(false);
+    private final MediatorLiveData<RegisterFormState> _formState = new MediatorLiveData<>();
+    private final MutableLiveData<Boolean> _isLoading = new MutableLiveData<>(false);
+    private final MutableLiveData<RegisterUIState> _result = new MutableLiveData<>();
+    private final MediatorLiveData<Boolean> _isRegisterButtonEnabled = new MediatorLiveData<>();
 
-
-    private final MediatorLiveData<RegisterFormState> formState = new MediatorLiveData<>();
-    private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
-    private final MutableLiveData<RegisterResult> result = new MutableLiveData<>();
+    public LiveData<RegisterFormState> getFormState() { return _formState; }
+    public LiveData<Boolean> getIsLoading() { return _isLoading; }
+    public LiveData<RegisterUIState> getResult() { return _result; }
+    public LiveData<Boolean> getIsRegisterButtonEnabled() { return _isRegisterButtonEnabled; }
 
     @Inject
     public RegisterViewModel(@NonNull Application application, AuthRepository authRepository) {
         super(application);
         this.authRepository = authRepository;
 
-        formState.addSource(username, text -> validateForm());
-        formState.addSource(name, text -> validateForm());
-        formState.addSource(surname, text -> validateForm());
-        formState.addSource(email, text -> validateForm());
-        formState.addSource(password, text -> validateForm());
+        _formState.addSource(_username, text -> validateForm());
+        _formState.addSource(_name, text -> validateForm());
+        _formState.addSource(_surname, text -> validateForm());
+        _formState.addSource(_email, text -> validateForm());
+        _formState.addSource(_password, text -> validateForm());
 
-        formState.addSource(isUsernameTouched, touched -> validateForm());
-        formState.addSource(isNameTouched, touched -> validateForm());
-        formState.addSource(isSurnameTouched, touched -> validateForm());
-        formState.addSource(isEmailTouched, touched -> validateForm());
-        formState.addSource(isPasswordTouched, touched -> validateForm());
+        _isRegisterButtonEnabled.addSource(_formState, state -> updateButtonState());
+        _isRegisterButtonEnabled.addSource(_isLoading, loading -> updateButtonState());
+    }
+
+    public void onUsernameChanged(String username) { _username.setValue(username); }
+    public void onNameChanged(String name) { _name.setValue(name); }
+    public void onSurnameChanged(String surname) { _surname.setValue(surname); }
+    public void onEmailChanged(String email) { _email.setValue(email); }
+    public void onPasswordChanged(String password) { _password.setValue(password); }
+
+    private void updateButtonState() {
+        RegisterFormState state = _formState.getValue();
+        boolean loading = Boolean.TRUE.equals(_isLoading.getValue());
+        boolean enabled = state != null && state.isDataValid() && !loading;
+        _isRegisterButtonEnabled.setValue(enabled);
     }
 
     private void validateForm() {
-        Integer usernameError = null;
-        if (Boolean.TRUE.equals(isUsernameTouched.getValue()) && !UserValidator.isUsernameValid(username.getValue())) {
-            usernameError = R.string.username_register_error;
-        }
+        String usernameValue = _username.getValue();
+        Integer usernameError = (usernameValue != null && !usernameValue.isEmpty() && !UserValidator.isUsernameValid(usernameValue))
+                ? R.string.username_register_error : null;
 
-        Integer nameError = null;
-        if (Boolean.TRUE.equals(isNameTouched.getValue()) && !UserValidator.isNameValid(name.getValue())) {
-            nameError = R.string.name_register_error;
-        }
+        String nameValue = _name.getValue();
+        Integer nameError = (nameValue != null && !nameValue.isEmpty() && !UserValidator.isNameValid(nameValue))
+                ? R.string.name_register_error : null;
 
-        Integer surnameError = null;
-        if (Boolean.TRUE.equals(isSurnameTouched.getValue()) && !UserValidator.isSurnameValid(surname.getValue())) {
-            surnameError = R.string.surname_register_error;
-        }
+        String surnameValue = _surname.getValue();
+        Integer surnameError = (surnameValue != null && !surnameValue.isEmpty() && !UserValidator.isSurnameValid(surnameValue))
+                ? R.string.surname_register_error : null;
 
-        Integer emailError = null;
-        if (Boolean.TRUE.equals(isEmailTouched.getValue()) && !UserValidator.isEmailValid(email.getValue())) {
-            emailError = R.string.email_register_error;
-        }
+        String emailValue = _email.getValue();
+        Integer emailError = (emailValue != null && !emailValue.isEmpty() && !UserValidator.isEmailValid(emailValue))
+                ? R.string.email_register_error : null;
 
-        Integer passwordError = null;
-        if (Boolean.TRUE.equals(isPasswordTouched.getValue()) && !UserValidator.isPasswordValid(password.getValue())) {
-            passwordError = R.string.password_register_error;
-        }
+        String passwordValue = _password.getValue();
+        Integer passwordError = (passwordValue != null && !passwordValue.isEmpty() && !UserValidator.isPasswordValid(passwordValue))
+                ? R.string.password_register_error : null;
 
-        boolean isDataValidForSubmission = UserValidator.isUsernameValid(username.getValue()) &&
-                UserValidator.isNameValid(name.getValue()) &&
-                UserValidator.isSurnameValid(surname.getValue()) &&
-                UserValidator.isEmailValid(email.getValue()) &&
-                UserValidator.isPasswordValid(password.getValue());
+        boolean isDataValidForSubmission = UserValidator.isUsernameValid(usernameValue) &&
+                UserValidator.isNameValid(nameValue) &&
+                UserValidator.isSurnameValid(surnameValue) &&
+                UserValidator.isEmailValid(emailValue) &&
+                UserValidator.isPasswordValid(passwordValue);
 
-        formState.setValue(new RegisterFormState(usernameError, nameError, surnameError, emailError, passwordError, isDataValidForSubmission));
+        _formState.setValue(new RegisterFormState(usernameError, nameError, surnameError, emailError, passwordError, isDataValidForSubmission));
     }
 
     public void register() {
-        RegisterFormState currentState = formState.getValue();
+        validateForm();
+
+        RegisterFormState currentState = _formState.getValue();
         if (currentState == null || !currentState.isDataValid()) {
-            isUsernameTouched.setValue(true);
-            isNameTouched.setValue(true);
-            isSurnameTouched.setValue(true);
-            isEmailTouched.setValue(true);
-            isPasswordTouched.setValue(true);
-            validateForm();
             return;
         }
 
-        isLoading.setValue(true);
+        _isLoading.setValue(true);
         RegisterRequest request = new RegisterRequest(
-                username.getValue(), password.getValue(), email.getValue(), name.getValue(), surname.getValue()
+                _username.getValue(), _password.getValue(), _email.getValue(), _name.getValue(), _surname.getValue()
         );
 
         authRepository.register(request, new Callback<String>() {
             @Override
             public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
                 if (response.isSuccessful()) {
-                    result.postValue(new RegisterResult.Success());
+                    _result.postValue(new RegisterUIState.Success());
                 } else {
-                    result.postValue(new RegisterResult.Error(R.string.invalid_data_register_error));
+                    _result.postValue(new RegisterUIState.Error(R.string.invalid_data_register_error));
                 }
-                isLoading.postValue(false);
+                _isLoading.postValue(false);
             }
 
             @Override
             public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
-                result.postValue(new RegisterResult.Error(R.string.server_error));
-                isLoading.postValue(false);
+                _result.postValue(new RegisterUIState.Error(R.string.server_error));
+                _isLoading.postValue(false);
             }
         });
-    }
-
-    public void onUsernameFocusLost() {
-        isUsernameTouched.setValue(true);
-    }
-
-    public void onNameFocusLost() {
-        isNameTouched.setValue(true);
-    }
-
-    public void onSurnameFocusLost() {
-        isSurnameTouched.setValue(true);
-    }
-
-    public void onEmailFocusLost() {
-        isEmailTouched.setValue(true);
-    }
-
-    public void onPasswordFocusLost() {
-        isPasswordTouched.setValue(true);
-    }
-
-    public LiveData<RegisterFormState> getFormState() {
-        return formState;
-    }
-
-    public LiveData<Boolean> getIsLoading() {
-        return isLoading;
-    }
-
-    public LiveData<RegisterResult> getResult() {
-        return result;
     }
 }

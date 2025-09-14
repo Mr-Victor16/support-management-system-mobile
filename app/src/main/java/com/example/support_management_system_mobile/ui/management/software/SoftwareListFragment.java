@@ -21,8 +21,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.support_management_system_mobile.R;
-import com.example.support_management_system_mobile.payload.response.SoftwareResponse;
-import com.example.support_management_system_mobile.validators.SoftwareValidator;
+import com.example.support_management_system_mobile.data.payload.response.SoftwareResponse;
+import com.example.support_management_system_mobile.utils.validators.SoftwareValidator;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputLayout;
 

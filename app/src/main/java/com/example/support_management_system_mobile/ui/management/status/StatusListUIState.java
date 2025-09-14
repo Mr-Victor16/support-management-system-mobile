@@ -1,6 +1,6 @@
 package com.example.support_management_system_mobile.ui.management.status;
 
-import com.example.support_management_system_mobile.payload.response.StatusResponse;
+import com.example.support_management_system_mobile.data.payload.response.StatusResponse;
 
 import java.util.List;
 

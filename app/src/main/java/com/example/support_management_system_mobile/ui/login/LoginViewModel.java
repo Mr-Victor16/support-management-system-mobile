@@ -10,8 +10,8 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.example.support_management_system_mobile.R;
 import com.example.support_management_system_mobile.data.repository.AuthRepository;
-import com.example.support_management_system_mobile.payload.request.LoginRequest;
-import com.example.support_management_system_mobile.payload.response.LoginResponse;
+import com.example.support_management_system_mobile.data.payload.request.LoginRequest;
+import com.example.support_management_system_mobile.data.payload.response.LoginResponse;
 
 import javax.inject.Inject;
 
@@ -24,68 +24,75 @@ import retrofit2.Response;
 public class LoginViewModel extends AndroidViewModel {
     private final AuthRepository repository;
 
-    public final MutableLiveData<String> username = new MutableLiveData<>("");
-    public final MutableLiveData<String> password = new MutableLiveData<>("");
+    private final MutableLiveData<String> _username = new MutableLiveData<>("");
+    private final MutableLiveData<String> _password = new MutableLiveData<>("");
+    private final MutableLiveData<LoginUIState> _result = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> _isLoading = new MutableLiveData<>(false);
+    private final MediatorLiveData<Boolean> _isLoginButtonEnabled = new MediatorLiveData<>();
 
-    private final MutableLiveData<LoginResult> result = new MutableLiveData<>();
-    private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
+    public LiveData<LoginUIState> getResult() {
+        return _result;
+    }
 
-    private final MediatorLiveData<Boolean> isLoginButtonEnabled = new MediatorLiveData<>();
+    public LiveData<Boolean> getIsLoading() {
+        return _isLoading;
+    }
+
+    public LiveData<Boolean> getIsLoginButtonEnabled() {
+        return _isLoginButtonEnabled;
+    }
 
     @Inject
     public LoginViewModel(@NonNull Application app, AuthRepository repository) {
         super(app);
         this.repository = repository;
 
-        isLoginButtonEnabled.addSource(username, value -> validateForm());
-        isLoginButtonEnabled.addSource(password, value -> validateForm());
-        isLoginButtonEnabled.addSource(isLoading, value -> validateForm());
+        _isLoginButtonEnabled.addSource(_username, value -> validateForm());
+        _isLoginButtonEnabled.addSource(_password, value -> validateForm());
+        _isLoginButtonEnabled.addSource(_isLoading, value -> validateForm());
+    }
+
+    public void onUsernameChanged(String username) {
+        _username.setValue(username);
+    }
+
+    public void onPasswordChanged(String password) {
+        _password.setValue(password);
     }
 
     private void validateForm() {
-        String user = username.getValue();
-        String pass = password.getValue();
-        boolean loading = Boolean.TRUE.equals(isLoading.getValue());
+        String user = _username.getValue();
+        String pass = _password.getValue();
+        boolean loading = Boolean.TRUE.equals(_isLoading.getValue());
 
         boolean isFormValid = user != null && !user.trim().isEmpty() &&
                 pass != null && !pass.trim().isEmpty();
 
-        isLoginButtonEnabled.setValue(isFormValid && !loading);
+        _isLoginButtonEnabled.setValue(isFormValid && !loading);
     }
 
     public void loginUser() {
-        if (Boolean.FALSE.equals(isLoginButtonEnabled.getValue())) return;
+        if (Boolean.FALSE.equals(_isLoginButtonEnabled.getValue())) return;
 
-        isLoading.setValue(true);
-        LoginRequest req = new LoginRequest(username.getValue(), password.getValue());
+        _isLoading.setValue(true);
+        LoginRequest req = new LoginRequest(_username.getValue(), _password.getValue());
 
         repository.login(req, new Callback<LoginResponse>() {
             @Override
             public void onResponse(@NonNull Call<LoginResponse> call, @NonNull Response<LoginResponse> resp) {
                 if (resp.isSuccessful() && resp.body() != null) {
-                    result.postValue(new LoginResult.Success(resp.body()));
+                    _result.postValue(new LoginUIState.Success(resp.body()));
                 } else {
-                    result.postValue(new LoginResult.Error(R.string.invalid_username_or_password));
+                    _result.postValue(new LoginUIState.Error(R.string.invalid_username_or_password));
                 }
-                isLoading.postValue(false);
+                _isLoading.postValue(false);
             }
+
             @Override
             public void onFailure(@NonNull Call<LoginResponse> call, @NonNull Throwable t) {
-                result.postValue(new LoginResult.Error(R.string.server_error));
-                isLoading.postValue(false);
+                _result.postValue(new LoginUIState.Error(R.string.server_error));
+                _isLoading.postValue(false);
             }
         });
-    }
-
-    public LiveData<LoginResult> getResult() {
-        return result;
-    }
-
-    public LiveData<Boolean> getIsLoading() {
-        return isLoading;
-    }
-
-    public LiveData<Boolean> getIsLoginButtonEnabled() {
-        return isLoginButtonEnabled;
     }
 }

@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.support_management_system_mobile.R;
-import com.example.support_management_system_mobile.payload.response.SoftwareResponse;
+import com.example.support_management_system_mobile.data.payload.response.SoftwareResponse;
 
 public class SoftwareManageAdapter extends ListAdapter<SoftwareResponse, SoftwareManageAdapter.SoftwareViewHolder> {
     public interface OnSoftwareInteractionListener {

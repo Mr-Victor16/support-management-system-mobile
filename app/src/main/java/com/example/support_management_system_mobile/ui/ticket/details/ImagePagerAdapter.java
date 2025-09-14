@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.support_management_system_mobile.R;
-import com.example.support_management_system_mobile.models.Image;
+import com.example.support_management_system_mobile.data.models.Image;
 
 public class ImagePagerAdapter extends ListAdapter<Image, ImagePagerAdapter.ImageViewHolder> {
     public ImagePagerAdapter() {

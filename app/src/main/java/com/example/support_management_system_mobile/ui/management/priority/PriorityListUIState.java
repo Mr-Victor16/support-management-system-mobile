@@ -1,6 +1,6 @@
 package com.example.support_management_system_mobile.ui.management.priority;
 
-import com.example.support_management_system_mobile.payload.response.PriorityResponse;
+import com.example.support_management_system_mobile.data.payload.response.PriorityResponse;
 
 import java.util.List;
 

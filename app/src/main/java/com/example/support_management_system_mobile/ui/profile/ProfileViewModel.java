@@ -9,9 +9,9 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.support_management_system_mobile.R;
-import com.example.support_management_system_mobile.auth.AuthContext;
-import com.example.support_management_system_mobile.auth.JWTUtils;
-import com.example.support_management_system_mobile.models.Event;
+import com.example.support_management_system_mobile.utils.AuthContext;
+import com.example.support_management_system_mobile.data.models.Event;
+import com.example.support_management_system_mobile.data.models.User;
 
 import javax.inject.Inject;
 
@@ -20,7 +20,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel;
 @HiltViewModel
 public class ProfileViewModel extends ViewModel {
     private final Application application;
-    private final AuthContext authContext;
+
+    @Inject
+    AuthContext authContext;
 
     private final MutableLiveData<ProfileUIState> _screenState = new MutableLiveData<>();
     public LiveData<ProfileUIState> getScreenState() {
@@ -46,30 +48,26 @@ public class ProfileViewModel extends ViewModel {
     public void refreshUserData() {
         _screenState.setValue(new ProfileUIState.Loading());
 
-        if (JWTUtils.getToken(application) == null) {
+        if (!authContext.isLoggedIn()) {
             _navigateToLogin.setValue(new Event<>(true));
             return;
         }
 
-        String username = JWTUtils.getUsername(application);
-        String email = JWTUtils.getEmail(application);
-        String name = JWTUtils.getName(application);
-        String surname = JWTUtils.getSurname(application);
-        String fullName = application.getString(R.string.full_name_format, name, surname);
-        String userRole = JWTUtils.getUserRole(application);
+        User userData = authContext.getCurrentUser();
+        String fullName = application.getString(R.string.full_name_format, userData.getName(), userData.getSurname());
         boolean isOperatorOrAdmin = authContext.isOperatorOrAdmin();
 
         _screenState.setValue(new ProfileUIState.Success(
-                username,
+                userData.getUsername(),
                 fullName,
-                email,
-                getRoleStringRes(userRole),
+                userData.getEmail(),
+                getRoleStringRes(authContext.getUserRole()),
                 isOperatorOrAdmin
         ));
     }
 
     public void onLogoutClicked() {
-        JWTUtils.clearData(application);
+        authContext.logout();
         _navigateToLogin.setValue(new Event<>(true));
     }
 

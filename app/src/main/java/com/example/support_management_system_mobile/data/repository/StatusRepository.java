@@ -1,10 +1,10 @@
 package com.example.support_management_system_mobile.data.repository;
 
-import com.example.support_management_system_mobile.models.Status;
-import com.example.support_management_system_mobile.network.APIService;
-import com.example.support_management_system_mobile.payload.request.add.AddStatusRequest;
-import com.example.support_management_system_mobile.payload.request.update.UpdateStatusRequest;
-import com.example.support_management_system_mobile.payload.response.StatusResponse;
+import com.example.support_management_system_mobile.data.models.Status;
+import com.example.support_management_system_mobile.data.api.APIService;
+import com.example.support_management_system_mobile.data.payload.request.add.AddStatusRequest;
+import com.example.support_management_system_mobile.data.payload.request.update.UpdateStatusRequest;
+import com.example.support_management_system_mobile.data.payload.response.StatusResponse;
 
 import java.util.List;
 

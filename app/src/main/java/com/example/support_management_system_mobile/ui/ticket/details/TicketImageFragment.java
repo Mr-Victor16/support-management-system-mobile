@@ -24,8 +24,8 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.support_management_system_mobile.R;
-import com.example.support_management_system_mobile.models.Image;
-import com.example.support_management_system_mobile.models.Ticket;
+import com.example.support_management_system_mobile.data.models.Image;
+import com.example.support_management_system_mobile.data.models.Ticket;
 import com.example.support_management_system_mobile.ui.ticket.TicketViewModel;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 

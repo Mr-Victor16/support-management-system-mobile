@@ -1,6 +1,6 @@
 package com.example.support_management_system_mobile.ui.management.software;
 
-import com.example.support_management_system_mobile.payload.response.SoftwareResponse;
+import com.example.support_management_system_mobile.data.payload.response.SoftwareResponse;
 
 import java.util.List;
 

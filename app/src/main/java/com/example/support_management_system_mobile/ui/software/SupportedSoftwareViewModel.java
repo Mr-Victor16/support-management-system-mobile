@@ -9,8 +9,8 @@ import androidx.lifecycle.ViewModel;
 
 import com.example.support_management_system_mobile.R;
 import com.example.support_management_system_mobile.data.repository.SoftwareRepository;
-import com.example.support_management_system_mobile.models.Event;
-import com.example.support_management_system_mobile.models.Software;
+import com.example.support_management_system_mobile.data.models.Event;
+import com.example.support_management_system_mobile.data.models.Software;
 
 import java.util.List;
 import java.util.stream.Collectors;

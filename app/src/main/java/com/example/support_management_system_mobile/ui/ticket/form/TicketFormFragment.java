@@ -20,9 +20,9 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.support_management_system_mobile.R;
-import com.example.support_management_system_mobile.models.Category;
-import com.example.support_management_system_mobile.models.Priority;
-import com.example.support_management_system_mobile.models.Software;
+import com.example.support_management_system_mobile.data.models.Category;
+import com.example.support_management_system_mobile.data.models.Priority;
+import com.example.support_management_system_mobile.data.models.Software;
 import com.example.support_management_system_mobile.ui.ticket.TicketViewModel;
 import com.google.android.material.textfield.TextInputLayout;
 

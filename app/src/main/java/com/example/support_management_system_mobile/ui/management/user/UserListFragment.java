@@ -18,8 +18,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.support_management_system_mobile.R;
-import com.example.support_management_system_mobile.auth.AuthContext;
-import com.example.support_management_system_mobile.payload.response.UserDetailsResponse;
+import com.example.support_management_system_mobile.utils.AuthContext;
+import com.example.support_management_system_mobile.data.payload.response.UserDetailsResponse;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import dagger.hilt.android.AndroidEntryPoint;

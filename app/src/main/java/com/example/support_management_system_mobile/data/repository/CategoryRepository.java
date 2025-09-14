@@ -1,10 +1,10 @@
 package com.example.support_management_system_mobile.data.repository;
 
-import com.example.support_management_system_mobile.models.Category;
-import com.example.support_management_system_mobile.network.APIService;
-import com.example.support_management_system_mobile.payload.request.add.AddCategoryRequest;
-import com.example.support_management_system_mobile.payload.request.update.UpdateCategoryRequest;
-import com.example.support_management_system_mobile.payload.response.CategoryResponse;
+import com.example.support_management_system_mobile.data.models.Category;
+import com.example.support_management_system_mobile.data.api.APIService;
+import com.example.support_management_system_mobile.data.payload.request.add.AddCategoryRequest;
+import com.example.support_management_system_mobile.data.payload.request.update.UpdateCategoryRequest;
+import com.example.support_management_system_mobile.data.payload.response.CategoryResponse;
 
 import java.util.List;
 
