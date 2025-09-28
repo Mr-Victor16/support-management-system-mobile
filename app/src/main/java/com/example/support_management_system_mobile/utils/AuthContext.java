@@ -66,11 +66,11 @@ public class AuthContext {
 
     public String getSurname() {
         User currentUser = sessionManager.getCurrentUser();
-        return currentUser.getSurname();
+        return currentUser.surname();
     }
 
     public String getName() {
         User currentUser = sessionManager.getCurrentUser();
-        return currentUser.getName();
+        return currentUser.name();
     }
 }

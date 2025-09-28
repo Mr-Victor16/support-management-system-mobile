@@ -40,9 +40,8 @@ public class ProfileViewModel extends ViewModel {
     }
 
     @Inject
-    public ProfileViewModel(@NonNull Application application, AuthContext authContext) {
+    public ProfileViewModel(@NonNull Application application) {
         this.application = application;
-        this.authContext = authContext;
     }
 
     public void refreshUserData() {
@@ -54,13 +53,13 @@ public class ProfileViewModel extends ViewModel {
         }
 
         User userData = authContext.getCurrentUser();
-        String fullName = application.getString(R.string.full_name_format, userData.getName(), userData.getSurname());
+        String fullName = application.getString(R.string.full_name_format, userData.name(), userData.surname());
         boolean isOperatorOrAdmin = authContext.isOperatorOrAdmin();
 
         _screenState.setValue(new ProfileUIState.Success(
-                userData.getUsername(),
+                userData.username(),
                 fullName,
-                userData.getEmail(),
+                userData.email(),
                 getRoleStringRes(authContext.getUserRole()),
                 isOperatorOrAdmin
         ));

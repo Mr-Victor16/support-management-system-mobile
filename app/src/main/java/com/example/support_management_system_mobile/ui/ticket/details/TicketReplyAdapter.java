@@ -49,8 +49,8 @@ public class TicketReplyAdapter extends ListAdapter<TicketReply, TicketReplyAdap
     }
 
     public static class ReplyViewHolder extends RecyclerView.ViewHolder {
-        TextView contentText, authorText, dateText;
-        ImageButton deleteButton;
+        final TextView contentText, authorText, dateText;
+        final ImageButton deleteButton;
 
         public ReplyViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -61,11 +61,11 @@ public class TicketReplyAdapter extends ListAdapter<TicketReply, TicketReplyAdap
         }
 
         public void bind(final TicketReply reply, boolean canDelete, final OnDeleteClickListener listener) {
-            contentText.setText(reply.getContent());
-            authorText.setText(reply.getUser().getUsername());
+            contentText.setText(reply.content());
+            authorText.setText(reply.user().username());
 
-            if (reply.getCreatedDate() != null) {
-                dateText.setText(reply.getCreatedDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+            if (reply.createdDate() != null) {
+                dateText.setText(reply.createdDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
             }
 
             if (canDelete) {
@@ -80,7 +80,7 @@ public class TicketReplyAdapter extends ListAdapter<TicketReply, TicketReplyAdap
     private static final DiffUtil.ItemCallback<TicketReply> DIFF_CALLBACK = new DiffUtil.ItemCallback<>() {
         @Override
         public boolean areItemsTheSame(@NonNull TicketReply oldItem, @NonNull TicketReply newItem) {
-            return Objects.equals(oldItem.getId(), newItem.getId());
+            return Objects.equals(oldItem.id(), newItem.id());
 
         }
 

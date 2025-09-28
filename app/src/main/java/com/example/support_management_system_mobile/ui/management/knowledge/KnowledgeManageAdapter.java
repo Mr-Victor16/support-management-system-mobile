@@ -48,9 +48,9 @@ public class KnowledgeManageAdapter extends ListAdapter<Knowledge, KnowledgeMana
         }
     }
 
-    static class KnowledgeViewHolder extends RecyclerView.ViewHolder {
-        TextView titleTextView, softwareTextView, dateTextView;
-        ImageButton editButton, deleteButton;
+    public static class KnowledgeViewHolder extends RecyclerView.ViewHolder {
+        final TextView titleTextView, softwareTextView, dateTextView;
+        final ImageButton editButton, deleteButton;
 
         public KnowledgeViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -62,9 +62,9 @@ public class KnowledgeManageAdapter extends ListAdapter<Knowledge, KnowledgeMana
         }
 
         public void bind(final Knowledge item, final OnKnowledgeInteractionListener listener, boolean canManage) {
-            titleTextView.setText(item.getTitle());
-            dateTextView.setText(item.getCreatedDate().toString());
-            softwareTextView.setText(item.getSoftware().getName());
+            titleTextView.setText(item.title());
+            dateTextView.setText(item.createdDate().toString());
+            softwareTextView.setText(item.software().name());
 
             int visibility = canManage ? View.VISIBLE : View.GONE;
             editButton.setVisibility(visibility);
@@ -80,7 +80,7 @@ public class KnowledgeManageAdapter extends ListAdapter<Knowledge, KnowledgeMana
     private static final DiffUtil.ItemCallback<Knowledge> DIFF_CALLBACK = new DiffUtil.ItemCallback<>() {
         @Override
         public boolean areItemsTheSame(@NonNull Knowledge oldItem, @NonNull Knowledge newItem) {
-            return Objects.equals(oldItem.getId(), newItem.getId());
+            return Objects.equals(oldItem.id(), newItem.id());
         }
 
         @Override
@@ -90,11 +90,11 @@ public class KnowledgeManageAdapter extends ListAdapter<Knowledge, KnowledgeMana
     };
 
     public void setCanManage(boolean canManage) {
-        boolean needsUpdate = this.canManage != canManage;
-        this.canManage = canManage;
-
-        if (needsUpdate) {
-            notifyDataSetChanged();
+        if (this.canManage == canManage) {
+            return;
         }
+
+        this.canManage = canManage;
+        notifyItemRangeChanged(0, getItemCount());
     }
 }

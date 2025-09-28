@@ -119,6 +119,7 @@
 
     <string name="management_panel">Management panel</string>
     <string name="manage_categories">Manage categories</string>
+    <string name="manage_knowledge">Manage knowledge</string>
     <string name="manage_knowledge_base">Manage knowledge base</string>
     <string name="manage_priorities">Manage priorities</string>
     <string name="manage_software">Manage software</string>

@@ -30,12 +30,12 @@ public class SoftwareManageAdapter extends ListAdapter<SoftwareResponse, Softwar
     }
 
     public void setCanManage(boolean canManage) {
-        boolean needsUpdate = this.canManage != canManage;
-        this.canManage = canManage;
-
-        if (needsUpdate) {
-            notifyDataSetChanged();
+        if (this.canManage == canManage) {
+            return;
         }
+
+        this.canManage = canManage;
+        notifyItemRangeChanged(0, getItemCount());
     }
 
     @NonNull
@@ -50,9 +50,9 @@ public class SoftwareManageAdapter extends ListAdapter<SoftwareResponse, Softwar
         holder.bind(getItem(position), listener, canManage);
     }
 
-    static class SoftwareViewHolder extends RecyclerView.ViewHolder {
-        TextView nameTextView, usageCountTextView;
-        ImageButton editButton, deleteButton;
+    public static class SoftwareViewHolder extends RecyclerView.ViewHolder {
+        final TextView nameTextView, usageCountTextView;
+        final ImageButton editButton, deleteButton;
 
         public SoftwareViewHolder(@NonNull View itemView) {
             super(itemView);

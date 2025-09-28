@@ -61,26 +61,32 @@ public class EditProfileViewModel extends ViewModel {
         String sName = surname.getValue();
         String pwd = password.getValue();
 
+        Integer firstNameError = null;
         if (!UserValidator.isNameValid(fName)) {
-            formState.setValue(new EditProfileFormState(R.string.name_register_error, null, null));
-            return;
+            firstNameError = R.string.name_register_error;
         }
 
+        Integer surnameError = null;
         if (!UserValidator.isSurnameValid(sName)) {
-            formState.setValue(new EditProfileFormState(null, R.string.surname_register_error, null));
-            return;
+            surnameError = R.string.surname_register_error;
         }
 
+        Integer passwordError = null;
         if (pwd != null && !pwd.isEmpty() && !UserValidator.isPasswordValid(pwd)) {
-            formState.setValue(new EditProfileFormState(null, null, R.string.password_register_error));
-            return;
+            passwordError = R.string.password_register_error;
         }
 
-        boolean hasChanges = !Objects.equals(fName, originalFirstName)
-                || !Objects.equals(sName, originalSurname)
-                || (UserValidator.isPasswordValid(pwd));
+        boolean isDataValid = firstNameError == null && surnameError == null && passwordError == null;
 
-        formState.setValue(new EditProfileFormState(true, hasChanges));
+        if (!isDataValid) {
+            formState.setValue(new EditProfileFormState(firstNameError, surnameError, passwordError));
+        } else {
+            boolean hasChanges = !Objects.equals(fName, originalFirstName)
+                    || !Objects.equals(sName, originalSurname)
+                    || (pwd != null && !pwd.isEmpty());
+
+            formState.setValue(new EditProfileFormState(true, hasChanges));
+        }
     }
 
     public void saveChanges() {
@@ -99,7 +105,7 @@ public class EditProfileViewModel extends ViewModel {
 
         UpdateProfileRequest request = new UpdateProfileRequest(fName, sName, pwd);
 
-        profileRepository.update(request, new Callback<Void>() {
+        profileRepository.update(request, new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
                 if (response.isSuccessful()) {

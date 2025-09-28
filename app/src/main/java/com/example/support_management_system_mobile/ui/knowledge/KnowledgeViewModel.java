@@ -43,7 +43,7 @@ public class KnowledgeViewModel extends ViewModel {
     public void loadKnowledge() {
         _uiState.setValue(new KnowledgeUIState.Loading());
 
-        knowledgeRepository.getKnowledgeItems(new Callback<List<Knowledge>>() {
+        knowledgeRepository.getKnowledgeItems(new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<List<Knowledge>> call, @NonNull Response<List<Knowledge>> response) {
                 if (response.isSuccessful() && response.body() != null) {
@@ -74,7 +74,7 @@ public class KnowledgeViewModel extends ViewModel {
         List<KnowledgeUIModel> currentList = ((KnowledgeUIState.Success) currentState).items;
         List<KnowledgeUIModel> newList = currentList.stream()
                 .map(item -> {
-                    if (item.knowledge().getId().equals(knowledgeId)) {
+                    if (item.knowledge().id().equals(knowledgeId)) {
                         return new KnowledgeUIModel(item.knowledge(), !item.isExpanded());
                     }
                     return item;

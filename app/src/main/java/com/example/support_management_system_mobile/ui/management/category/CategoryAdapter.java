@@ -43,9 +43,9 @@ public class CategoryAdapter extends ListAdapter<CategoryResponse, CategoryAdapt
         holder.bind(getItem(position), listener, isAdmin);
     }
 
-    static class CategoryViewHolder extends RecyclerView.ViewHolder {
-        TextView categoryName, usageCount;
-        ImageButton editButton, deleteButton;
+    public static class CategoryViewHolder extends RecyclerView.ViewHolder {
+        final TextView categoryName, usageCount;
+        final ImageButton editButton, deleteButton;
 
         public CategoryViewHolder(@NonNull View itemView) {
             super(itemView);

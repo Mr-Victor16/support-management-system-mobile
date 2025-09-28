@@ -43,7 +43,7 @@ public class PriorityManagementViewModel extends ViewModel {
 
     public void loadPriorities() {
         _priorityListState.setValue(new PriorityListUIState.Loading());
-        priorityRepository.getPrioritiesWithUseNumber(new Callback<List<PriorityResponse>>() {
+        priorityRepository.getPrioritiesWithUseNumber(new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<List<PriorityResponse>> call, @NonNull Response<List<PriorityResponse>> response) {
                 if (response.isSuccessful() && response.body() != null) {
@@ -52,6 +52,7 @@ public class PriorityManagementViewModel extends ViewModel {
                     _priorityListState.postValue(new PriorityListUIState.Error(application.getString(R.string.error_loading_data)));
                 }
             }
+
             @Override
             public void onFailure(@NonNull Call<List<PriorityResponse>> call, @NonNull Throwable t) {
                 _priorityListState.postValue(new PriorityListUIState.Error(application.getString(R.string.server_error)));
@@ -60,7 +61,7 @@ public class PriorityManagementViewModel extends ViewModel {
     }
 
     public void deletePriority(Long priorityId) {
-        priorityRepository.deletePriority(priorityId, new Callback<Void>() {
+        priorityRepository.deletePriority(priorityId, new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
                 if (response.isSuccessful()) {
@@ -70,6 +71,7 @@ public class PriorityManagementViewModel extends ViewModel {
                     _toastMessage.postValue(new Event<>(application.getString(R.string.priority_delete_error)));
                 }
             }
+
             @Override
             public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
                 _toastMessage.postValue(new Event<>(application.getString(R.string.server_error)));
@@ -78,7 +80,7 @@ public class PriorityManagementViewModel extends ViewModel {
     }
 
     public void createPriority(String name) {
-        priorityRepository.createPriority(name, new Callback<Void>() {
+        priorityRepository.createPriority(name, new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
                 if (response.isSuccessful()) {
@@ -88,6 +90,7 @@ public class PriorityManagementViewModel extends ViewModel {
                     _toastMessage.postValue(new Event<>(application.getString(R.string.priority_add_error)));
                 }
             }
+
             @Override
             public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
                 _toastMessage.postValue(new Event<>(application.getString(R.string.server_error)));
@@ -96,7 +99,7 @@ public class PriorityManagementViewModel extends ViewModel {
     }
 
     public void updatePriority(Long priorityId, String newName) {
-        priorityRepository.updatePriority(priorityId, newName, new Callback<Void>() {
+        priorityRepository.updatePriority(priorityId, newName, new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
                 if (response.isSuccessful()) {
@@ -106,6 +109,7 @@ public class PriorityManagementViewModel extends ViewModel {
                     _toastMessage.postValue(new Event<>(application.getString(R.string.priority_update_error)));
                 }
             }
+
             @Override
             public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
                 _toastMessage.postValue(new Event<>(application.getString(R.string.server_error)));

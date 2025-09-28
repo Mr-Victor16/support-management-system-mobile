@@ -30,7 +30,7 @@ public class SoftwareAdapter extends ListAdapter<SoftwareUIModel, SoftwareAdapte
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        public TextView name, description;
+        public final TextView name, description;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -40,8 +40,8 @@ public class SoftwareAdapter extends ListAdapter<SoftwareUIModel, SoftwareAdapte
 
         public void bind(SoftwareUIModel model, OnItemClickListener listener) {
             Software software = model.software();
-            name.setText(software.getName());
-            description.setText(software.getDescription());
+            name.setText(software.name());
+            description.setText(software.description());
 
             description.setVisibility(model.isExpanded() ? View.VISIBLE : View.GONE);
 
@@ -72,7 +72,7 @@ public class SoftwareAdapter extends ListAdapter<SoftwareUIModel, SoftwareAdapte
     private static final DiffUtil.ItemCallback<SoftwareUIModel> DIFF_CALLBACK = new DiffUtil.ItemCallback<>() {
         @Override
         public boolean areItemsTheSame(@NonNull SoftwareUIModel oldItem, @NonNull SoftwareUIModel newItem) {
-            return oldItem.software().getId().equals(newItem.software().getId());
+            return oldItem.software().id().equals(newItem.software().id());
         }
 
         @Override

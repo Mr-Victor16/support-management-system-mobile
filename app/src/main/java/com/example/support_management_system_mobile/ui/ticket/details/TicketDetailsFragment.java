@@ -180,18 +180,18 @@ public class TicketDetailsFragment extends Fragment {
     private void bindSuccessState(TicketDetailsUIState.Success state) {
         bindTicketData(state.ticket);
         bindControlStates(state.controls, state.imageCount, state.isClosedNoticeVisible);
-        bindReplies(state.ticket.getReplies(), state.controls.canDeleteReply());
+        bindReplies(state.ticket.replies(), state.controls.canDeleteReply());
     }
 
     private void bindTicketData(Ticket ticket) {
-        ticketTitle.setText(ticket.getTitle());
-        ticketStatus.setText(ticket.getStatus().getName());
-        ticketDescription.setText(ticket.getDescription());
-        ticketCategory.setText(getString(R.string.category_format, ticket.getCategory().getName()));
-        ticketPriority.setText(getString(R.string.priority_format, ticket.getPriority().getName()));
-        ticketSoftware.setText(getString(R.string.software_format, ticket.getSoftware().getName(), ticket.getVersion()));
-        ticketAuthor.setText(getString(R.string.author_format, ticket.getUser().getUsername()));
-        ticketDate.setText(getString(R.string.date_format, ticket.getCreatedDate().toString()));
+        ticketTitle.setText(ticket.title());
+        ticketStatus.setText(ticket.status().name());
+        ticketDescription.setText(ticket.description());
+        ticketCategory.setText(getString(R.string.category_format, ticket.category().name()));
+        ticketPriority.setText(getString(R.string.priority_format, ticket.priority().name()));
+        ticketSoftware.setText(getString(R.string.software_format, ticket.software().name(), ticket.version()));
+        ticketAuthor.setText(getString(R.string.author_format, ticket.user().username()));
+        ticketDate.setText(getString(R.string.date_format, ticket.createdDate().toString()));
     }
 
     private void bindControlStates(TicketDetailsControlsState controls, int imageCount, boolean isClosedNoticeVisible) {
@@ -222,7 +222,7 @@ public class TicketDetailsFragment extends Fragment {
     }
 
     private void showStatusChangeDialog(List<Status> statuses) {
-        final CharSequence[] statusNames = statuses.stream().map(Status::getName).toArray(CharSequence[]::new);
+        final CharSequence[] statusNames = statuses.stream().map(Status::name).toArray(CharSequence[]::new);
         new AlertDialog.Builder(requireContext())
                 .setTitle(R.string.change_status_title)
                 .setItems(statusNames, (dialog, which) -> {

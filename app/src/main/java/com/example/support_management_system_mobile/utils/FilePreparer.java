@@ -2,6 +2,7 @@ package com.example.support_management_system_mobile.utils;
 
 import android.content.Context;
 import android.net.Uri;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 
@@ -33,12 +34,13 @@ public class FilePreparer {
 
             byte[] fileBytes = inputStreamToByteArray(inputStream);
             String mimeType = appContext.getContentResolver().getType(imageUri);
+
+            if (mimeType == null) mimeType = "application/octet-stream";
             RequestBody requestFile = RequestBody.create(MediaType.parse(mimeType), fileBytes);
 
             return MultipartBody.Part.createFormData(partName, "image.jpg", requestFile);
-
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.e("FilePreparer", "Failed to prepare image part", e);
             return null;
         }
     }

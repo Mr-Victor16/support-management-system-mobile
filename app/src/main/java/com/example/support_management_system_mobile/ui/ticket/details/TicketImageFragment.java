@@ -42,6 +42,7 @@ public class TicketImageFragment extends Fragment {
     private ConstraintLayout contentLayout;
     private ImageButton deleteButton;
     private ExtendedFloatingActionButton addButton;
+    private ImageButton closeButton;
     private ActivityResultLauncher<Intent> imagePickerLauncher;
     private long ticketId = -1;
 
@@ -70,7 +71,7 @@ public class TicketImageFragment extends Fragment {
         observeViewModel();
 
         Ticket currentTicketInViewModel = viewModel.getCurrentTicket();
-        if (currentTicketInViewModel == null || currentTicketInViewModel.getId() != ticketId) {
+        if (currentTicketInViewModel == null || currentTicketInViewModel.id() != ticketId) {
             viewModel.loadTicketDetails(ticketId);
         }
     }
@@ -79,6 +80,7 @@ public class TicketImageFragment extends Fragment {
         viewPager = view.findViewById(R.id.viewImagePager);
         deleteButton = view.findViewById(R.id.deleteImageButton);
         addButton = view.findViewById(R.id.addImageButton);
+        closeButton = view.findViewById(R.id.closeImagesFragmentButton);
         noImagesTextView = view.findViewById(R.id.noImagesTextView);
         progressBar = view.findViewById(R.id.progressBar);
         contentLayout = view.findViewById(R.id.contentLayout);
@@ -101,7 +103,6 @@ public class TicketImageFragment extends Fragment {
     }
 
     private void setupListeners() {
-        ImageButton closeButton = getView().findViewById(R.id.closeImagesFragmentButton);
         closeButton.setOnClickListener(v -> getParentFragmentManager().popBackStack());
         addButton.setOnClickListener(v -> viewModel.onAddImageClicked());
         deleteButton.setOnClickListener(v -> showDeleteConfirmation());
@@ -113,12 +114,12 @@ public class TicketImageFragment extends Fragment {
             contentLayout.setVisibility(state instanceof TicketDetailsUIState.Success ? View.VISIBLE : View.GONE);
 
             if (state instanceof TicketDetailsUIState.Success successState) {
-                if (successState.ticket.getId() == ticketId) {
+                if (successState.ticket.id() == ticketId) {
                     boolean hasImages = successState.imageCount > 0;
                     viewPager.setVisibility(hasImages ? View.VISIBLE : View.GONE);
                     noImagesTextView.setVisibility(hasImages ? View.GONE : View.VISIBLE);
 
-                    pagerAdapter.submitList(successState.ticket.getImages());
+                    pagerAdapter.submitList(successState.ticket.images());
 
                     boolean canEdit = successState.controls.canEditImages();
                     deleteButton.setVisibility(hasImages && canEdit ? View.VISIBLE : View.GONE);
@@ -152,7 +153,7 @@ public class TicketImageFragment extends Fragment {
         new AlertDialog.Builder(requireContext())
                 .setTitle(R.string.delete_image)
                 .setMessage(R.string.confirm_delete_image)
-                .setPositiveButton(R.string.delete_button, (dialog, which) -> viewModel.deleteImage(imageToDelete.getId()))
+                .setPositiveButton(R.string.delete_button, (dialog, which) -> viewModel.deleteImage(imageToDelete.id()))
                 .setNegativeButton(R.string.cancel_button, null)
                 .show();
     }

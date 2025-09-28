@@ -1,17 +1,12 @@
 package com.example.support_management_system_mobile.data.repository;
 
-import android.net.Uri;
-
-import com.example.support_management_system_mobile.R;
 import com.example.support_management_system_mobile.data.models.Ticket;
 import com.example.support_management_system_mobile.data.api.APIService;
 import com.example.support_management_system_mobile.data.payload.request.add.AddTicketReplyRequest;
 import com.example.support_management_system_mobile.data.payload.request.add.AddTicketRequest;
 import com.example.support_management_system_mobile.data.payload.request.update.UpdateTicketRequest;
 import com.example.support_management_system_mobile.data.payload.request.update.UpdateTicketStatusRequest;
-import com.example.support_management_system_mobile.utils.FilePreparer;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
@@ -22,12 +17,10 @@ import retrofit2.Callback;
 
 public class TicketRepository {
     private final APIService apiService;
-    private final FilePreparer filePreparer;
 
     @Inject
-    public TicketRepository(APIService apiService, FilePreparer filePreparer) {
+    public TicketRepository(APIService apiService) {
         this.apiService = apiService;
-        this.filePreparer = filePreparer;
     }
 
     public void getUserTickets(Callback<List<Ticket>> callback) {
@@ -62,15 +55,8 @@ public class TicketRepository {
         apiService.deleteTicketImage(imageId).enqueue(callback);
     }
 
-    public void uploadImage(Long ticketId, Uri imageUri, Callback<Void> callback) {
-        MultipartBody.Part body = filePreparer.prepareImagePart("files", imageUri);
-
-        if (body == null) {
-            callback.onFailure(null, new IOException(String.valueOf(R.string.image_prepare_failed)));
-            return;
-        }
-
-        apiService.uploadTicketImages(ticketId, Collections.singletonList(body)).enqueue(callback);
+    public void uploadImage(Long ticketId, MultipartBody.Part imagePart, Callback<Void> callback) {
+        apiService.uploadTicketImages(ticketId, Collections.singletonList(imagePart)).enqueue(callback);
     }
 
     public void createTicket(AddTicketRequest request, Callback<Void> callback) {

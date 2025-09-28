@@ -37,7 +37,7 @@ public class WelcomeViewModel extends ViewModel {
         _uiState.setValue(new WelcomeUIState.Loading());
 
         if (authContext.isLoggedIn()) {
-            String welcomeText = application.getString(R.string.welcome_header_format, authContext.getCurrentUser().getName());
+            String welcomeText = application.getString(R.string.welcome_header_format, authContext.getCurrentUser().name());
             _uiState.setValue(new WelcomeUIState.Success(welcomeText, false));
         } else {
             String welcomeText = application.getString(R.string.welcome);

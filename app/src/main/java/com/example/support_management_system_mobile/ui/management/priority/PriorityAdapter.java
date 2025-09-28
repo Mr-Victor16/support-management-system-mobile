@@ -43,9 +43,9 @@ public class PriorityAdapter extends ListAdapter<PriorityResponse, PriorityAdapt
         holder.bind(getItem(position), listener, isAdmin);
     }
 
-    static class PriorityViewHolder extends RecyclerView.ViewHolder {
-        TextView priorityName, usageCount;
-        ImageButton editButton, deleteButton;
+    public static class PriorityViewHolder extends RecyclerView.ViewHolder {
+        final TextView priorityName, usageCount;
+        final ImageButton editButton, deleteButton;
 
         public PriorityViewHolder(@NonNull View itemView) {
             super(itemView);

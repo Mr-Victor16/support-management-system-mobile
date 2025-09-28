@@ -3,65 +3,39 @@ package com.example.support_management_system_mobile.ui.register;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
-public class RegisterFormState {
-    @Nullable
-    @StringRes
-    private final Integer usernameError;
+import com.example.support_management_system_mobile.R;
+import com.example.support_management_system_mobile.utils.validators.UserValidator;
 
-    @Nullable
-    @StringRes
-    private final Integer nameError;
+public record RegisterFormState(
+        @Nullable @StringRes Integer usernameError,
+        @Nullable @StringRes Integer nameError,
+        @Nullable @StringRes Integer surnameError,
+        @Nullable @StringRes Integer emailError,
+        @Nullable @StringRes Integer passwordError,
+        boolean isDataValid
+) {
+    public static RegisterFormState create(String username, String name, String surname, String email, String password) {
+        Integer usernameError = (!username.isEmpty() && !UserValidator.isUsernameValid(username))
+                ? R.string.username_register_error : null;
 
-    @Nullable
-    @StringRes
-    private final Integer surnameError;
+        Integer nameError = (!name.isEmpty() && !UserValidator.isNameValid(name))
+                ? R.string.name_register_error : null;
 
-    @Nullable
-    @StringRes
-    private final Integer emailError;
+        Integer surnameError = (!surname.isEmpty() && !UserValidator.isSurnameValid(surname))
+                ? R.string.surname_register_error : null;
 
-    @Nullable
-    @StringRes
-    private final Integer passwordError;
+        Integer emailError = (!email.isEmpty() && !UserValidator.isEmailValid(email))
+                ? R.string.email_register_error : null;
 
-    private final boolean isDataValid;
+        Integer passwordError = (!password.isEmpty() && !UserValidator.isPasswordValid(password))
+                ? R.string.password_register_error : null;
 
-    public RegisterFormState(@Nullable Integer usernameError, @Nullable Integer nameError, @Nullable Integer surnameError,
-                             @Nullable Integer emailError, @Nullable Integer passwordError, boolean isDataValid) {
-        this.usernameError = usernameError;
-        this.nameError = nameError;
-        this.surnameError = surnameError;
-        this.emailError = emailError;
-        this.passwordError = passwordError;
-        this.isDataValid = isDataValid;
-    }
+        boolean isDataValidForSubmission = UserValidator.isUsernameValid(username) &&
+                UserValidator.isNameValid(name) &&
+                UserValidator.isSurnameValid(surname) &&
+                UserValidator.isEmailValid(email) &&
+                UserValidator.isPasswordValid(password);
 
-    @Nullable
-    public Integer getUsernameError() {
-        return usernameError;
-    }
-
-    @Nullable
-    public Integer getNameError() {
-        return nameError;
-    }
-
-    @Nullable
-    public Integer getSurnameError() {
-        return surnameError;
-    }
-
-    @Nullable
-    public Integer getEmailError() {
-        return emailError;
-    }
-
-    @Nullable
-    public Integer getPasswordError() {
-        return passwordError;
-    }
-
-    public boolean isDataValid() {
-        return isDataValid;
+        return new RegisterFormState(usernameError, nameError, surnameError, emailError, passwordError, isDataValidForSubmission);
     }
 }

@@ -31,7 +31,7 @@ public class ImagePagerAdapter extends ListAdapter<Image, ImagePagerAdapter.Imag
     public void onBindViewHolder(@NonNull ImageViewHolder holder, int position) {
         Image image = getItem(position);
 
-        String base64String = "data:image/jpeg;base64," + image.getContent();
+        String base64String = "data:image/jpeg;base64," + image.content();
 
         Glide.with(holder.itemView.getContext())
                 .load(base64String)
@@ -41,7 +41,8 @@ public class ImagePagerAdapter extends ListAdapter<Image, ImagePagerAdapter.Imag
     }
 
     public static class ImageViewHolder extends RecyclerView.ViewHolder {
-        ImageView imageView;
+        final ImageView imageView;
+
         public ImageViewHolder(@NonNull View itemView) {
             super(itemView);
             imageView = itemView.findViewById(R.id.fullscreen_image_view);
@@ -51,7 +52,7 @@ public class ImagePagerAdapter extends ListAdapter<Image, ImagePagerAdapter.Imag
     private static final DiffUtil.ItemCallback<Image> DIFF_CALLBACK = new DiffUtil.ItemCallback<>() {
         @Override
         public boolean areItemsTheSame(@NonNull Image oldItem, @NonNull Image newItem) {
-            return oldItem.getId().equals(newItem.getId());
+            return oldItem.id().equals(newItem.id());
         }
 
         @Override

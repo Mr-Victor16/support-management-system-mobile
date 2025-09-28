@@ -33,9 +33,10 @@ import dagger.hilt.android.AndroidEntryPoint;
 public class KnowledgeFormFragment extends Fragment {
     private KnowledgeManagementViewModel viewModel;
 
-    private ProgressBar progressBar;
+    private ProgressBar loadingProgressBar, submittingProgressBar;
     private ScrollView formContent;
-    private TextView errorMessageTextView, formHeader;
+    private TextView errorTextView;
+    private TextView formHeader;
     private TextInputLayout titleInputLayout, contentInputLayout;
     private EditText editTitle, editContent;
     private AutoCompleteTextView softwareAutoComplete;
@@ -56,6 +57,10 @@ public class KnowledgeFormFragment extends Fragment {
         if (knowledgeId == -1L) knowledgeId = null;
 
         initViews(view);
+
+        int headerResId = (knowledgeId == null) ? R.string.add_new_knowledge : R.string.edit_knowledge;
+        formHeader.setText(headerResId);
+
         setupListeners();
         observeViewModel();
 
@@ -63,9 +68,10 @@ public class KnowledgeFormFragment extends Fragment {
     }
 
     private void initViews(View view) {
-        progressBar = view.findViewById(R.id.progressBar);
+        loadingProgressBar = view.findViewById(R.id.loadingProgressBar);
+        submittingProgressBar = view.findViewById(R.id.submittingProgressBar);
         formContent = view.findViewById(R.id.formContent);
-        errorMessageTextView = view.findViewById(R.id.errorMessageTextView);
+        errorTextView = view.findViewById(R.id.errorTextView);
         formHeader = view.findViewById(R.id.formHeader);
         titleInputLayout = view.findViewById(R.id.titleInputLayout);
         editTitle = view.findViewById(R.id.editTitle);
@@ -78,15 +84,10 @@ public class KnowledgeFormFragment extends Fragment {
     private void setupListeners() {
         saveButton.setOnClickListener(v -> viewModel.saveKnowledgeItem());
 
-        editTitle.setOnFocusChangeListener((v, hasFocus) -> {
-            if (!hasFocus) viewModel.onFieldTouched(KnowledgeManagementViewModel.FormField.TITLE);
-        });
-        editContent.setOnFocusChangeListener((v, hasFocus) -> {
-            if (!hasFocus) viewModel.onFieldTouched(KnowledgeManagementViewModel.FormField.CONTENT);
-        });
-
-        editTitle.addTextChangedListener(new SimpleTextWatcher(s -> viewModel.knowledgeTitle.setValue(s)));
-        editContent.addTextChangedListener(new SimpleTextWatcher(s -> viewModel.knowledgeContent.setValue(s)));
+        editTitle.addTextChangedListener(new SimpleTextWatcher(s ->
+                viewModel.onFieldChanged(KnowledgeManagementViewModel.FormField.TITLE, s)));
+        editContent.addTextChangedListener(new SimpleTextWatcher(s ->
+                viewModel.onFieldChanged(KnowledgeManagementViewModel.FormField.CONTENT, s)));
 
         softwareAutoComplete.setOnItemClickListener((parent, view, position, id) -> {
             Software selectedSoftware = (Software) parent.getItemAtPosition(position);
@@ -102,18 +103,30 @@ public class KnowledgeFormFragment extends Fragment {
 
     private void observeViewModel() {
         viewModel.knowledgeFormState.observe(getViewLifecycleOwner(), state -> {
-            boolean isLoading = state instanceof KnowledgeFormUIState.Loading || state instanceof KnowledgeFormUIState.Submitting;
-            progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
-            formContent.setVisibility(state instanceof KnowledgeFormUIState.Editing ? View.VISIBLE : View.GONE);
+            loadingProgressBar.setVisibility(View.GONE);
+            formContent.setVisibility(View.GONE);
+            errorTextView.setVisibility(View.GONE);
+            submittingProgressBar.setVisibility(View.GONE);
 
-            if (state instanceof KnowledgeFormUIState.Editing) {
-                formHeader.setText(((KnowledgeFormUIState.Editing) state).headerTextResId);
+            if (state instanceof KnowledgeFormUIState.Loading) {
+                loadingProgressBar.setVisibility(View.VISIBLE);
+            }
+            else if (state instanceof KnowledgeFormUIState.Error) {
+                errorTextView.setVisibility(View.VISIBLE);
+                errorTextView.setText(((KnowledgeFormUIState.Error) state).message);
+            }
+            else if (state instanceof KnowledgeFormUIState.Submitting) {
+                formContent.setVisibility(View.VISIBLE);
+                setFormEnabled(false);
+                submittingProgressBar.setVisibility(View.VISIBLE);
+            }
+            else if (state instanceof KnowledgeFormUIState.Editing) {
+                formContent.setVisibility(View.VISIBLE);
+                setFormEnabled(true);
                 saveButton.setText(((KnowledgeFormUIState.Editing) state).saveButtonTextResId);
-            } else if (state instanceof KnowledgeFormUIState.Success) {
+            }
+            else if (state instanceof KnowledgeFormUIState.Success) {
                 getParentFragmentManager().popBackStack();
-            } else if (state instanceof KnowledgeFormUIState.Error) {
-                errorMessageTextView.setText(((KnowledgeFormUIState.Error) state).message);
-                errorMessageTextView.setVisibility(View.VISIBLE);
             }
         });
 
@@ -123,8 +136,8 @@ public class KnowledgeFormFragment extends Fragment {
         viewModel.contentError.observe(getViewLifecycleOwner(), errorResId ->
                 contentInputLayout.setError(errorResId != null ? getString(errorResId) : null));
 
-        viewModel.isFormValid.observe(getViewLifecycleOwner(), isValid ->
-                saveButton.setEnabled(isValid != null && isValid));
+        viewModel.isSaveButtonEnabled.observe(getViewLifecycleOwner(), isEnabled ->
+                saveButton.setEnabled(isEnabled != null && isEnabled));
 
         viewModel.softwareList.observe(getViewLifecycleOwner(), softwareList -> {
             if (getContext() == null || softwareList == null) return;
@@ -147,6 +160,13 @@ public class KnowledgeFormFragment extends Fragment {
         });
     }
 
+    private void setFormEnabled(boolean isEnabled) {
+        titleInputLayout.setEnabled(isEnabled);
+        contentInputLayout.setEnabled(isEnabled);
+        softwareAutoComplete.setEnabled(isEnabled);
+        saveButton.setEnabled(isEnabled);
+    }
+
     private void setAutocompleteSelection(Software value) {
         String newText = (value != null) ? value.toString() : "";
 
@@ -155,13 +175,7 @@ public class KnowledgeFormFragment extends Fragment {
         }
     }
 
-    private static class SimpleTextWatcher implements TextWatcher {
-        private final java.util.function.Consumer<String> onTextChanged;
-
-        public SimpleTextWatcher(java.util.function.Consumer<String> onTextChanged) {
-            this.onTextChanged = onTextChanged;
-        }
-
+    private record SimpleTextWatcher(java.util.function.Consumer<String> onTextChanged) implements TextWatcher {
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {    }
 

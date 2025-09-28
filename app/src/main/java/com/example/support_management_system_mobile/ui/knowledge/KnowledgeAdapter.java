@@ -31,7 +31,7 @@ public class KnowledgeAdapter extends ListAdapter<KnowledgeUIModel, KnowledgeAda
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        public TextView title, content, date, softwareName;
+        public final TextView title, content, date, softwareName;
 
         public ViewHolder(View view) {
             super(view);
@@ -44,13 +44,13 @@ public class KnowledgeAdapter extends ListAdapter<KnowledgeUIModel, KnowledgeAda
         public void bind(KnowledgeUIModel model, OnItemClickListener listener) {
             Knowledge knowledge = model.knowledge();
 
-            title.setText(knowledge.getTitle());
-            content.setText(knowledge.getContent());
-            date.setText(knowledge.getCreatedDate().toString());
+            title.setText(knowledge.title());
+            content.setText(knowledge.content());
+            date.setText(knowledge.createdDate().toString());
 
-            Software software = knowledge.getSoftware();
+            Software software = knowledge.software();
             if (software != null) {
-                softwareName.setText(software.getName());
+                softwareName.setText(software.name());
                 softwareName.setVisibility(View.VISIBLE);
             } else {
                 softwareName.setVisibility(View.GONE);
@@ -85,7 +85,7 @@ public class KnowledgeAdapter extends ListAdapter<KnowledgeUIModel, KnowledgeAda
     private static final DiffUtil.ItemCallback<KnowledgeUIModel> DIFF_CALLBACK = new DiffUtil.ItemCallback<>() {
         @Override
         public boolean areItemsTheSame(@NonNull KnowledgeUIModel oldItem, @NonNull KnowledgeUIModel newItem) {
-            return oldItem.knowledge().getId().equals(newItem.knowledge().getId());
+            return oldItem.knowledge().id().equals(newItem.knowledge().id());
         }
 
         @Override

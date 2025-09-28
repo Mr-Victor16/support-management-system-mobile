@@ -33,7 +33,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 public class UserFormFragment extends Fragment {
     private UserManagementViewModel viewModel;
 
-    private ProgressBar progressBar;
+    private ProgressBar loadingProgressBar, submittingProgressBar;
     private ScrollView formContent;
     private TextView errorTextView, formHeader;
     private TextInputLayout usernameInputLayout;
@@ -60,6 +60,10 @@ public class UserFormFragment extends Fragment {
         if (userId == -1L) userId = null;
 
         initViews(view);
+
+        int headerResId = (userId == null) ? R.string.add_new_user : R.string.edit_user;
+        formHeader.setText(headerResId);
+
         setupListeners();
         observeViewModel();
 
@@ -67,7 +71,8 @@ public class UserFormFragment extends Fragment {
     }
 
     private void initViews(View view) {
-        progressBar = view.findViewById(R.id.progressBar);
+        loadingProgressBar = view.findViewById(R.id.loadingProgressBar);
+        submittingProgressBar = view.findViewById(R.id.submittingProgressBar);
         formContent = view.findViewById(R.id.formContent);
         errorTextView = view.findViewById(R.id.errorTextView);
         formHeader = view.findViewById(R.id.formHeader);
@@ -91,27 +96,16 @@ public class UserFormFragment extends Fragment {
     private void setupListeners() {
         saveButton.setOnClickListener(v -> viewModel.saveUser());
 
-        editUsername.setOnFocusChangeListener((v, hasFocus) -> {
-            if (!hasFocus) viewModel.onFieldTouched(UserManagementViewModel.FormField.USERNAME);
-        });
-        editEmail.setOnFocusChangeListener((v, hasFocus) -> {
-            if (!hasFocus) viewModel.onFieldTouched(UserManagementViewModel.FormField.EMAIL);
-        });
-        editName.setOnFocusChangeListener((v, hasFocus) -> {
-            if (!hasFocus) viewModel.onFieldTouched(UserManagementViewModel.FormField.NAME);
-        });
-        editSurname.setOnFocusChangeListener((v, hasFocus) -> {
-            if (!hasFocus) viewModel.onFieldTouched(UserManagementViewModel.FormField.SURNAME);
-        });
-        editPassword.setOnFocusChangeListener((v, hasFocus) -> {
-            if (!hasFocus) viewModel.onFieldTouched(UserManagementViewModel.FormField.PASSWORD);
-        });
-
-        editUsername.addTextChangedListener(new UserFormFragment.SimpleTextWatcher(s -> viewModel.username.setValue(s)));
-        editEmail.addTextChangedListener(new UserFormFragment.SimpleTextWatcher(s -> viewModel.email.setValue(s)));
-        editName.addTextChangedListener(new UserFormFragment.SimpleTextWatcher(s -> viewModel.name.setValue(s)));
-        editSurname.addTextChangedListener(new UserFormFragment.SimpleTextWatcher(s -> viewModel.surname.setValue(s)));
-        editPassword.addTextChangedListener(new UserFormFragment.SimpleTextWatcher(s -> viewModel.password.setValue(s)));
+        editUsername.addTextChangedListener(new UserFormFragment.SimpleTextWatcher(s ->
+                viewModel.onFieldChanged(UserManagementViewModel.FormField.USERNAME, s)));
+        editEmail.addTextChangedListener(new UserFormFragment.SimpleTextWatcher(s ->
+                viewModel.onFieldChanged(UserManagementViewModel.FormField.EMAIL, s)));
+        editName.addTextChangedListener(new UserFormFragment.SimpleTextWatcher(s ->
+                viewModel.onFieldChanged(UserManagementViewModel.FormField.NAME, s)));
+        editSurname.addTextChangedListener(new UserFormFragment.SimpleTextWatcher(s ->
+                viewModel.onFieldChanged(UserManagementViewModel.FormField.SURNAME, s)));
+        editPassword.addTextChangedListener(new UserFormFragment.SimpleTextWatcher(s ->
+                viewModel.onFieldChanged(UserManagementViewModel.FormField.PASSWORD, s)));
 
         roleAutoComplete.setOnItemClickListener((parent, view, position, id) -> {
             Role selectedRole = (Role) parent.getItemAtPosition(position);
@@ -119,25 +113,44 @@ public class UserFormFragment extends Fragment {
         });
     }
 
+    private void setFormEnabled(boolean isEnabled) {
+        usernameInputLayout.setEnabled(isEnabled);
+        emailInputLayout.setEnabled(isEnabled);
+        nameInputLayout.setEnabled(isEnabled);
+        surnameInputLayout.setEnabled(isEnabled);
+        passwordInputLayout.setEnabled(isEnabled);
+        roleAutoComplete.setEnabled(isEnabled);
+        saveButton.setEnabled(isEnabled);
+    }
+
     private void observeViewModel() {
         viewModel.userFormState.observe(getViewLifecycleOwner(), state -> {
-            boolean isLoading = state instanceof UserFormUIState.Loading || state instanceof UserFormUIState.Submitting;
-            progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
-            formContent.setVisibility(state instanceof UserFormUIState.Editing ? View.VISIBLE : View.GONE);
+            loadingProgressBar.setVisibility(View.GONE);
+            formContent.setVisibility(View.GONE);
+            errorTextView.setVisibility(View.GONE);
+            submittingProgressBar.setVisibility(View.GONE);
 
-            errorTextView.setVisibility(state instanceof UserFormUIState.Error ? View.VISIBLE : View.GONE);
-
-            if (state instanceof UserFormUIState.Editing) {
-                formHeader.setText(((UserFormUIState.Editing) state).headerTextResId);
+            if (state instanceof UserFormUIState.Loading) {
+                loadingProgressBar.setVisibility(View.VISIBLE);
+            }
+            else if (state instanceof UserFormUIState.Error) {
+                errorTextView.setVisibility(View.VISIBLE);
+                errorTextView.setText(((UserFormUIState.Error) state).message);
+            }
+            else if (state instanceof UserFormUIState.Submitting) {
+                formContent.setVisibility(View.VISIBLE);
+                setFormEnabled(false);
+                submittingProgressBar.setVisibility(View.VISIBLE);
+            }
+            else if (state instanceof UserFormUIState.Editing) {
+                formContent.setVisibility(View.VISIBLE);
+                setFormEnabled(true);
                 saveButton.setText(((UserFormUIState.Editing) state).saveButtonTextResId);
 
-                boolean isNewUser = userId == null;
-                passwordInputLayout.setVisibility(isNewUser ? View.VISIBLE : View.GONE);
-                editPassword.setVisibility(isNewUser ? View.VISIBLE : View.GONE);
-            } else if (state instanceof UserFormUIState.Success) {
+                passwordInputLayout.setVisibility(userId == null ? View.VISIBLE : View.GONE);
+            }
+            else if (state instanceof UserFormUIState.Success) {
                 getParentFragmentManager().popBackStack();
-            } else if (state instanceof UserFormUIState.Error) {
-                errorTextView.setText(((UserFormUIState.Error) state).message);
             }
         });
 
@@ -199,13 +212,7 @@ public class UserFormFragment extends Fragment {
         }
     }
 
-    private static class SimpleTextWatcher implements TextWatcher {
-        private final java.util.function.Consumer<String> onTextChanged;
-
-        public SimpleTextWatcher(java.util.function.Consumer<String> onTextChanged) {
-            this.onTextChanged = onTextChanged;
-        }
-
+    private record SimpleTextWatcher(java.util.function.Consumer<String> onTextChanged) implements TextWatcher {
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {    }
 

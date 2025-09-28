@@ -44,7 +44,7 @@ public class SoftwareManagementViewModel extends ViewModel {
     public void loadSoftwareList() {
         _softwareListState.setValue(new SoftwareListUIState.Loading());
 
-        softwareRepository.getSoftwareListWithUseNumber(new Callback<List<SoftwareResponse>>() {
+        softwareRepository.getSoftwareListWithUseNumber(new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<List<SoftwareResponse>> call, @NonNull Response<List<SoftwareResponse>> response) {
                 if (response.isSuccessful() && response.body() != null) {
@@ -63,7 +63,7 @@ public class SoftwareManagementViewModel extends ViewModel {
     }
 
     public void deleteSoftware(long softwareId) {
-        softwareRepository.deleteSoftware(softwareId, new Callback<Void>() {
+        softwareRepository.deleteSoftware(softwareId, new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
                 if (response.isSuccessful()) {
@@ -82,7 +82,7 @@ public class SoftwareManagementViewModel extends ViewModel {
     }
 
     public void createSoftware(String name, String description) {
-        softwareRepository.createSoftware(name, description, new Callback<Void>() {
+        softwareRepository.createSoftware(name, description, new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
                 if (response.isSuccessful()) {
@@ -101,7 +101,7 @@ public class SoftwareManagementViewModel extends ViewModel {
     }
 
     public void updateSoftware(Long softwareId, String newName, String newDescription) {
-        softwareRepository.updateSoftware(softwareId, newName, newDescription, new Callback<Void>() {
+        softwareRepository.updateSoftware(softwareId, newName, newDescription, new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
                 if (response.isSuccessful()) {
@@ -118,5 +118,4 @@ public class SoftwareManagementViewModel extends ViewModel {
             }
         });
     }
-
 }

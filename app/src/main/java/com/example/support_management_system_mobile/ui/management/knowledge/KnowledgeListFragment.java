@@ -69,15 +69,15 @@ public class KnowledgeListFragment extends Fragment {
         adapter = new KnowledgeManageAdapter(canManage, new KnowledgeManageAdapter.OnKnowledgeInteractionListener() {
             @Override
             public void onEdit(Knowledge item) {
-                navigateToForm(item.getId());
+                navigateToForm(item.id());
             }
 
             @Override
             public void onDelete(Knowledge item) {
                 new AlertDialog.Builder(requireContext())
                         .setTitle(R.string.delete_knowledge_title)
-                        .setMessage(getString(R.string.confirm_delete_knowledge_message, item.getTitle()))
-                        .setPositiveButton(R.string.delete_button, (dialog, which) -> viewModel.deleteKnowledgeItem(item.getId()))
+                        .setMessage(getString(R.string.confirm_delete_knowledge_message, item.title()))
+                        .setPositiveButton(R.string.delete_button, (dialog, which) -> viewModel.deleteKnowledgeItem(item.id()))
                         .setNegativeButton(R.string.cancel_button, null)
                         .show();
             }
@@ -149,8 +149,8 @@ public class KnowledgeListFragment extends Fragment {
 
     private void showReadOnlyDialog(Knowledge item) {
         new AlertDialog.Builder(requireContext())
-                .setTitle(item.getTitle())
-                .setMessage(item.getContent())
+                .setTitle(item.title())
+                .setMessage(item.content())
                 .setPositiveButton(R.string.close_button, null)
                 .show();
     }

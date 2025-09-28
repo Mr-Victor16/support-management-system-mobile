@@ -75,7 +75,7 @@
                 android:drawablePadding="8dp"
                 android:gravity="center"
                 android:padding="16dp"
-                android:text="@string/manage_knowledge_base"
+                android:text="@string/manage_knowledge"
                 android:textAppearance="?attr/textAppearanceLabelLarge"
                 app:drawableTopCompat="@drawable/ic_knowledge"
                 app:drawableTint="?attr/colorPrimary" />

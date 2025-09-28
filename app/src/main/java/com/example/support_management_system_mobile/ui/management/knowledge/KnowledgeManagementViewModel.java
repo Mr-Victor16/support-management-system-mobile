@@ -38,12 +38,8 @@ public class KnowledgeManagementViewModel extends ViewModel {
     private Long currentEditingKnowledgeId = null;
     private final AuthContext authContext;
 
-    public enum FormField {
-        TITLE,
-        CONTENT
-    }
-
-    private final Set<FormField> touchedFields = new HashSet<>();
+    public enum FormField { TITLE, CONTENT }
+    private final Set<FormField> interactedFields = new HashSet<>();
 
     private final MutableLiveData<KnowledgeListUIState> _knowledgeListState = new MutableLiveData<>();
     public final LiveData<KnowledgeListUIState> knowledgeListState = _knowledgeListState;
@@ -70,6 +66,9 @@ public class KnowledgeManagementViewModel extends ViewModel {
     private final MutableLiveData<Event<String>> _toastMessage = new MutableLiveData<>();
     public final LiveData<Event<String>> toastMessage = _toastMessage;
 
+    private final MediatorLiveData<Boolean> _isSaveButtonEnabled = new MediatorLiveData<>();
+    public final LiveData<Boolean> isSaveButtonEnabled = _isSaveButtonEnabled;
+
     @Inject
     public KnowledgeManagementViewModel(Application application, KnowledgeRepository knowledgeRepository,
                                         SoftwareRepository softwareRepository, AuthContext authContext) {
@@ -81,11 +80,22 @@ public class KnowledgeManagementViewModel extends ViewModel {
         _isFormValid.addSource(knowledgeTitle, value -> validateKnowledgeForm());
         _isFormValid.addSource(knowledgeContent, value -> validateKnowledgeForm());
         _isFormValid.addSource(selectedSoftware, value -> validateKnowledgeForm());
+
+        _isSaveButtonEnabled.addSource(isFormValid, isValid -> updateButtonState());
+        _isSaveButtonEnabled.addSource(knowledgeFormState, state -> updateButtonState());
+    }
+
+    private void updateButtonState() {
+        boolean isValid = Boolean.TRUE.equals(isFormValid.getValue());
+        KnowledgeFormUIState state = knowledgeFormState.getValue();
+        boolean isLoadingOrSubmitting = state instanceof KnowledgeFormUIState.Loading || state instanceof KnowledgeFormUIState.Submitting;
+
+        _isSaveButtonEnabled.setValue(isValid && !isLoadingOrSubmitting);
     }
 
     public void loadKnowledgeItems() {
         _knowledgeListState.setValue(new KnowledgeListUIState.Loading());
-        knowledgeRepository.getKnowledgeItems(new Callback<List<Knowledge>>() {
+        knowledgeRepository.getKnowledgeItems(new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<List<Knowledge>> call, @NonNull Response<List<Knowledge>> response) {
                 if (response.isSuccessful() && response.body() != null) {
@@ -104,7 +114,7 @@ public class KnowledgeManagementViewModel extends ViewModel {
     }
 
     public void deleteKnowledgeItem(Long knowledgeId) {
-        knowledgeRepository.deleteKnowledgeItem(knowledgeId, new Callback<Void>() {
+        knowledgeRepository.deleteKnowledgeItem(knowledgeId, new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
                 if (response.isSuccessful()) {
@@ -125,9 +135,9 @@ public class KnowledgeManagementViewModel extends ViewModel {
     public void loadKnowledgeForm(Long knowledgeId) {
         this.currentEditingKnowledgeId = knowledgeId;
         _knowledgeFormState.setValue(new KnowledgeFormUIState.Loading());
-        touchedFields.clear();
+        interactedFields.clear();
 
-        softwareRepository.getSoftwareList(new Callback<List<Software>>() {
+        softwareRepository.getSoftwareList(new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<List<Software>> call, @NonNull Response<List<Software>> response) {
                 if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
@@ -150,15 +160,15 @@ public class KnowledgeManagementViewModel extends ViewModel {
     }
 
     private void loadKnowledgeItemForEditing(Long knowledgeId) {
-        knowledgeRepository.getKnowledgeItemById(knowledgeId, new Callback<Knowledge>() {
+        knowledgeRepository.getKnowledgeItemById(knowledgeId, new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<Knowledge> call, @NonNull Response<Knowledge> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     Knowledge item = response.body();
-                    knowledgeTitle.postValue(item.getTitle());
-                    knowledgeContent.postValue(item.getContent());
-                    selectedSoftware.postValue(item.getSoftware());
-                    _knowledgeFormState.postValue(new KnowledgeFormUIState.Editing(R.string.edit_knowledge, R.string.save_changes_button));
+                    knowledgeTitle.postValue(item.title());
+                    knowledgeContent.postValue(item.content());
+                    selectedSoftware.postValue(item.software());
+                    _knowledgeFormState.postValue(new KnowledgeFormUIState.Editing(R.string.save_changes_button));
                 } else {
                     _knowledgeFormState.postValue(new KnowledgeFormUIState.Error(application.getString(R.string.error_loading_data)));
                 }
@@ -175,7 +185,7 @@ public class KnowledgeManagementViewModel extends ViewModel {
         knowledgeTitle.postValue("");
         knowledgeContent.postValue("");
         selectedSoftware.postValue(null);
-        _knowledgeFormState.postValue(new KnowledgeFormUIState.Editing(R.string.add_new_knowledge, R.string.save));
+        _knowledgeFormState.postValue(new KnowledgeFormUIState.Editing(R.string.save));
         validateKnowledgeForm();
     }
 
@@ -184,23 +194,23 @@ public class KnowledgeManagementViewModel extends ViewModel {
         boolean isContentValid = KnowledgeValidator.isContentValid(knowledgeContent.getValue());
         boolean isSoftwareSelected = selectedSoftware.getValue() != null;
 
-        _titleError.setValue(touchedFields.contains(FormField.TITLE) && !isTitleValid ? R.string.knowledge_title_error : null);
-        _contentError.setValue(touchedFields.contains(FormField.CONTENT) && !isContentValid ? R.string.knowledge_content_error : null);
+        _titleError.setValue(interactedFields.contains(FormField.TITLE) && !isTitleValid ? R.string.knowledge_title_error : null);
+        _contentError.setValue(interactedFields.contains(FormField.CONTENT) && !isContentValid ? R.string.knowledge_content_error : null);
 
         _isFormValid.setValue(isTitleValid && isContentValid && isSoftwareSelected);
     }
 
     public void saveKnowledgeItem() {
-        touchedFields.add(FormField.TITLE);
-        touchedFields.add(FormField.CONTENT);
+        interactedFields.add(FormField.TITLE);
+        interactedFields.add(FormField.CONTENT);
         validateKnowledgeForm();
-        if (Boolean.FALSE.equals(isFormValid.getValue())) return;
+        if (Boolean.FALSE.equals(isFormValid.getValue()) || selectedSoftware.getValue() == null) return;
 
         _knowledgeFormState.setValue(new KnowledgeFormUIState.Submitting());
 
         String title = knowledgeTitle.getValue();
         String content = knowledgeContent.getValue();
-        Long softwareId = selectedSoftware.getValue().getId();
+        Long softwareId = selectedSoftware.getValue().id();
 
         Callback<Void> callback = createSaveCallback();
         if (currentEditingKnowledgeId == null) {
@@ -223,20 +233,39 @@ public class KnowledgeManagementViewModel extends ViewModel {
                     loadKnowledgeItems();
                     _knowledgeFormState.postValue(new KnowledgeFormUIState.Success());
                 } else {
-                    _knowledgeFormState.postValue(new KnowledgeFormUIState.Error(application.getString(isNewEntry ? R.string.entry_add_error: R.string.entry_update_error)));
+                    _toastMessage.postValue(new Event<>(application.getString(isNewEntry ? R.string.entry_add_error: R.string.entry_update_error)));
+
+                    if (_knowledgeFormState.getValue() instanceof KnowledgeFormUIState.Submitting) {
+                        _knowledgeFormState.postValue(new KnowledgeFormUIState.Editing(isNewEntry ? R.string.save : R.string.save_changes_button));
+                    }
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
-                _knowledgeFormState.postValue(new KnowledgeFormUIState.Error(application.getString(R.string.server_error)));
+                _toastMessage.postValue(new Event<>(application.getString(R.string.server_error)));
+
+                if (_knowledgeFormState.getValue() instanceof KnowledgeFormUIState.Submitting) {
+                    _knowledgeFormState.postValue(new KnowledgeFormUIState.Editing(isNewEntry ? R.string.save : R.string.save_changes_button));
+                }
             }
         };
     }
 
-    public void onFieldTouched(FormField field) {
-        if (touchedFields.add(field)) {
-            validateKnowledgeForm();
+    public void onFieldChanged(FormField field, String value) {
+        interactedFields.add(field);
+
+        switch (field) {
+            case TITLE:
+                if (!java.util.Objects.equals(knowledgeTitle.getValue(), value)) {
+                    knowledgeTitle.setValue(value);
+                }
+                break;
+            case CONTENT:
+                if (!java.util.Objects.equals(knowledgeContent.getValue(), value)) {
+                    knowledgeContent.setValue(value);
+                }
+                break;
         }
     }
 }

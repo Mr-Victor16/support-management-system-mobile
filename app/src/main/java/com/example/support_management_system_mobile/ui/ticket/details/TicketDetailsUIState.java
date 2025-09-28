@@ -29,11 +29,11 @@ public abstract class TicketDetailsUIState {
         public Success(Ticket ticket, User currentUser) {
             this.ticket = ticket;
 
-            boolean isOwner = currentUser.getId().equals(ticket.getUser().getId());
-            boolean isOperator = currentUser.getRole().getType().equals(Role.Types.ROLE_OPERATOR);
-            boolean isTicketClosed = ticket.getStatus().isCloseTicket();
+            boolean isOwner = currentUser.id().equals(ticket.user().id());
+            boolean isOperator = currentUser.role().getType().equals(Role.Types.ROLE_OPERATOR);
+            boolean isTicketClosed = ticket.status().closeTicket();
 
-            this.imageCount = (ticket.getImages() != null) ? ticket.getImages().size() : 0;
+            this.imageCount = (ticket.images() != null) ? ticket.images().size() : 0;
             boolean hasImages = this.imageCount > 0;
 
             boolean canEditImages = (isOwner && !isTicketClosed) || isOperator;

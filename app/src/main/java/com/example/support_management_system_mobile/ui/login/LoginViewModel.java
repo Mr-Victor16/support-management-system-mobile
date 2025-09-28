@@ -75,9 +75,9 @@ public class LoginViewModel extends AndroidViewModel {
         if (Boolean.FALSE.equals(_isLoginButtonEnabled.getValue())) return;
 
         _isLoading.setValue(true);
-        LoginRequest req = new LoginRequest(_username.getValue(), _password.getValue());
+        LoginRequest request = new LoginRequest(_username.getValue(), _password.getValue());
 
-        repository.login(req, new Callback<LoginResponse>() {
+        repository.login(request, new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<LoginResponse> call, @NonNull Response<LoginResponse> resp) {
                 if (resp.isSuccessful() && resp.body() != null) {

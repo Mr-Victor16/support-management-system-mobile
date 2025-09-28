@@ -85,11 +85,11 @@ public class RegisterActivity extends AppCompatActivity {
     private void setupObservers() {
         viewModel.getFormState().observe(this, state -> {
             if (state == null) return;
-            usernameLayout.setError(state.getUsernameError() != null ? getString(state.getUsernameError()) : null);
-            nameLayout.setError(state.getNameError() != null ? getString(state.getNameError()) : null);
-            surnameLayout.setError(state.getSurnameError() != null ? getString(state.getSurnameError()) : null);
-            emailLayout.setError(state.getEmailError() != null ? getString(state.getEmailError()) : null);
-            passwordLayout.setError(state.getPasswordError() != null ? getString(state.getPasswordError()) : null);
+            usernameLayout.setError(state.usernameError() != null ? getString(state.usernameError()) : null);
+            nameLayout.setError(state.nameError() != null ? getString(state.nameError()) : null);
+            surnameLayout.setError(state.surnameError() != null ? getString(state.surnameError()) : null);
+            emailLayout.setError(state.emailError() != null ? getString(state.emailError()) : null);
+            passwordLayout.setError(state.passwordError() != null ? getString(state.passwordError()) : null);
         });
 
         viewModel.getIsLoading().observe(this, isLoading ->

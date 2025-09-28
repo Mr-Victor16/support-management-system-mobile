@@ -28,17 +28,19 @@ import com.example.support_management_system_mobile.data.payload.request.add.Add
 import com.example.support_management_system_mobile.data.payload.request.update.UpdateTicketRequest;
 import com.example.support_management_system_mobile.ui.ticket.details.TicketDetailsUIState;
 import com.example.support_management_system_mobile.ui.ticket.form.TicketFormUIState;
-import com.example.support_management_system_mobile.ui.ticket.form.TicketFormValidationState;
 import com.example.support_management_system_mobile.ui.ticket.list.TicketListUIState;
+import com.example.support_management_system_mobile.utils.FilePreparer;
 import com.example.support_management_system_mobile.utils.validators.TicketValidator;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
+import okhttp3.MultipartBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -55,6 +57,8 @@ public class TicketViewModel extends ViewModel {
     private final CategoryRepository categoryRepository;
     private final Application application;
     private final AuthContext authContext;
+
+    private final FilePreparer filePreparer;
 
     private final MutableLiveData<TicketListUIState> _ticketListState = new MutableLiveData<>();
     public final LiveData<TicketListUIState> ticketListState = _ticketListState;
@@ -77,40 +81,41 @@ public class TicketViewModel extends ViewModel {
     private final MutableLiveData<Event<Boolean>> _pickImageEvent = new MutableLiveData<>();
     public LiveData<Event<Boolean>> getPickImageEvent() { return _pickImageEvent; }
 
-    private final MutableLiveData<List<Category>> _categories = new MutableLiveData<>();
-    public final LiveData<List<Category>> categories = _categories;
+    private final MutableLiveData<List<Category>> _categoryList = new MutableLiveData<>();
+    public final LiveData<List<Category>> categoryList = _categoryList;
+    private final MutableLiveData<List<Priority>> _priorityList = new MutableLiveData<>();
+    public final LiveData<List<Priority>> priorityList = _priorityList;
+    private final MutableLiveData<List<Software>> _softwareList = new MutableLiveData<>();
+    public final LiveData<List<Software>> softwareList = _softwareList;
 
-    private final MutableLiveData<List<Priority>> _priorities = new MutableLiveData<>();
-    public final LiveData<List<Priority>> priorities = _priorities;
-
-    private final MutableLiveData<List<Software>> _software = new MutableLiveData<>();
-    public final LiveData<List<Software>> software = _software;
-
-    public final MutableLiveData<String> ticketTitle = new MutableLiveData<>("");
-    public final MutableLiveData<String> ticketDescription = new MutableLiveData<>("");
-    public final MutableLiveData<String> ticketVersion = new MutableLiveData<>("");
-
+    public final MutableLiveData<String> title = new MutableLiveData<>("");
+    public final MutableLiveData<String> description = new MutableLiveData<>("");
+    public final MutableLiveData<String> version = new MutableLiveData<>("");
     public final MutableLiveData<Category> selectedCategory = new MutableLiveData<>();
     public final MutableLiveData<Priority> selectedPriority = new MutableLiveData<>();
     public final MutableLiveData<Software> selectedSoftware = new MutableLiveData<>();
 
-    private final MutableLiveData<TicketFormUIState> _formState = new MutableLiveData<>();
-    public final LiveData<TicketFormUIState> formState = _formState;
+    private final MutableLiveData<TicketFormUIState> _ticketFormState = new MutableLiveData<>();
+    public final LiveData<TicketFormUIState> ticketFormState = _ticketFormState;
 
     private final MediatorLiveData<Boolean> _isFormValid = new MediatorLiveData<>();
     public final LiveData<Boolean> isFormValid = _isFormValid;
 
-    private final MediatorLiveData<TicketFormValidationState> _validationState = new MediatorLiveData<>();
-    public final LiveData<TicketFormValidationState> validationState = _validationState;
+    private final MutableLiveData<Integer> _titleError = new MutableLiveData<>(null);
+    public final LiveData<Integer> titleError = _titleError;
+    private final MutableLiveData<Integer> _descriptionError = new MutableLiveData<>(null);
+    public final LiveData<Integer> descriptionError = _descriptionError;
+    private final MutableLiveData<Integer> _versionError = new MutableLiveData<>(null);
+    public final LiveData<Integer> versionError = _versionError;
 
-    private final Set<FormField> touchedFields = new HashSet<>();
+    private final Set<FormField> interactedFields = new HashSet<>();
 
     private Long currentEditingTicketId = null;
 
     @Inject
     public TicketViewModel(Application application, TicketRepository ticketRepository, StatusRepository statusRepository,
                            PriorityRepository priorityRepository, SoftwareRepository softwareRepository,
-                           CategoryRepository categoryRepository, AuthContext authContext) {
+                           CategoryRepository categoryRepository, AuthContext authContext, FilePreparer filePreparer) {
         this.application = application;
         this.ticketRepository = ticketRepository;
         this.statusRepository = statusRepository;
@@ -118,13 +123,14 @@ public class TicketViewModel extends ViewModel {
         this.softwareRepository = softwareRepository;
         this.categoryRepository = categoryRepository;
         this.authContext = authContext;
+        this.filePreparer = filePreparer;
 
-        _validationState.addSource(ticketTitle, value -> validateForm());
-        _validationState.addSource(ticketDescription, value -> validateForm());
-        _validationState.addSource(ticketVersion, value -> validateForm());
-        _validationState.addSource(selectedCategory, value -> validateForm());
-        _validationState.addSource(selectedPriority, value -> validateForm());
-        _validationState.addSource(selectedSoftware, value -> validateForm());
+        _isFormValid.addSource(title, value -> validateTicketForm());
+        _isFormValid.addSource(description, value -> validateTicketForm());
+        _isFormValid.addSource(version, value -> validateTicketForm());
+        _isFormValid.addSource(selectedCategory, value -> validateTicketForm());
+        _isFormValid.addSource(selectedPriority, value -> validateTicketForm());
+        _isFormValid.addSource(selectedSoftware, value -> validateTicketForm());
     }
 
     public void loadTickets() {
@@ -175,7 +181,7 @@ public class TicketViewModel extends ViewModel {
             return;
         }
         _ticketDetailsState.setValue(new TicketDetailsUIState.Loading());
-        ticketRepository.getTicketById(ticketId, new Callback<Ticket>() {
+        ticketRepository.getTicketById(ticketId, new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<Ticket> call, @NonNull Response<Ticket> response) {
                 if (response.isSuccessful() && response.body() != null) {
@@ -197,11 +203,11 @@ public class TicketViewModel extends ViewModel {
         Ticket ticket = getCurrentTicket();
         if (ticket == null) return;
 
-        ticketRepository.addReply(ticket.getId(), replyContent.getValue(), new Callback<Void>() {
+        ticketRepository.addReply(ticket.id(), replyContent.getValue(), new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
                 if (response.isSuccessful()) {
-                    loadTicketDetails(ticket.getId());
+                    loadTicketDetails(ticket.id());
                     replyContent.postValue("");
                     _toastMessage.postValue(new Event<>(application.getString(R.string.reply_added)));
                 } else {
@@ -217,7 +223,7 @@ public class TicketViewModel extends ViewModel {
     }
 
     public void loadStatuses() {
-        statusRepository.getStatuses(new Callback<List<Status>>() {
+        statusRepository.getStatuses(new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<List<Status>> call, @NonNull Response<List<Status>> response) {
                 if (response.isSuccessful()) {
@@ -238,11 +244,11 @@ public class TicketViewModel extends ViewModel {
         Ticket ticket = getCurrentTicket();
         if (ticket == null) return;
 
-        ticketRepository.changeStatus(ticket.getId(), newStatus.getId(), new Callback<Void>() {
+        ticketRepository.changeStatus(ticket.id(), newStatus.id(), new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
-                if(response.isSuccessful()) {
-                    loadTicketDetails(ticket.getId());
+                if (response.isSuccessful()) {
+                    loadTicketDetails(ticket.id());
                     _toastMessage.postValue(new Event<>(application.getString(R.string.status_changed)));
                 } else {
                     _toastMessage.postValue(new Event<>(application.getString(R.string.status_change_failed)));
@@ -260,10 +266,10 @@ public class TicketViewModel extends ViewModel {
         Ticket ticket = getCurrentTicket();
         if (ticket == null) return;
 
-        ticketRepository.deleteTicket(ticket.getId(), new Callback<Void>() {
+        ticketRepository.deleteTicket(ticket.id(), new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
-                if(response.isSuccessful()) {
+                if (response.isSuccessful()) {
                     _toastMessage.postValue(new Event<>(application.getString(R.string.ticket_deleted)));
                     _detailsNavigation.postValue(new Event<>(DetailsNavigation.GO_BACK));
                 } else {
@@ -282,11 +288,11 @@ public class TicketViewModel extends ViewModel {
         Ticket ticket = getCurrentTicket();
         if (ticket == null) return;
 
-        ticketRepository.deleteReply(reply.getId(), new Callback<Void>() {
+        ticketRepository.deleteReply(reply.id(), new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
                 if (response.isSuccessful()) {
-                    loadTicketDetails(ticket.getId());
+                    loadTicketDetails(ticket.id());
                     _toastMessage.postValue(new Event<>(application.getString(R.string.reply_deleted)));
                 } else {
                     _toastMessage.postValue(new Event<>(application.getString(R.string.reply_delete_failed)));
@@ -307,12 +313,18 @@ public class TicketViewModel extends ViewModel {
             return;
         }
 
-        ticketRepository.uploadImage(ticket.getId(), imageUri, new Callback<Void>() {
+        MultipartBody.Part body = filePreparer.prepareImagePart("files", imageUri);
+        if (body == null) {
+            _toastMessage.postValue(new Event<>(application.getString(R.string.image_prepare_failed)));
+            return;
+        }
+
+        ticketRepository.uploadImage(ticket.id(), body, new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
                 if (response.isSuccessful()) {
                     _toastMessage.postValue(new Event<>(application.getString(R.string.image_added)));
-                    loadTicketDetails(ticket.getId());
+                    loadTicketDetails(ticket.id());
                 } else {
                     _toastMessage.postValue(new Event<>(application.getString(R.string.add_image_failed)));
                 }
@@ -329,12 +341,12 @@ public class TicketViewModel extends ViewModel {
         Ticket ticket = getCurrentTicket();
         if (ticket == null) return;
 
-        ticketRepository.deleteImage(imageId, new Callback<Void>() {
+        ticketRepository.deleteImage(imageId, new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
                 if (response.isSuccessful()) {
                     _toastMessage.postValue(new Event<>(application.getString(R.string.image_deleted)));
-                    loadTicketDetails(ticket.getId());
+                    loadTicketDetails(ticket.id());
                 } else {
                     _toastMessage.postValue(new Event<>(application.getString(R.string.image_delete_failed)));
                 }
@@ -368,206 +380,232 @@ public class TicketViewModel extends ViewModel {
         return null;
     }
 
-    public void loadForm(Long ticketId) {
+    public void loadTicketForm(Long ticketId) {
         this.currentEditingTicketId = ticketId;
-        _formState.setValue(new TicketFormUIState.Loading());
-        touchedFields.clear();
 
-        categoryRepository.getCategories(new Callback<List<Category>>() {
+        _isFormValid.setValue(false);
+        interactedFields.clear();
+
+        _ticketFormState.setValue(new TicketFormUIState.Loading());
+
+        final int TOTAL_REQUESTS = 3;
+        AtomicInteger successfulRequests = new AtomicInteger(0);
+        AtomicInteger failedRequests = new AtomicInteger(0);
+
+        Runnable checkCompletion = () -> {
+            if (successfulRequests.incrementAndGet() == TOTAL_REQUESTS) {
+                if (ticketId != null) {
+                    loadTicketForEditing(ticketId);
+                } else {
+                    prepareNewTicketForm();
+                }
+            }
+        };
+
+        Runnable handleFailure = () -> {
+            if (failedRequests.incrementAndGet() == 1) {
+                _ticketFormState.postValue(new TicketFormUIState.Error(application.getString(R.string.form_data_load_error)));
+            }
+        };
+
+        Runnable handleServerError = () -> {
+            if (failedRequests.incrementAndGet() == 1) {
+                _ticketFormState.postValue(new TicketFormUIState.Error(application.getString(R.string.server_error)));
+            }
+        };
+
+        categoryRepository.getCategories(new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<List<Category>> call, @NonNull Response<List<Category>> response) {
-                if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
-                    _categories.postValue(response.body());
-                    loadPriorities(ticketId);
+                if (response.isSuccessful() && response.body() != null) {
+                    _categoryList.postValue(response.body());
+                    checkCompletion.run();
                 } else {
-                    handleFormDataLoadError();
+                    handleFailure.run();
                 }
             }
-
             @Override
             public void onFailure(@NonNull Call<List<Category>> call, @NonNull Throwable t) {
-                handleFormDataLoadError();
+                handleServerError.run();
             }
         });
-    }
 
-    private void loadPriorities(Long ticketId) {
-        priorityRepository.getPriorities(new Callback<List<Priority>>() {
+        priorityRepository.getPriorities(new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<List<Priority>> call, @NonNull Response<List<Priority>> response) {
-                if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
-                    _priorities.postValue(response.body());
-                    loadSoftware(ticketId);
+                if (response.isSuccessful() && response.body() != null) {
+                    _priorityList.postValue(response.body());
+                    checkCompletion.run();
                 } else {
-                    handleFormDataLoadError();
+                    handleFailure.run();
                 }
             }
-
             @Override
             public void onFailure(@NonNull Call<List<Priority>> call, @NonNull Throwable t) {
-                handleFormDataLoadError();
+                handleServerError.run();
             }
         });
-    }
 
-    private void loadSoftware(Long ticketId) {
-        softwareRepository.getSoftwareList(new Callback<List<Software>>() {
+        softwareRepository.getSoftwareList(new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<List<Software>> call, @NonNull Response<List<Software>> response) {
-                if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
-                    _software.postValue(response.body());
-
-                    if (ticketId != null) {
-                        loadTicketForEditing(ticketId);
-                    } else {
-                        prepareNewTicketForm();
-                    }
+                if (response.isSuccessful() && response.body() != null) {
+                    _softwareList.postValue(response.body());
+                    checkCompletion.run();
                 } else {
-                    handleFormDataLoadError();
+                    handleFailure.run();
                 }
             }
-
             @Override
             public void onFailure(@NonNull Call<List<Software>> call, @NonNull Throwable t) {
-                handleFormDataLoadError();
+                handleServerError.run();
             }
         });
     }
 
     private void loadTicketForEditing(Long ticketId) {
-        ticketRepository.getTicketById(ticketId, new Callback<Ticket>() {
+        ticketRepository.getTicketById(ticketId, new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<Ticket> call, @NonNull Response<Ticket> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    Ticket ticket = response.body();
-                    ticketTitle.postValue(ticket.getTitle());
-                    ticketDescription.postValue(ticket.getDescription());
-                    ticketVersion.postValue(ticket.getVersion());
-
-                    selectedCategory.postValue(ticket.getCategory());
-                    selectedPriority.postValue(ticket.getPriority());
-                    selectedSoftware.postValue(ticket.getSoftware());
-                    _formState.postValue(new TicketFormUIState.Editing(R.string.edit_ticket, R.string.save_changes_button));
+                    Ticket item = response.body();
+                    title.postValue(item.title());
+                    description.postValue(item.description());
+                    version.postValue(item.version());
+                    selectedCategory.postValue(item.category());
+                    selectedPriority.postValue(item.priority());
+                    selectedSoftware.postValue(item.software());
+                    _ticketFormState.postValue(new TicketFormUIState.Editing(R.string.save_changes_button));
                 } else {
-                    _formState.postValue(new TicketFormUIState.Error(R.string.ticket_not_found));
+                    _ticketFormState.postValue(new TicketFormUIState.Error(application.getString(R.string.error_loading_data)));
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<Ticket> call, @NonNull Throwable t) {
-                _formState.postValue(new TicketFormUIState.Error(R.string.server_error));
+                _ticketFormState.postValue(new TicketFormUIState.Error(application.getString(R.string.server_error)));
             }
         });
     }
 
-    private void validateForm() {
-        Integer titleError = !TicketValidator.isTicketTitleValid(ticketTitle.getValue()) ? R.string.ticket_title_error : null;
-        Integer descriptionError = !TicketValidator.isTicketDescriptionValid(ticketDescription.getValue()) ? R.string.ticket_description_error : null;
-        Integer versionError = !TicketValidator.isTicketVersionValid(ticketVersion.getValue()) ? R.string.software_version_error : null;
+    private void validateTicketForm() {
+        boolean isTitleValid = TicketValidator.isTicketTitleValid(title.getValue());
+        boolean isDescriptionValid = TicketValidator.isTicketDescriptionValid(description.getValue());
+        boolean isVersionValid = TicketValidator.isTicketVersionValid(version.getValue());
+        boolean areDropdownsSelected = selectedCategory.getValue() != null && selectedPriority.getValue() != null && selectedSoftware.getValue() != null;
 
-        Integer finalTitleError = touchedFields.contains(FormField.TITLE) ? titleError : null;
-        Integer finalDescriptionError = touchedFields.contains(FormField.DESCRIPTION) ? descriptionError : null;
-        Integer finalVersionError = touchedFields.contains(FormField.VERSION) ? versionError : null;
+        _titleError.setValue(interactedFields.contains(FormField.TITLE) && !isTitleValid ? R.string.ticket_title_error : null);
+        _descriptionError.setValue(interactedFields.contains(FormField.DESCRIPTION) && !isDescriptionValid ? R.string.ticket_description_error : null);
+        _versionError.setValue(interactedFields.contains(FormField.VERSION) && !isVersionValid ? R.string.software_version_error : null);
 
-        boolean areSpinnersSelected = selectedCategory.getValue() != null &&
-                selectedPriority.getValue() != null &&
-                selectedSoftware.getValue() != null;
-
-        boolean isSaveEnabled = titleError == null && descriptionError == null && versionError == null && areSpinnersSelected;
-
-        _validationState.setValue(new TicketFormValidationState(finalTitleError, finalDescriptionError, finalVersionError, isSaveEnabled));
+        _isFormValid.setValue(isTitleValid && isDescriptionValid && isVersionValid && areDropdownsSelected);
     }
 
     public void saveTicket() {
-        if (Boolean.FALSE.equals(isFormValid.getValue())) return;
-        _formState.setValue(new TicketFormUIState.Submitting());
+        interactedFields.add(FormField.TITLE);
+        interactedFields.add(FormField.DESCRIPTION);
+        interactedFields.add(FormField.VERSION);
+        validateTicketForm();
 
-        Category category = selectedCategory.getValue();
-        Long categoryId = (category != null) ? category.getId() : null;
+        if (Boolean.FALSE.equals(_isFormValid.getValue())) return;
 
-        Priority priority = selectedPriority.getValue();
-        Long priorityId = (priority != null) ? priority.getId() : null;
+        _ticketFormState.setValue(new TicketFormUIState.Submitting());
 
-        Software software = selectedSoftware.getValue();
-        Long softwareId = (software != null) ? software.getId() : null;
+        Long categoryId = selectedCategory.getValue() != null ? selectedCategory.getValue().id() : null;
+        Long priorityId = selectedPriority.getValue() != null ? selectedPriority.getValue().id() : null;
+        Long softwareId = selectedSoftware.getValue() != null ? selectedSoftware.getValue().id() : null;
 
         if (currentEditingTicketId == null) {
             AddTicketRequest request = new AddTicketRequest(
-                    ticketTitle.getValue(),
-                    ticketDescription.getValue(),
-                    categoryId,
-                    priorityId,
-                    ticketVersion.getValue(),
-                    softwareId
-            );
-            ticketRepository.createTicket(request, new Callback<Void>() {
-                @Override
-                public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
-                    handleSaveResponse(true);
-                }
-
-                @Override
-                public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
-                    handleSaveFailure(true);
-                }
-            });
+                    title.getValue(), description.getValue(), categoryId,
+                    priorityId, version.getValue(), softwareId);
+            createTicket(request);
         } else {
             UpdateTicketRequest request = new UpdateTicketRequest(
-                    currentEditingTicketId,
-                    ticketTitle.getValue(),
-                    ticketDescription.getValue(),
-                    categoryId,
-                    priorityId,
-                    ticketVersion.getValue(),
-                    softwareId
-            );
-            ticketRepository.updateTicket(request, new Callback<Void>() {
-                @Override
-                public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
-                    handleSaveResponse(false);
-                }
-
-                @Override
-                public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
-                    handleSaveFailure(false);
-                }
-            });
+                    currentEditingTicketId, title.getValue(), description.getValue(),
+                    categoryId, priorityId, version.getValue(), softwareId);
+            updateTicket(request);
         }
     }
 
-    private void handleSaveResponse(boolean isNewTicket) {
-        _formState.postValue(new TicketFormUIState.Success());
-        _toastMessage.postValue(new Event<>(isNewTicket ? application.getString(R.string.ticket_added) : application.getString(R.string.ticket_updated)));
+    private void createTicket(AddTicketRequest request) {
+        ticketRepository.createTicket(request, new Callback<>() {
+            @Override
+            public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
+                if (response.isSuccessful()) {
+                    _toastMessage.postValue(new Event<>(application.getString(R.string.ticket_added)));
+                    _ticketFormState.postValue(new TicketFormUIState.Success());
+                } else {
+                    _toastMessage.postValue(new Event<>(application.getString(R.string.add_ticket_error)));
 
-        if (isNewTicket) {
-            loadTickets();
-        } else {
-            loadTicketDetails(currentEditingTicketId);
-        }
+                    if (_ticketFormState.getValue() instanceof TicketFormUIState.Submitting) {
+                        _ticketFormState.postValue(new TicketFormUIState.Editing(R.string.add_ticket_button));
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
+                _toastMessage.postValue(new Event<>(application.getString(R.string.server_error)));
+                if (_ticketFormState.getValue() instanceof TicketFormUIState.Submitting) {
+                    _ticketFormState.postValue(new TicketFormUIState.Editing(R.string.add_ticket_button));
+                }
+            }
+        });
     }
 
-    private void handleSaveFailure(boolean isNewTicket) {
-        _formState.postValue(new TicketFormUIState.Error(isNewTicket ? R.string.add_ticket_error : R.string.update_ticket_error));
+    private void updateTicket(UpdateTicketRequest request) {
+        ticketRepository.updateTicket(request, new Callback<>() {
+            @Override
+            public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
+                if (response.isSuccessful()) {
+                    _toastMessage.postValue(new Event<>(application.getString(R.string.ticket_updated)));
+                    _ticketFormState.postValue(new TicketFormUIState.Success());
+                } else {
+                    _toastMessage.postValue(new Event<>(application.getString(R.string.update_ticket_error)));
+
+                    if (_ticketFormState.getValue() instanceof TicketFormUIState.Submitting) {
+                        _ticketFormState.postValue(new TicketFormUIState.Editing(R.string.save_changes_button));
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
+                _toastMessage.postValue(new Event<>(application.getString(R.string.server_error)));
+
+                if (_ticketFormState.getValue() instanceof TicketFormUIState.Submitting) {
+                    _ticketFormState.postValue(new TicketFormUIState.Editing(R.string.save_changes_button));
+                }
+            }
+        });
     }
 
-    public void onFieldTouched(FormField field) {
-        if (touchedFields.add(field)) {
-            validateForm();
+    public void onFieldChanged(FormField field, String value) {
+        interactedFields.add(field);
+
+        switch (field) {
+            case TITLE:
+                if (!java.util.Objects.equals(title.getValue(), value)) title.setValue(value);
+                break;
+            case DESCRIPTION:
+                if (!java.util.Objects.equals(description.getValue(), value)) description.setValue(value);
+                break;
+            case VERSION:
+                if (!java.util.Objects.equals(version.getValue(), value)) version.setValue(value);
+                break;
         }
     }
 
     private void prepareNewTicketForm() {
-        ticketTitle.postValue("");
-        ticketDescription.postValue("");
-        ticketVersion.postValue("");
+        title.postValue("");
+        description.postValue("");
+        version.postValue("");
         selectedCategory.postValue(null);
         selectedPriority.postValue(null);
         selectedSoftware.postValue(null);
-        _formState.postValue(new TicketFormUIState.Editing(R.string.new_ticket, R.string.add_ticket_button));
-        validateForm();
-    }
 
-    private void handleFormDataLoadError() {
-        _formState.postValue(new TicketFormUIState.Error(R.string.form_data_load_error));
+        _ticketFormState.postValue(new TicketFormUIState.Editing(R.string.add_ticket_button));
+        validateTicketForm();
     }
 }

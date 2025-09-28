@@ -43,7 +43,7 @@ public class SupportedSoftwareViewModel extends ViewModel {
     public void loadSupportedSoftware() {
         _screenState.setValue(new SoftwareUIState.Loading());
 
-        softwareRepository.getSoftwareList(new Callback<List<Software>>() {
+        softwareRepository.getSoftwareList(new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<List<Software>> call, @NonNull Response<List<Software>> response) {
                 if (response.isSuccessful() && response.body() != null) {
@@ -72,7 +72,7 @@ public class SupportedSoftwareViewModel extends ViewModel {
 
         List<SoftwareUIModel> newList = currentList.stream()
                 .map(item -> {
-                    if (item.software().getId().equals(clickedItem.software().getId())) {
+                    if (item.software().id().equals(clickedItem.software().id())) {
                         return new SoftwareUIModel(item.software(), !item.isExpanded());
                     }
                     return item;

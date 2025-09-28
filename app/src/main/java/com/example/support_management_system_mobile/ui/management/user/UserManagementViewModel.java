@@ -38,15 +38,8 @@ public class UserManagementViewModel extends ViewModel {
     private final AuthContext authContext;
     private Long currentEditingUserId = null;
 
-    public enum FormField {
-        USERNAME,
-        NAME,
-        SURNAME,
-        EMAIL,
-        PASSWORD
-    }
-
-    private final Set<FormField> touchedFields = new HashSet<>();
+    public enum FormField { USERNAME, NAME, SURNAME, EMAIL, PASSWORD }
+    private final Set<FormField> interactedFields = new HashSet<>();
 
     public final MutableLiveData<String> username = new MutableLiveData<>("");
     public final MutableLiveData<String> name = new MutableLiveData<>("");
@@ -100,7 +93,7 @@ public class UserManagementViewModel extends ViewModel {
     public void loadUserList() {
         _userListState.setValue(new UserListUIState.Loading());
 
-        userRepository.getUsers(new Callback<List<UserDetailsResponse>>() {
+        userRepository.getUsers(new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<List<UserDetailsResponse>> call, @NonNull Response<List<UserDetailsResponse>> response) {
                 if (response.isSuccessful() && response.body() != null) {
@@ -119,7 +112,7 @@ public class UserManagementViewModel extends ViewModel {
     }
 
     public void deleteUser(long userId) {
-        userRepository.deleteUser(userId, new Callback<Void>() {
+        userRepository.deleteUser(userId, new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
                 if (response.isSuccessful()) {
@@ -138,7 +131,7 @@ public class UserManagementViewModel extends ViewModel {
     }
 
     public void createUser(AddUserRequest request) {
-        userRepository.createUser(request, new Callback<Void>() {
+        userRepository.createUser(request, new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
                 if (response.isSuccessful()) {
@@ -147,18 +140,26 @@ public class UserManagementViewModel extends ViewModel {
                     _userFormState.postValue(new UserFormUIState.Success());
                 } else {
                     _toastMessage.postValue(new Event<>(application.getString(R.string.user_add_error)));
+
+                    if (_userFormState.getValue() instanceof UserFormUIState.Submitting) {
+                        _userFormState.postValue(new UserFormUIState.Editing(R.string.save));
+                    }
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
                 _toastMessage.postValue(new Event<>(application.getString(R.string.server_error)));
+
+                if (_userFormState.getValue() instanceof UserFormUIState.Submitting) {
+                    _userFormState.postValue(new UserFormUIState.Editing(R.string.save));
+                }
             }
         });
     }
 
     public void updateUser(UpdateUserRequest request) {
-        userRepository.updateUser(request, new Callback<Void>() {
+        userRepository.updateUser(request, new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
                 if (response.isSuccessful()) {
@@ -167,12 +168,20 @@ public class UserManagementViewModel extends ViewModel {
                     _userFormState.postValue(new UserFormUIState.Success());
                 } else {
                     _toastMessage.postValue(new Event<>(application.getString(R.string.user_update_error)));
+
+                    if (_userFormState.getValue() instanceof UserFormUIState.Submitting) {
+                        _userFormState.postValue(new UserFormUIState.Editing(R.string.save_changes_button));
+                    }
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
                 _toastMessage.postValue(new Event<>(application.getString(R.string.server_error)));
+
+                if (_userFormState.getValue() instanceof UserFormUIState.Submitting) {
+                    _userFormState.postValue(new UserFormUIState.Editing(R.string.save_changes_button));
+                }
             }
         });
     }
@@ -184,9 +193,9 @@ public class UserManagementViewModel extends ViewModel {
     public void loadUserForm(Long userId) {
         this.currentEditingUserId = userId;
         _userFormState.setValue(new UserFormUIState.Loading());
-        touchedFields.clear();
+        interactedFields.clear();
 
-        roleRepository.getRoles(new Callback<List<Role>>() {
+        roleRepository.getRoles(new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<List<Role>> call, @NonNull Response<List<Role>> response) {
                 if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
@@ -209,7 +218,7 @@ public class UserManagementViewModel extends ViewModel {
     }
 
     private void loadUserForEditing(Long userId) {
-        userRepository.getUserById(userId, new Callback<UserDetailsResponse>() {
+        userRepository.getUserById(userId, new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<UserDetailsResponse> call, @NonNull Response<UserDetailsResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
@@ -220,7 +229,7 @@ public class UserManagementViewModel extends ViewModel {
                     email.postValue(item.email());
                     selectedRole.postValue(item.role());
 
-                    _userFormState.postValue(new UserFormUIState.Editing(R.string.edit_user, R.string.save_changes_button));
+                    _userFormState.postValue(new UserFormUIState.Editing(R.string.save_changes_button));
                 } else {
                     _userFormState.postValue(new UserFormUIState.Error(application.getString(R.string.error_loading_data)));
                 }
@@ -241,13 +250,29 @@ public class UserManagementViewModel extends ViewModel {
         email.postValue("");
 
         selectedRole.postValue(null);
-        _userFormState.postValue(new UserFormUIState.Editing(R.string.add_new_user, R.string.save));
+        _userFormState.postValue(new UserFormUIState.Editing(R.string.save));
         validateUserForm();
     }
 
-    public void onFieldTouched(UserManagementViewModel.FormField field) {
-        if (touchedFields.add(field)) {
-            validateUserForm();
+    public void onFieldChanged(FormField field, String value) {
+        interactedFields.add(field);
+
+        switch (field) {
+            case USERNAME:
+                if (!java.util.Objects.equals(username.getValue(), value)) username.setValue(value);
+                break;
+            case NAME:
+                if (!java.util.Objects.equals(name.getValue(), value)) name.setValue(value);
+                break;
+            case SURNAME:
+                if (!java.util.Objects.equals(surname.getValue(), value)) surname.setValue(value);
+                break;
+            case EMAIL:
+                if (!java.util.Objects.equals(email.getValue(), value)) email.setValue(value);
+                break;
+            case PASSWORD:
+                if (!java.util.Objects.equals(password.getValue(), value)) password.setValue(value);
+                break;
         }
     }
 
@@ -261,33 +286,32 @@ public class UserManagementViewModel extends ViewModel {
         boolean isPasswordValid = true;
         if (currentEditingUserId == null) {
             isPasswordValid = UserValidator.isPasswordValid(password.getValue());
-            _passwordError.setValue(touchedFields.contains(FormField.PASSWORD) && !isPasswordValid ? R.string.password_register_error : null);
+            _passwordError.setValue(interactedFields.contains(FormField.PASSWORD) && !isPasswordValid ? R.string.password_register_error : null);
         } else {
             _passwordError.setValue(null);
         }
 
-        _usernameError.setValue(touchedFields.contains(FormField.USERNAME) && !isUsernameValid ? R.string.username_register_error : null);
-        _nameError.setValue(touchedFields.contains(FormField.NAME) && !isNameValid ? R.string.name_register_error : null);
-        _surnameError.setValue(touchedFields.contains(FormField.SURNAME) && !isSurnameValid ? R.string.surname_register_error : null);
-        _emailError.setValue(touchedFields.contains(FormField.EMAIL) && !isEmailValid ? R.string.email_register_error : null);
-        _passwordError.setValue(touchedFields.contains(FormField.PASSWORD) && !isPasswordValid ? R.string.password_register_error : null);
+        _usernameError.setValue(interactedFields.contains(FormField.USERNAME) && !isUsernameValid ? R.string.username_register_error : null);
+        _nameError.setValue(interactedFields.contains(FormField.NAME) && !isNameValid ? R.string.name_register_error : null);
+        _surnameError.setValue(interactedFields.contains(FormField.SURNAME) && !isSurnameValid ? R.string.surname_register_error : null);
+        _emailError.setValue(interactedFields.contains(FormField.EMAIL) && !isEmailValid ? R.string.email_register_error : null);
 
         boolean isFieldValid = isUsernameValid && isNameValid && isSurnameValid && isEmailValid && isPasswordValid;
         _isFormValid.setValue(isFieldValid && isRoleSelected);
     }
 
     public void saveUser() {
-        touchedFields.add(UserManagementViewModel.FormField.USERNAME);
-        touchedFields.add(UserManagementViewModel.FormField.NAME);
-        touchedFields.add(UserManagementViewModel.FormField.SURNAME);
-        touchedFields.add(UserManagementViewModel.FormField.EMAIL);
+        interactedFields.add(UserManagementViewModel.FormField.USERNAME);
+        interactedFields.add(UserManagementViewModel.FormField.NAME);
+        interactedFields.add(UserManagementViewModel.FormField.SURNAME);
+        interactedFields.add(UserManagementViewModel.FormField.EMAIL);
 
         if (currentEditingUserId == null) {
-            touchedFields.add(UserManagementViewModel.FormField.PASSWORD);
+            interactedFields.add(UserManagementViewModel.FormField.PASSWORD);
         }
 
         validateUserForm();
-        if (Boolean.FALSE.equals(isFormValid.getValue())) return;
+        if (Boolean.FALSE.equals(isFormValid.getValue()) || selectedRole.getValue() == null) return;
 
         _userFormState.setValue(new UserFormUIState.Submitting());
 

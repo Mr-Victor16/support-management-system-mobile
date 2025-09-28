@@ -32,12 +32,12 @@ public class UserAdapter extends ListAdapter<UserDetailsResponse, UserAdapter.Us
     }
 
     public void setCanManage(boolean canManage) {
-        boolean needsUpdate = this.canManage != canManage;
-        this.canManage = canManage;
-
-        if (needsUpdate) {
-            notifyDataSetChanged();
+        if (this.canManage == canManage) {
+            return;
         }
+
+        this.canManage = canManage;
+        notifyItemRangeChanged(0, getItemCount());
     }
 
     @NonNull
@@ -49,14 +49,14 @@ public class UserAdapter extends ListAdapter<UserDetailsResponse, UserAdapter.Us
 
     @Override
     public void onBindViewHolder(@NonNull UserAdapter.UserViewHolder holder, int position) {
-        Long userId = authContext.getCurrentUser().getId();
+        Long userId = authContext.getCurrentUser().id();
 
         holder.bind(getItem(position), listener, userId);
     }
 
-    static class UserViewHolder extends RecyclerView.ViewHolder {
-        TextView usernameTextView, roleTextView;
-        ImageButton editButton, deleteButton;
+    public static class UserViewHolder extends RecyclerView.ViewHolder {
+        final TextView usernameTextView, roleTextView;
+        final ImageButton editButton, deleteButton;
 
         public UserViewHolder(@NonNull View itemView) {
             super(itemView);

@@ -10,7 +10,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
-class SessionManager {
+public class SessionManager {
     private static final String TOKEN_KEY = "jwt_token";
     private static final String ID_KEY = "user_id";
     private static final String USERNAME_KEY = "username";

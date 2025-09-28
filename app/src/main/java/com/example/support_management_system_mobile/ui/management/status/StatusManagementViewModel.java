@@ -46,7 +46,7 @@ public class StatusManagementViewModel extends ViewModel {
     public void loadStatusList() {
         _statusListState.setValue(new StatusListUIState.Loading());
 
-        statusRepository.getStatusesWithUseNumber(new Callback<List<StatusResponse>>() {
+        statusRepository.getStatusesWithUseNumber(new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<List<StatusResponse>> call, @NonNull Response<List<StatusResponse>> response) {
                 if (response.isSuccessful() && response.body() != null) {
@@ -65,7 +65,7 @@ public class StatusManagementViewModel extends ViewModel {
     }
 
     public void deleteStatus(long statusId) {
-        statusRepository.deleteStatus(statusId, new Callback<Void>() {
+        statusRepository.deleteStatus(statusId, new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
                 if (response.isSuccessful()) {
@@ -84,7 +84,7 @@ public class StatusManagementViewModel extends ViewModel {
     }
 
     public void createStatus(String name, boolean closeTicket, boolean defaultStatus) {
-        statusRepository.createStatus(new AddStatusRequest(name, closeTicket, defaultStatus), new Callback<Void>() {
+        statusRepository.createStatus(new AddStatusRequest(name, closeTicket, defaultStatus), new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
                 if (response.isSuccessful()) {
@@ -103,7 +103,7 @@ public class StatusManagementViewModel extends ViewModel {
     }
 
     public void updateStatus(Long statusId, String newName, boolean closeTicket, boolean defaultStatus) {
-        statusRepository.updateStatus(new UpdateStatusRequest(statusId, newName, closeTicket, defaultStatus), new Callback<Void>() {
+        statusRepository.updateStatus(new UpdateStatusRequest(statusId, newName, closeTicket, defaultStatus), new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
                 if (response.isSuccessful()) {

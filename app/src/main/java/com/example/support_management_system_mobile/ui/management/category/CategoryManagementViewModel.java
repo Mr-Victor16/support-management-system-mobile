@@ -44,7 +44,7 @@ public class CategoryManagementViewModel extends ViewModel {
     public void loadCategories() {
         _categoryListState.setValue(new CategoryListUIState.Loading());
 
-        categoryRepository.getCategoriesWithUseNumber(new Callback<List<CategoryResponse>>() {
+        categoryRepository.getCategoriesWithUseNumber(new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<List<CategoryResponse>> call, @NonNull Response<List<CategoryResponse>> response) {
                 if (response.isSuccessful() && response.body() != null) {
@@ -62,7 +62,7 @@ public class CategoryManagementViewModel extends ViewModel {
     }
 
     public void deleteCategory(Long categoryId) {
-        categoryRepository.deleteCategory(categoryId, new Callback<Void>() {
+        categoryRepository.deleteCategory(categoryId, new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
                 if (response.isSuccessful()) {
@@ -81,7 +81,7 @@ public class CategoryManagementViewModel extends ViewModel {
     }
 
     public void createCategory(String name) {
-        categoryRepository.createCategory(name, new Callback<Void>() {
+        categoryRepository.createCategory(name, new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
                 if (response.isSuccessful()) {
@@ -100,7 +100,7 @@ public class CategoryManagementViewModel extends ViewModel {
     }
 
     public void updateCategory(Long categoryId, String newName) {
-        categoryRepository.updateCategory(categoryId, newName, new Callback<Void>() {
+        categoryRepository.updateCategory(categoryId, newName, new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
                 if (response.isSuccessful()) {

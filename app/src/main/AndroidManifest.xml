@@ -17,12 +17,6 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
-            android:name=".ui.ticket.TicketFormActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.ticket.TicketImageActivity"
-            android:exported="false" />
-        <activity
             android:name=".ui.register.RegisterActivity"
             android:exported="false" />
         <activity

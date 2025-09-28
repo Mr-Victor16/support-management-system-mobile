@@ -43,7 +43,7 @@ public class TicketAdapter extends ListAdapter<Ticket, TicketAdapter.TicketViewH
     }
 
     public static class TicketViewHolder extends RecyclerView.ViewHolder {
-        TextView title, date, status;
+        final TextView title, date, status;
 
         public TicketViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -53,9 +53,9 @@ public class TicketAdapter extends ListAdapter<Ticket, TicketAdapter.TicketViewH
         }
 
         public void bind(final Ticket ticket, final OnTicketClickListener listener) {
-            title.setText(ticket.getTitle());
-            date.setText(ticket.getCreatedDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-            status.setText(ticket.getStatus().getName());
+            title.setText(ticket.title());
+            date.setText(ticket.createdDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+            status.setText(ticket.status().name());
             itemView.setOnClickListener(v -> listener.onTicketClick(ticket));
         }
     }
@@ -63,7 +63,7 @@ public class TicketAdapter extends ListAdapter<Ticket, TicketAdapter.TicketViewH
     private static final DiffUtil.ItemCallback<Ticket> DIFF_CALLBACK = new DiffUtil.ItemCallback<>() {
         @Override
         public boolean areItemsTheSame(@NonNull Ticket oldItem, @NonNull Ticket newItem) {
-            return oldItem.getId().equals(newItem.getId());
+            return oldItem.id().equals(newItem.id());
         }
 
         @Override

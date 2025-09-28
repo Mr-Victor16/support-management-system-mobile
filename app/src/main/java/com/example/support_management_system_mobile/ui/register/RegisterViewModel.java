@@ -11,7 +11,8 @@ import androidx.lifecycle.MutableLiveData;
 import com.example.support_management_system_mobile.R;
 import com.example.support_management_system_mobile.data.repository.AuthRepository;
 import com.example.support_management_system_mobile.data.payload.request.RegisterRequest;
-import com.example.support_management_system_mobile.utils.validators.UserValidator;
+
+import java.util.Objects;
 
 import javax.inject.Inject;
 
@@ -69,38 +70,18 @@ public class RegisterViewModel extends AndroidViewModel {
     }
 
     private void validateForm() {
-        String usernameValue = _username.getValue();
-        Integer usernameError = (usernameValue != null && !usernameValue.isEmpty() && !UserValidator.isUsernameValid(usernameValue))
-                ? R.string.username_register_error : null;
-
-        String nameValue = _name.getValue();
-        Integer nameError = (nameValue != null && !nameValue.isEmpty() && !UserValidator.isNameValid(nameValue))
-                ? R.string.name_register_error : null;
-
-        String surnameValue = _surname.getValue();
-        Integer surnameError = (surnameValue != null && !surnameValue.isEmpty() && !UserValidator.isSurnameValid(surnameValue))
-                ? R.string.surname_register_error : null;
-
-        String emailValue = _email.getValue();
-        Integer emailError = (emailValue != null && !emailValue.isEmpty() && !UserValidator.isEmailValid(emailValue))
-                ? R.string.email_register_error : null;
-
-        String passwordValue = _password.getValue();
-        Integer passwordError = (passwordValue != null && !passwordValue.isEmpty() && !UserValidator.isPasswordValid(passwordValue))
-                ? R.string.password_register_error : null;
-
-        boolean isDataValidForSubmission = UserValidator.isUsernameValid(usernameValue) &&
-                UserValidator.isNameValid(nameValue) &&
-                UserValidator.isSurnameValid(surnameValue) &&
-                UserValidator.isEmailValid(emailValue) &&
-                UserValidator.isPasswordValid(passwordValue);
-
-        _formState.setValue(new RegisterFormState(usernameError, nameError, surnameError, emailError, passwordError, isDataValidForSubmission));
+        _formState.setValue(
+                RegisterFormState.create(
+                        Objects.requireNonNullElse(_username.getValue(), ""),
+                        Objects.requireNonNullElse(_name.getValue(), ""),
+                        Objects.requireNonNullElse(_surname.getValue(), ""),
+                        Objects.requireNonNullElse(_email.getValue(), ""),
+                        Objects.requireNonNullElse(_password.getValue(), "")
+                )
+        );
     }
 
     public void register() {
-        validateForm();
-
         RegisterFormState currentState = _formState.getValue();
         if (currentState == null || !currentState.isDataValid()) {
             return;
@@ -111,7 +92,7 @@ public class RegisterViewModel extends AndroidViewModel {
                 _username.getValue(), _password.getValue(), _email.getValue(), _name.getValue(), _surname.getValue()
         );
 
-        authRepository.register(request, new Callback<String>() {
+        authRepository.register(request, new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
                 if (response.isSuccessful()) {

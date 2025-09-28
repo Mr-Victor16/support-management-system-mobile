@@ -60,7 +60,7 @@ public class TicketListFragment extends Fragment {
     }
 
     private void setupRecyclerView() {
-        ticketAdapter = new TicketAdapter(ticket -> navigateToDetails(ticket.getId()));
+        ticketAdapter = new TicketAdapter(ticket -> navigateToDetails(ticket.id()));
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(ticketAdapter);
     }
